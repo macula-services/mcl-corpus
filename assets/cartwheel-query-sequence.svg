@@ -100,7 +100,7 @@
     <g transform="translate(150, 85)">
       <rect x="0" y="0" width="100" height="70" rx="8" fill="url(#controllerGrad)"/>
       <text x="50" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="14" font-weight="bold" fill="#fff">Controller</text>
-      <text x="50" y="50" text-anchor="middle" font-family="monospace" font-size="9" fill="#bfdbfe">hecate_api_*.erl</text>
+      <text x="50" y="50" text-anchor="middle" font-family="monospace" font-size="9" fill="#bfdbfe">*_api.erl</text>
       <text x="50" y="-8" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#64748b">HTTP Handler</text>
     </g>
 
@@ -197,5 +197,5 @@
   </g>
 
   <!-- Attribution -->
-  <text x="870" y="490" text-anchor="end" font-family="system-ui, sans-serif" font-size="9" fill="#475569">macula-hecate • Query Sequence</text>
+  <text x="870" y="490" text-anchor="end" font-family="system-ui, sans-serif" font-size="9" fill="#475569">Macula • Query Sequence</text>
 </svg>

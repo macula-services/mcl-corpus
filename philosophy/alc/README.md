@@ -66,7 +66,7 @@ Concluding Planning doesn't dispatch a command to start Crafting -- there's no p
 
 If two harnesses both act on the same document, resolution is git's own: whichever pushes or merges first wins, and the second hits a conflict and backs off. No aggregate, no lock service -- the same thing that already happens whenever more than one contributor touches a shared file.
 
-See `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md` for the full multi-agent design this feeds. There is no crew backend service; this is a git-and-mesh convention, not infrastructure to build.
+There is no crew backend service; this is a git-and-mesh convention, not infrastructure to build.
 
 ---
 

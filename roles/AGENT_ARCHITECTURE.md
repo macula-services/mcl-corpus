@@ -66,16 +66,14 @@ lifecycle phases."
 There is exactly one execution context: **an agent (a harness, channel
 (b) of `AUTH_MODEL.md`) does the reasoning, always, on its own
 already-configured model.** No service in this architecture calls a
-model on an agent's behalf — full design in
-`macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md`.
+model on an agent's behalf.
 
 "Interactive" and "background" are a scheduling distinction — is a human
 watching this particular session right now — not an architectural one.
 A background task (e.g. "Generate Division," per `TASK_MODEL.md`)
 still runs inside some harness's own agent session; it's just not the
 one session a human happens to be watching turn-by-turn. Task-state
-tracking and unlock publication are process-manager mechanics (see
-`PLAN_MARTHA_MULTI_AGENT_MCP.md`'s "Multi-agent coordination"); nothing
+tracking and unlock publication are process-manager mechanics; nothing
 picks up the work itself, and nothing calls a model.
 
 The T0–T1 tier vocabulary is advisory in every case, without exception —

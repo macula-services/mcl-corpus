@@ -135,9 +135,8 @@ first wins, and the second hits a conflict and backs off. No aggregate,
 no process manager, no lock service — the mesh carries the "something
 changed, go look" signal, and git carries the state.
 
-See `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md` for the full
-multi-agent design this feeds — there is no backend service that owns
-domain/division lifecycle tracking; it's a git-and-mesh convention.
+There is no backend service that owns domain/division lifecycle tracking
+and no multi-agent crew design to build: it's a git-and-mesh convention.
 
 ---
 

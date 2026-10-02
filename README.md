@@ -37,7 +37,6 @@ This repository is the corpus that shapes how Macula agents think and work. It c
 | **Skills** | `skills/`, `skills/antipatterns/`, `skills/codegen/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
-| **Templates** | `templates/` | Parameterized codegen |
 
 Full layout and reading paths in [`INDEX.md`](INDEX.md).
 
@@ -67,7 +66,6 @@ Changes to this corpus shape how every Macula agent thinks. They are not casual 
 - **Philosophy** changes affect mental models across all agents
 - **Skills** changes affect generated code
 - **Guardrails** (`skills/antipatterns/`) changes affect what fails review
-- **Templates** changes affect what generated code looks like
 
 Read [`INDEX.md`](INDEX.md) before opening a PR.
 

@@ -29,7 +29,6 @@ app, a Phoenix LiveView site, or a Blazor site to it.
 | **Skills** | `skills/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
-| **Templates** | `templates/` | Parameterized codegen |
 | **Glossary** | `GLOSSARY.md` | Canonical vocabulary, 5D hierarchy |
 | **Codex** | `CODEX.md` | Narrative booklet distilled from the corpus (draft) |
 
@@ -111,7 +110,6 @@ The Tier 3 LLM reads **only** these. No creativity required.
 | Naming derivation | [`skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md`](skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md) |
 | Generation checklist | [`skills/codegen/erlang/CODEGEN_ERLANG_CHECKLISTS.md`](skills/codegen/erlang/CODEGEN_ERLANG_CHECKLISTS.md) |
 | Templates | [`skills/codegen/erlang/CODEGEN_ERLANG_TEMPLATES.md`](skills/codegen/erlang/CODEGEN_ERLANG_TEMPLATES.md) |
-| Templates source | `templates/erlang/*.tmpl`, `templates/routes/*.tmpl` |
 
 The Tier 3 path is intentionally bare. Philosophy is not needed for mechanical code generation.
 

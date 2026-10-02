@@ -16,9 +16,9 @@ stage: stable
 ## 🔥 History Narration in Operational Docs
 
 **Date:** 2026-09-01
-**Origin:** the crew roster redesign session — `roles/AGENT_ARCHITECTURE.md`,
-`macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md`, and four role files all
-picked up the same habit independently, in the same afternoon.
+**Origin:** the crew roster redesign session — `roles/AGENT_ARCHITECTURE.md`
+and four role files all picked up the same habit independently, in the
+same afternoon.
 
 ### The Antipattern
 
