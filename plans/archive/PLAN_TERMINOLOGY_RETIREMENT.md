@@ -5,9 +5,11 @@ day (file renames + mechanical pass + contextual fixes); P4 (internal
 links) folded into P3. P5 external references done the same day
 (macula-mcp plans, the mcl-chess plan, the retrieval skill description),
 and the corpus's relative links, indexes and leftover names swept.
-Remaining: re-seed the RAG index — the local hecate-rag stack is not
-running on this machine.** The inventory and mapping below stay as the
-migration record.
+Re-seed: there is no local retrieval stack; retrieval is `mesh_recall`
+against mcl-rag on the fleet, and the fleet's corpus list
+(macula-fleet, `edge/msi00.lab/mcl-rag/corpus-repos.json`) moves this
+repository's pin to the rename commit — mcl-rag re-embeds it on the next
+sync.** The inventory and mapping below stay as the migration record.
 
 This exists so the corpus names what the workspace actually contains. The
 services have physically moved to `macula-services` as `mcl-*`, the
