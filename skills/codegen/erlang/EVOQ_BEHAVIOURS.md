@@ -7,7 +7,7 @@ stage: stable
 
 # Evoq Behaviours — Complete Reference
 
-**Package:** `evoq` (hex.pm, `~> 1.23`; this page matches 1.23.1)
+**Package:** `evoq` (hex.pm, `~> 1.26`; this page matches 1.26.1)
 **Source:** `reckon-db-org/evoq/src/` — every callback below is copied from the
 module's own `-callback` / `-optional_callbacks` attributes, so the source is
 the authority if the two ever disagree.
@@ -147,7 +147,7 @@ Events are immutable facts, past tense, produced by aggregates.
 
 ### 5. `evoq_event_handler` — Event Subscription (Side Effects)
 
-Event handlers subscribe to event types (not streams) and process events as they are published. **This is what every real emitter, projection and process manager in this workspace implements** — see `guides/FAQ_WIRE_A_PROCESS_MANAGER.md` and `guides/FAQ_QUERY_READ_MODELS.md` for live examples.
+Event handlers subscribe to event types (not streams) and process events as they are published. **This is what every real emitter, projection and cross-aggregate policy in this workspace implements** — per-entity state machines are `evoq_process_manager` (section 7); see `guides/FAQ_WIRE_A_PROCESS_MANAGER.md` and `guides/FAQ_QUERY_READ_MODELS.md` for live examples.
 
 **Required callbacks:**
 
@@ -162,26 +162,34 @@ Event handlers subscribe to event types (not streams) and process events as they
 | Callback | Description |
 |----------|-------------|
 | `on_error/4` | Custom error handling strategy (see `evoq_error_handler`) |
+| `replay_policy/0` | `skip \| deliver`. `skip` for anything with a side effect (publishing, dispatching, sending); `deliver` for handlers rebuilding in-memory state. Undeclared delivers and logs a warning naming the handler. |
+| `handle_info/2` | Messages the handler scheduled to itself from `handle_event/4`, most usefully a deadline or retry via `erlang:send_after/3`. This is the only evoq reaction surface with it — see section 7. |
 
 **Started via:** `evoq_event_handler:start_link/2,3` — `start_link(CallbackModule, Config)`, a one-line child spec in the owning slice's supervisor. Registers with `evoq_event_type_registry` by event type.
 
-**Example (pg emitter, real shape from hecate-daemon):**
+**Example (mesh emitter, real shape — `macula-services/mcl-bookclub`):**
 
 ```erlang
--module(franchise_territory_awarded_v1_to_pg).
+-module(emit_member_registered_v1_to_mesh).
 -behaviour(evoq_event_handler).
--export([interested_in/0, init/1, handle_event/4]).
+-export([interested_in/0, init/1, handle_event/4, replay_policy/0]).
 
--define(PG_GROUP, franchise_territory_awarded_v1).
+interested_in() -> [<<"member_registered_v1">>].
 
-interested_in() -> [<<"franchise_territory_awarded_v1">>].
+%% A restart's replay must not re-publish facts that already went out.
+replay_policy() -> skip.
 
 init(_Config) -> {ok, #{}}.
 
 handle_event(_EventType, Event, _Metadata, State) ->
-    Members = pg:get_members(pg, ?PG_GROUP),
-    lists:foreach(fun(Pid) -> Pid ! {?PG_GROUP, Event} end, Members),
-    {ok, State}.
+    Data = maps:get(data, Event, Event),
+    case mcl_om:mesh_handles() of
+        {ok, Pool, Realm} ->
+            Fact = mcl_bookclub_facts:to_wire(mcl_bookclub_facts:member_registered(Data)),
+            publish_on(Pool, Realm, Fact, State);
+        {error, _} = Error ->
+            Error
+    end.
 ```
 
 ---
@@ -230,7 +238,11 @@ Coordinates long-running business processes spanning multiple aggregates. Correl
 | `init/1` | `init(ProcessId :: binary()) -> {ok, State}` | Initialize PM state for a new process instance |
 | `compensate/2` | `compensate(State, FailedCommand :: #evoq_command{}) -> {ok, [#evoq_command{}]} \| skip` | Compensating commands for saga rollback |
 
-**Started via:** `evoq_process_manager:start/2,3`. Routes via `evoq_pm_router` -> `evoq_pm_instance`. The simple, stateless "on event X dispatch command Y" process managers this workspace names `on_{event}_{action}_{target}` are `evoq_event_handler`s, not `evoq_process_manager`s — reach for this behaviour only when a process genuinely has per-instance state across several events.
+**Started via:** `evoq_process_manager:start/2,3`. Routes via `evoq_pm_router` -> `evoq_pm_instance`, one instance per `{process manager module, ProcessId}` (1.26.0; before that two managers correlating on the same id shared an instance). The simple, stateless "on event X dispatch command Y" policies this workspace names `on_{event}_{action}_{target}` are `evoq_event_handler`s, not `evoq_process_manager`s — reach for this behaviour only when a process genuinely has per-instance state across several events.
+
+**Replay:** on a restart, `handle/3` and `apply/2` run for every replayed event and the instance rebuilds exactly the state it had — but **the commands `handle/3` returns are not dispatched** (dispatching again would re-issue its whole history). Events appended while the node was down arrive as new and dispatch normally. This is the behaviour's replay guarantee; an `evoq_event_handler` must declare `replay_policy/0` instead.
+
+**Two limits as of 1.26.1:** an instance cannot receive a message it sent itself (there is no `handle_info/2` callback and the idle timer only logs), so a timer or deadline needs an `evoq_event_handler` with `handle_info/2` — or the evoq extension `mcl-chess` tracks; and an event type only a process manager declares is not delivered until some event handler also consumes it (evoq #2). Run one on one node for now (instance routing is cluster-wide, evoq #10).
 
 ---
 
@@ -415,7 +427,7 @@ Default: exponential backoff (100ms base, 30s max), 5 retries, then dead letter.
 | Cross-cutting invariant over a tag set, not one stream | `evoq_decision` |
 | Define / validate a command | `evoq_command` |
 | Define an event | `evoq_event` |
-| React to events (side effects, pg/mesh, read-model writes, `on_*` PMs) | `evoq_event_handler` |
+| React to events (side effects, pg/mesh, read-model writes, `on_*` policies) | `evoq_event_handler` |
 | Build a checkpointed, rebuildable read model | `evoq_projection` |
 | Coordinate across aggregates with per-instance state (saga) | `evoq_process_manager` |
 | Publish a domain event to another bounded context | `evoq_fact` + `evoq_emitter` |
@@ -433,7 +445,6 @@ Default: exponential backoff (100ms base, 30s max), 5 retries, then dead letter.
 
 ## Common Patterns in Our Codebase
 
-**Emitter (event handler → pg):** `{event}_v1_to_pg.erl` — subscribes to event, sends to every pg group member
-**Emitter (event handler → mesh):** `{event}_to_mesh.erl` — subscribes to event, publishes a fact to the mesh
+**Emitter (event handler → mesh):** `emit_{event}_to_mesh.erl` — subscribes to event, publishes a fact to the mesh
 **Projection (event → table):** `{event}_to_{table}.erl` — projects event to an ETS/SQLite/barrel read model
-**Process Manager:** `on_{event}_{verb}_{subject}.erl` — reacts to event, dispatches command to another aggregate (an `evoq_event_handler` living in the target domain)
+**Process Manager:** `on_{event}_{action}_{target}.erl` policies react to one event and dispatch one command — an `evoq_event_handler` living in the target domain. A process with per-instance state across events (one clock per game, one saga per order) is an `evoq_process_manager` with `correlate/2` keying the instance.

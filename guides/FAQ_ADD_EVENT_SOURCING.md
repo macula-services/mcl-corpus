@@ -1,17 +1,17 @@
 ---
-title: "FAQ: Adding Event Sourcing to a New Hecate Service"
+title: "FAQ: Adding Event Sourcing to a New Macula Service"
 layer: guide
 audience: [agent, human]
 stage: stable
 ---
 
-# FAQ: How Do I Add Event Sourcing (reckon-db + evoq) to a New Hecate Service?
+# FAQ: How Do I Add Event Sourcing (reckon-db + evoq) to a New Macula Service?
 
 [Back to FAQ index](FAQ.md) · [Back to corpus index](../INDEX.md)
 
 This is the practical CMD-department walkthrough: command → aggregate →
 event → dispatch, using a real, live example
-(`hecate-services/hecate-whiteboard`'s `GuideBoardLifecycle` app) rather
+(`macula-services/mcl-whiteboard`'s `GuideBoardLifecycle` app) rather
 than an abstract description.
 
 ---
@@ -138,12 +138,48 @@ matching this workspace's own documented convention that status fields
 are bit flags manipulated via `evoq_bit_flags:set/2`, `unset/2`, `has/2`,
 `has_not/2` — all real exports of `evoq_bit_flags` (reckon-db-org/evoq).
 
+## The evoq-only rule (application surface)
+
+Application code — desks, aggregates, policies, projections, emitters,
+process managers — uses **evoq's own behaviours and API**, and nothing
+below it. In particular, no module in `apps/` calls
+`reckon_evoq_adapter`, `reckon_gater` or `reckon_db` directly; the adapter
+is named **once, in `config/sys.config.src`** (see the scaffold section
+below), and `evoq_store_subscription` is what delivers events to whatever
+your app registered. This is what keeps a service portable across stores
+and testable without a running reckon cluster.
+
+| Need | evoq surface |
+|---|---|
+| Command / Event | `evoq_command`, `evoq_event` |
+| Aggregate + state | `evoq_aggregate` + the state module |
+| Policy / side effect (by event type) | `evoq_event_handler` (+ `replay_policy/0`) |
+| Per-entity state machine / saga | `evoq_process_manager` (+ `compensate/2`) |
+| Projection into a read model | `evoq_event_handler` today (the deployed practice; `evoq_projection` is documented but not yet exercised in the fleet) |
+| Mesh fact / listener | `evoq_emitter`, `evoq_listener` |
+| Dispatch | `evoq_router:dispatch/1`, `evoq_command_router:dispatch_with_state/2` |
+| Status bits | `evoq_bit_flags` |
+
+**Known gaps (2026-10, evoq 1.26.1).** Three needs have no evoq-only
+answer yet, and are tracked rather than worked around: an
+`evoq_process_manager` instance cannot receive a message it sent itself
+(no `handle_info/2` callback, so a deadline/timer needs an event handler
+or an evoq extension); there is no evoq API to mint a store-valid
+aggregate id (`reckon_gater_stream_id` lives below the line); and the
+canonical `store=1` scaffold's `<name>_app` opens the store by calling
+`reckon_db_sup:start_store/1` and `#store_config{}` directly (only
+`evoq_store_subscription` is evoq) — either declare boot wiring the
+sanctioned exception or add an `evoq_store:open/1` facade. `mcl-chess`'s
+plan proposes `handle_info/2` on the PM and
+`evoq_adapter:new_stream_id/1`, and adopts the scaffold as-is with the
+bootstrap debt recorded.
+
 ## Turning on a real store: the scaffold's `store` option
 
-[FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md)
-already covers `rebar3 new hecate_service ...` — here's what the
+[FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md)
+already covers `rebar3 new mcl_service ...` — here's what the
 `store` variable actually does. The template's own doc comment
-(`hecate-services/hecate-om/priv/templates/hecate_service.template`):
+(`macula-services/mcl-om/priv/templates/mcl_service.template`):
 
 > OFF BY DEFAULT. Empty means no store, which is what most services
 > want. Set it to **`1`** and the service opens a reckon-db store called
@@ -157,7 +193,7 @@ already covers `rebar3 new hecate_service ...` — here's what the
 > result does not compile — a limitation of the template engine, not a
 > preference.
 
-So the real invocation is `rebar3 new hecate_service ... store=1` — the
+So the real invocation is `rebar3 new mcl_service ... store=1` — the
 literal digit, not a letter or word. This generates, in
 `sys.config.src`:
 
@@ -175,7 +211,7 @@ and in `<name>_service.erl`:
 ```erlang
 -export([store_id/0, data_dir/0]).
 store_id() -> <name>_store.
-data_dir() -> chosen(os:getenv("HECATE_DATA_DIR")).
+data_dir() -> chosen(os:getenv("MCL_DATA_DIR")).
 chosen(false) -> "/tmp/<name>";
 chosen("")    -> "/tmp/<name>";
 chosen(Path)  -> Path.
@@ -186,7 +222,7 @@ service once shipped `store_id/0`/`data_dir/0` exported with no `evoq`
 sys.config block at all, which put **two of three fleet nodes into a
 boot-crash loop** (`{not_configured, event_store_adapter}`) — because
 `evoq` starts as a release-boot application *before* any service's
-`start/2` runs, so `hecate_om` cannot inject the adapter config at
+`start/2` runs, so `mcl_om` cannot inject the adapter config at
 runtime, unlike capability registration. That's the specific, documented
 incident behind adding this as a scaffold option instead of three manual
 steps.
@@ -203,6 +239,6 @@ compares the two values directly so this can't ship silently either.
 
 - [FAQ: How do I query a read model (QRY+PRJ)?](FAQ_QUERY_READ_MODELS.md) — the other side of what these events feed
 - [FAQ: How do I wire a Process Manager for cross-domain integration?](FAQ_WIRE_A_PROCESS_MANAGER.md) — reacting to these events outside this aggregate's own boundary
-- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — the `hecate_om_service` scaffold this builds on
-- [FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md) — the `rebar3 new hecate_service` scaffold itself
+- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — the `mcl_om_service` scaffold this builds on
+- [FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md) — the `rebar3 new mcl_service` scaffold itself
 - [FAQ: How do I call event sourcing from a non-BEAM app?](FAQ_CALL_RECKON_GATEWAY.md) — the same reckon-db store, reached over gRPC instead of in-process evoq

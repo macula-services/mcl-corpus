@@ -31,7 +31,6 @@ _An LLM doing TnI codegen reads ONLY this file + the relevant template._
 | **PRJ Desk Supervisor** | `{event}_sup` | `order_initiated_sup` |
 | **Responder** | `{command}_responder_v1` | `initiate_order_responder_v1` |
 | **Emitter (mesh)** | `emit_{event}_to_mesh` | `emit_order_initiated_to_mesh` |
-| **Emitter (pg)** | `emit_{event}_to_pg` | `emit_order_initiated_to_pg` |
 | **Aggregate** | `{noun}_aggregate` | `order_aggregate` |
 | **Projection** | `{event}_to_{read_store}` | `order_initiated_to_orders` |
 | **Policy** | `on_{event}_maybe_{command}` | `on_license_revoked_v1_maybe_remove_plugin` |
@@ -48,15 +47,14 @@ _An LLM doing TnI codegen reads ONLY this file + the relevant template._
 
 ## Event Flows from the Store
 
-Every event stored in ReckonDB can trigger one of 5 flow types. Each has a distinct naming pattern and role:
+Every event stored in ReckonDB can trigger one of 4 flow types. Each has a distinct naming pattern and role:
 
 | # | Flow | Module Pattern | Role |
 |---|------|---------------|------|
 | 1 | Event Store → Read Model | `on_{event}_to_sqlite_{table}` / `on_{event}_to_couchdb_{table}` | **Projection** |
-| 2 | Event Store → PubSub | `emit_{event}_to_pg` | **Integration Emitter** |
-| 3 | Event Store → Mesh | `emit_{event}_to_mesh` | **Mesh Emitter** |
-| 4 | Event Store → own Aggregate | `on_{event}_maybe_{command}` | **Policy** |
-| 5 | Other Domain/Mesh → own Aggregate | `on_{fact}_from_{transport}_{command}` | **Listener** |
+| 2 | Event Store → Mesh | `emit_{event}_to_mesh` | **Mesh Emitter** |
+| 3 | Event Store → own Aggregate | `on_{event}_maybe_{command}` | **Policy** |
+| 4 | Other Service/Mesh → own Aggregate | `on_{fact}_from_{transport}_{command}` | **Listener** |
 
 All 5 subscribe to events via `reckon_evoq_adapter:subscribe/5`. The difference is what they DO with the event:
 
@@ -136,7 +134,6 @@ Given a dossier/app name, all other names are **deterministic**:
 | `initiate_order` | `_desk_sup` suffix | supervisor: `initiate_order_desk_sup` |
 | `initiate_order` | `_responder_v1` suffix | responder: `initiate_order_responder_v1` |
 | `initiate_order` | event `_to_mesh` | emitter: `emit_order_initiated_to_mesh` |
-| `initiate_order` | event `_to_pg` | pg emitter: `emit_order_initiated_to_pg` |
 
 ### From PRJ Desk Name (Event-Based)
 
@@ -178,34 +175,42 @@ Multiple versions and targets coexist in the same desk directory.
 Every mesh capability advertises under `{service}.{verb}` — the same
 shape as a route, over the mesh instead of HTTP. `{service}` is the
 service's own Erlang app/module name, **underscored, never hyphenated**:
-`hecate_mail.reply_to_letter`, not `hecate-mail.reply_to_letter`, and
+`mcl_mail.reply_to_letter`, not `mcl-mail.reply_to_letter`, and
 not the GitHub repo's own hyphenated spelling.
 
 **Why underscore, not the repo's hyphenated name:** an Erlang atom can't
 contain a hyphen without quoting, and most deployed services already use
-their app name as the prefix (`hecate_mail`, `hecate_citizens`,
-`hecate_stations`) — matching that majority means one name to keep in
-your head, not two. `hecate-rag` is the one outlier that doesn't yet
+their app name as the prefix (`mcl_mail`, `mcl_citizens`,
+`mcl_stations`) — matching that majority means one name to keep in
+your head, not two. `mcl-rag` is the one outlier that doesn't yet
 follow this.
 
+**Wire reality check (2026-10).** As deployed today (mcl-om 0.36), an
+`mcl_om` capability registers on the wire as `Org/Name` — mcl_echo is
+`mcl-echo/echo`, mcl-rag's seventeen are `mcl-rag/<name>` — and the
+version travels as the capability map's `version` field, not as a `_v1`
+suffix in the name. The `{service}.{verb}` dot form is the standard for
+new names where the org gives the prefix; do not expect an underscored
+dot name to resolve on the current fleet.
+
 **A service's `capabilities/0` entry and its actual advertised procedure
-name must be the same name.** `hecate_embedder`'s own `capabilities/0`
+name must be the same name.** `mcl_embedder`'s own `capabilities/0`
 currently advertises `embed` (dropping "-er") while the real, callable
-procedure it registers separately is `io.hecate.embed` — a different
+procedure it registers separately is `mcl-embed/embed` — a different
 namespace entirely. Two different names for the same one thing is
 exactly the failure mode this rule exists to prevent: a caller
 discovering `embed` via the DHT gets `unknown_next_peer` calling it by
 that name, because the working procedure was never that name at all.
 
 **A service with no procedures needs no prefix.** A pubsub-only
-participant (e.g. `hecate_whiteboard`, which publishes to topics but
+participant (e.g. `mcl_whiteboard`, which publishes to topics but
 advertises no callable procedures) has nothing to prefix — this rule
 governs procedure names, not every service in the fleet.
 
 ### What this doesn't do
 
 This is the standard for **new** procedures. It does not rename anything
-already deployed — `hecate-rag`'s hyphenated prefix, `hecate_embedder`'s
+already deployed — `mcl-rag`'s hyphenated prefix, `mcl_embedder`'s
 two-different-names problem, and the unprefixed services (`tube`,
 `warden`, `sentinel`) are each a live procedure name existing callers
 depend on. Migrating any of them is a deliberate, scoped, per-service
@@ -351,7 +356,6 @@ API handler:     initiate_order_api
 Supervisor:      initiate_order_desk_sup
 Responder:       initiate_order_responder_v1
 Mesh emitter:    emit_order_initiated_v1_to_mesh
-pg emitter:      emit_order_initiated_v1_to_pg
 PRJ desk dir:    src/order_initiated/                   (in PRJ app)
 PRJ desk sup:    order_initiated_sup                    (in PRJ app)
 Projection:      order_initiated_v1_to_sqlite_orders    (in PRJ app, inside order_initiated/)

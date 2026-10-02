@@ -18,6 +18,17 @@ stage: stable
 
 A **Process Manager** (also called Policy or Saga) coordinates actions across domain boundaries:
 
+> **Current SDK (2026-10).** evoq 1.26 ships a first-class
+> `evoq_process_manager` behaviour: one **instance per `correlate/2`
+> id**, `handle/3` returning commands (suppressed on replay), optional
+> `compensate/2`. That behaviour is the implementation contract; the
+> pg/gen_server sketch below is the original design shape. For a
+> cross-aggregate rule with no per-entity state, the shipped form is an
+> `evoq_event_handler` with `replay_policy() -> skip` — see
+> [`guides/FAQ_WIRE_A_PROCESS_MANAGER.md`](../guides/FAQ_WIRE_A_PROCESS_MANAGER.md).
+> There is no `evoq_policy` behaviour; "policy" is this corpus's word for
+> the event-handler shape.
+
 1. **Subscribes** to events from a source domain
 2. **Makes decisions** about what should happen next
 3. **Dispatches commands** to a target domain
@@ -148,7 +159,7 @@ design_division/src/                                    # TARGET domain
 │
 └── on_division_discovered_initiate_division/           # The PM — SIBLING slice
     ├── on_division_discovered_initiate_division_sup.erl
-    └── on_division_discovered_initiate_division.erl   # gen_server: pg:join + dispatch
+    └── on_division_discovered_initiate_division.erl   # evoq_event_handler + dispatch
 ```
 
 **Why sibling, not nested?**
@@ -169,7 +180,13 @@ design_division/src/                                    # TARGET domain
 
 ## Complete Code Example
 
-The PM is a single gen_server that joins the source domain's pg scope in `init/1` and dispatches the target command on each event. No separate "listener" module is needed.
+The PM is a module implementing `-behaviour(evoq_process_manager)`.
+**The code below is the pre-1.26 sketch of the flow, kept for its shape;
+translate it to the behaviour's `correlate/2` (route by id, `{start,
+continue, stop}`), `handle/3` (return commands) and `apply/2` (fold
+state) callbacks.** The SDK's instance supervisor owns the instances;
+the slice supervisor only registers the module with
+`evoq_process_manager:start(PMModule, #{})`.
 
 ### 1. The Process Manager (Single Module)
 
@@ -185,39 +202,20 @@ The PM is a single gen_server that joins the source domain's pg scope in `init/1
 %%% - Target: division (in design_division)
 %%% @end
 -module(on_division_discovered_initiate_division).
--behaviour(gen_server).
+-behaviour(evoq_event_handler).
 
--export([start_link/0]).
--export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
+-export([interested_in/0, init/1, handle_event/4, replay_policy/0]).
 
--include_lib("kernel/include/logger.hrl").
+interested_in() -> [<<"division_discovered_v1">>].
 
--define(SCOPE, discover_divisions).
--define(TOPIC, <<"division_discovered">>).
+%% A replayed event must not re-dispatch the command.
+replay_policy() -> skip.
 
-start_link() ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+init(_Config) -> {ok, #{}}.
 
-init([]) ->
-    ok = pg:join(?SCOPE, ?TOPIC, self()),
-    ?LOG_INFO("[~s] joined scope=~s topic=~s", [?MODULE, ?SCOPE, ?TOPIC]),
-    {ok, #{}}.
-
-handle_call(_Request, _From, State) ->
-    {reply, {error, unknown_call}, State}.
-
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-
-handle_info({evoq_event, #{event_data := EventData}}, State) ->
-    spawn(fun() -> dispatch_initiate(EventData) end),
-    {noreply, State};
-handle_info(Other, State) ->
-    ?LOG_WARNING("[~s] unexpected message: ~p", [?MODULE, Other]),
-    {noreply, State}.
-
-terminate(_Reason, _State) ->
-    ok.
+handle_event(_EventType, Event, _Metadata, State) ->
+    spawn(fun() -> dispatch_initiate(maps:get(data, Event, Event)) end),
+    {ok, State}.
 
 %%====================================================================
 %% Internal
@@ -247,9 +245,11 @@ get_field(Key, Map) when is_atom(Key) ->
     maps:get(Key, Map, maps:get(BinKey, Map, undefined)).
 ```
 
-The PM **spawns a worker** for the actual dispatch so the gen_server mailbox keeps draining. This matters when the dispatch path makes any blocking call.
+The PM **spawns a worker** for the actual dispatch so the handler keeps
+returning fast. This matters when the dispatch path makes any blocking
+call.
 
-> **Pattern note:** If the dispatch needs cross-domain data, the worker should run a [Command Pipeline](COMMAND_PIPELINES.md) — not inline cross-domain reads. The PM stays thin (join pg, spawn worker, dispatch); all the enrichment, validation, and external lookups live in the pipeline's steps. This keeps the cardinal-sin invariant intact and makes the PM's integration surface a single, declarative file.
+> **Pattern note:** If the dispatch needs cross-domain data, the worker should run a [Command Pipeline](COMMAND_PIPELINES.md) — not inline cross-domain reads. The PM stays thin (subscribe, spawn worker, dispatch); all the enrichment, validation, and external lookups live in the pipeline's steps. This keeps the cardinal-sin invariant intact and makes the PM's integration surface a single, declarative file.
 
 ### 2. The PM's Own Supervisor (the Slice's Sup)
 
@@ -268,7 +268,7 @@ start_link() ->
 init([]) ->
     Children = [
         #{id => on_division_discovered_initiate_division,
-          start => {on_division_discovered_initiate_division, start_link, []},
+          start => {evoq_event_handler, start_link, [on_division_discovered_initiate_division, #{}]},
           restart => permanent,
           type => worker}
     ],
@@ -330,7 +330,7 @@ should_auto_initiate(_) -> false.  %% Manual initiation required
 | PM without "maybe" in name when conditional | Hides conditional nature | Include "maybe" if conditional; omit if always-act |
 | Direct event passing | Bypasses command validation | Create proper command |
 | Global event bus subscription | Hidden dependencies | Explicit pg join in PM's `init/1` |
-| Inline dispatch in PM's `handle_info` | Blocks gen_server mailbox | Spawn worker for dispatch |
+| Inline dispatch in a PM/reaction callback | Blocks the mailbox | Return commands from `handle/3`; keep callbacks total |
 
 ---
 
@@ -368,15 +368,15 @@ PMs are first-class siblings of desks under the domain supervisor. Each PM slice
                                 ↓
                     ════════════════════════════
                          MESH (loose coupling)
-                         Topic: hecate.domain.division_discovered
+                         Topic: macula.domain.division_discovered
                     ════════════════════════════
                                 ↓
 ┌─────────────────────────────────────────────────────────────────┐
 │                   DOMAIN B (design_division)                    │
 │                                                                 │
 │  PM slice: on_division_discovered_initiate_division             │
-│      ↓ gen_server pg:joins source scope                         │
-│      ↓ receives FACT, spawns worker                             │
+│      ↓ evoq_event_handler subscribes by event type               │
+│      ↓ receives event, spawns worker                             │
 │      ↓ worker decides + creates command                         │
 │  Command: initiate_division_v1                                  │
 │      ↓                                                          │
@@ -395,7 +395,7 @@ PMs are first-class siblings of desks under the domain supervisor. Each PM slice
 3. **`on_*` directories scream business process flow at the filesystem level** - this is the primary justification for the sibling-slice rule
 4. **Naming convention reveals purpose** - `on_{event}_{action}_{target}`
 5. **"Maybe" indicates conditional policy** - omit when the PM always acts
-6. **PM is a gen_server that joins pg in `init/1` and dispatches** - no separate listener module
+6. **Register with `evoq_process_manager:start/2`** - the SDK owns routing and one instance per correlated id, not a hand-rolled gen_server
 7. **Dispatch runs in a spawned worker** - keeps the gen_server mailbox draining under load
 8. **Loose coupling enables testing** - each domain testable in isolation
 
@@ -424,4 +424,4 @@ This example teaches:
 - Flow from source event to target command
 
 *Date: 2026-02-08*
-*Origin: Hecate Domain → Division integration*
+*Origin: Macula Domain → Division integration*
