@@ -110,9 +110,8 @@ low-level to start from: [`macula-services/mcl-echo`](https://github.com/macula-
 the mesh's always-on echo, the hello-world target every SDK quickstart
 calls. One capability, a real `Dockerfile` and compose file, a real
 `/health`, small enough to read start to finish in a sitting — a better
-first read than a full multi-app production service. (The old
-`hecate-social/hecate-stub` quickstart this paragraph used to link is
-gone; the repo is 404.)
+first read than a full multi-app production service. (The old stub
+quickstart this paragraph used to link is gone; the repository is 404.)
 
 ## Erlang — `mcl_om_service` (the recommended path for a real service)
 

@@ -103,7 +103,7 @@ confuse the two despite the similar names; this page is entirely about
 
 Every mcl-* service running on realm infrastructure carries its own
 realm-signed credential — an institution of the realm, not a user's
-identity (`hecate-corpus/philosophy/TIER_MODEL.md`'s
+identity (`mcl-corpus/philosophy/TIER_MODEL.md`'s
 citizens-vs-institutions framing). The real endpoint
 (`macula-portal`'s `ServicePrincipalIssuanceController`):
 

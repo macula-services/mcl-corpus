@@ -378,7 +378,7 @@ Deploying this fix alone did NOT resolve the live symptom — see Part 2. The re
 After Part 1 shipped, `get_document_verbatim`/`get_source_by_id`/`get_chunk_by_id` stopped returning `unknown_method` — progress — but started returning `missing_source_path`/`missing_id` instead, even for a real, present field. A temporary diagnostic log (`logger:warning` on the raw payload, then removed once the answer was in hand) showed the actual value:
 
 ```erlang
-#{source_path => {text, <<"hecate-corpus/CODEX.md">>}}
+#{source_path => {text, <<"mcl-corpus/CODEX.md">>}}
 ```
 
 The key was exactly right. The VALUE was wrapped in a 2-tuple. Per `macula_record_cbor`'s own documented value representation, a JSON string sent as an RPC arg is encoded as a CBOR text string (major type 3), which decodes to `{text, binary()}` in Erlang — a bare `binary()` is reserved for a CBOR BYTE string (major type 2), a genuinely different wire type CBOR itself distinguishes and Erlang binaries alone cannot. `mcl_om_wire:field/2,3` found the key correctly and returned the tuple unchanged, so every `is_binary/1` guard downstream kept failing — indistinguishable, again, from a missing field. This recurses: a `topics :: [binary()]` field decodes to a list of `{text, _}` tuples, and a `hits :: [map()]` field (a caller round-tripping a prior response's hits back in) decodes to a list of maps whose OWN values need the identical unwrap.

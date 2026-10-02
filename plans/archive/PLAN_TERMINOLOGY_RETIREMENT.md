@@ -9,7 +9,12 @@ Re-seed: there is no local retrieval stack; retrieval is `mesh_recall`
 against mcl-rag on the fleet, and the fleet's corpus list
 (macula-fleet, `edge/msi00.lab/mcl-rag/corpus-repos.json`) moves this
 repository's pin to the rename commit — mcl-rag re-embeds it on the next
-sync.** The inventory and mapping below stay as the migration record.
+sync. The repository itself moved to `macula-services/mcl-corpus` on
+2026-10-02; the source-path references inside the corpus were swept to
+`mcl-corpus/…` in the same pass. The legacy `templates/`, `docs/` and
+`assets/` material still carries the old names and is left for a
+separate decision (they are the pre-Macula artifacts, not live docs).**
+The inventory and mapping below stay as the migration record.
 
 This exists so the corpus names what the workspace actually contains. The
 services have physically moved to `macula-services` as `mcl-*`, the

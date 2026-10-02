@@ -527,7 +527,7 @@ bounded_contexts:
 
 ## 10. References
 
-- hecate-corpus/philosophy/DDD.md
-- hecate-corpus/philosophy/CARTWHEEL.md
-- hecate-corpus/philosophy/VERTICAL_SLICING.md
-- hecate-corpus/skills/antipatterns/INDEX.md
+- mcl-corpus/philosophy/DDD.md
+- mcl-corpus/philosophy/CARTWHEEL.md
+- mcl-corpus/philosophy/VERTICAL_SLICING.md
+- mcl-corpus/skills/antipatterns/INDEX.md

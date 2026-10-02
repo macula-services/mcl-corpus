@@ -194,6 +194,6 @@ Ask in `#macula-architecture`. Better to spend 5 minutes confirming the tier tha
 - `macula-io/macula/docs/guides/TOPIC_NAMING_GUIDE.md` — authoritative SDK spec
 - `macula-io/macula/docs/guides/PUBSUB_GUIDE.md` — pub/sub usage
 - `macula-io/macula/docs/guides/RPC_GUIDE.md` — RPC usage
-- `hecate-corpus/philosophy/HOPE_FACT_SIDE_EFFECTS.md` — when a fact vs a hope; side-effect semantics
-- `hecate-corpus/skills/antipatterns/integration.md` — broader integration anti-patterns
-- `hecate-corpus/skills/antipatterns/mesh_pubsub.md` — mesh pub/sub specifics
+- `mcl-corpus/philosophy/HOPE_FACT_SIDE_EFFECTS.md` — when a fact vs a hope; side-effect semantics
+- `mcl-corpus/skills/antipatterns/integration.md` — broader integration anti-patterns
+- `mcl-corpus/skills/antipatterns/mesh_pubsub.md` — mesh pub/sub specifics
