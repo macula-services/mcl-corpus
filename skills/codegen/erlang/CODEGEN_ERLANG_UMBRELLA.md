@@ -29,17 +29,17 @@ In a rebar3 umbrella, the **root project IS the shell application**. It has its 
 ## Correct Layout
 
 ```
-my_daemon/
+mcl_<svc>/
 ├── rebar.config              # Umbrella: deps, relx listing all apps
 ├── config/
 │   ├── sys.config
 │   └── vm.args
 ├── src/                      # ROOT APP (shell) — lives at project root
-│   ├── my_daemon.app.src
-│   ├── my_daemon_app.erl     # Starts cowboy, ensures paths
-│   ├── my_daemon_sup.erl     # Supervises plugin infra only
-│   ├── my_daemon_paths.erl   # Path resolution
-│   └── my_daemon_*.erl       # HTTP infra (health, manifest, api_utils)
+│   ├── mcl_<svc>.app.src
+│   ├── mcl_<svc>_app.erl     # Starts cowboy, ensures paths
+│   ├── mcl_<svc>_sup.erl     # Supervises plugin infra only
+│   ├── mcl_<svc>_paths.erl   # Path resolution
+│   └── mcl_<svc>_*.erl       # HTTP infra (health, manifest, api_utils)
 ├── apps/                     # DOMAIN APPS — only CMD/QRY/PRJ here
 │   ├── run_something/        # CMD app
 │   │   ├── src/
@@ -54,10 +54,10 @@ my_daemon/
 ## Wrong Layout
 
 ```
-my_daemon/
+mcl_<svc>/
 ├── rebar.config
 ├── apps/
-│   ├── my_daemon/            # WRONG — root app nested under apps/
+│   ├── mcl_<svc>/            # WRONG — root app nested under apps/
 │   │   └── src/
 │   ├── run_something/
 │   └── query_something/
@@ -142,8 +142,8 @@ The root `rebar.config` declares ALL external dependencies and lists ALL apps in
 ]}.
 
 {relx, [
-    {release, {my_daemon, "0.1.0"}, [
-        my_daemon,              %% Root/shell app
+    {release, {mcl_<svc>, "0.1.0"}, [
+        mcl_<svc>,              %% Root/shell app
         run_something,          %% CMD domain app
         query_something,        %% QRY domain app
         reckon_db, evoq, reckon_evoq,
@@ -159,10 +159,9 @@ The root `rebar.config` declares ALL external dependencies and lists ALL apps in
 
 ## Reference Implementations
 
-| Daemon | Repo | Root App | Domain Apps |
+| Service | Repo | Root App | Domain Apps |
 |--------|------|----------|-------------|
-| hecate-marthad | `hecate-martha/hecate-marthad/` | `hecate_marthad` | `guide_venture_lifecycle`, `query_venture_lifecycle`, `guide_division_alc`, `query_division_alc` |
-| snake-dueld | `hecate-app-snake-duel/hecate-app-snake-dueld/` | `hecate_app_snake_dueld` | `run_snake_duel`, `query_snake_duel` |
+| a division service | `macula-services/mcl-<svc>` | `mcl_<svc>` | `{verb}_{aggregates}` (CMD), `project_<models>` (PRJ), `query_<models>` (QRY) — e.g. `mcl-chess`: `play_games`, `project_games`, `query_games` |
 
 ---
 

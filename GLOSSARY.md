@@ -7,13 +7,13 @@ stage: stable
 
 # Glossary
 
-*Canonical vocabulary for Hecate. One term per concept. Old names noted once, never repeated inline.*
+*Canonical vocabulary for Macula. One term per concept.*
 
 ---
 
 ## The 5D Hierarchy
 
-The structural backbone of Hecate. Four nested containers plus one flowing artifact. Each begins with `D`.
+The structural backbone of Macula. Four nested containers plus one flowing artifact. Each begins with `D`.
 
 ```
 Domain (1)
@@ -41,21 +41,21 @@ A Domain is the conglomerate that contains all Divisions belonging to a single b
 >
 > "Domain" is a heavily-overloaded word in Domain-Driven Design literature. Eric Evans uses it at two different scales: (1) *the entire problem space the business operates in* (the senior usage), and (2) loosely for *a sub-area / bounded context* (the junior usage, scattered through chapters about domain objects, domain services, domain models).
 >
-> **In Hecate, "Domain" means only the senior usage.** It is the whole problem space — the domain as a coherent endeavor. The bounded-context concept that DDD readers reflexively call "domain" is called **Division** in Hecate, never Domain.
+> **In Macula, "Domain" means only the senior usage.** It is the whole problem space — the domain as a coherent endeavor. The bounded-context concept that DDD readers reflexively call "domain" is called **Division** in Macula, never Domain.
 >
 > Concretely:
 >
-> | DDD term | Hecate term | Notes |
+> | DDD term | Macula term | Notes |
 > |----------|-------------|-------|
 > | Domain (senior, whole problem space) | **Domain** | Same word, same meaning |
 > | Subdomain (Core / Supporting / Generic) | **Division** | Each Division IS a (sub)domain in DDD terms |
 > | Bounded Context | **Division** | One Division = one bounded context |
 > | Ubiquitous Language | (per Division) | Each Division has its own |
 > | Domain Model | **Dossier** + Slips for that Division | The Aggregate IS the dossier |
-> | Domain Event | **Slip** (internal) or **FACT** (cross-context) | Hecate distinguishes by transport |
+> | Domain Event | **Slip** (internal) or **FACT** (cross-context) | Macula distinguishes by transport |
 > | Domain Service | (banned as horizontal) | Each Desk owns its logic |
 >
-> When you read DDD literature and see "domain" — pause and check the scale. If it's the whole-business scale, it maps to Hecate **Domain**. If it's the bounded-context scale, it maps to Hecate **Division**. Never let the word slip between scales mid-sentence.
+> When you read DDD literature and see "domain" — pause and check the scale. If it's the whole-business scale, it maps to Macula **Domain**. If it's the bounded-context scale, it maps to Macula **Division**. Never let the word slip between scales mid-sentence.
 >
 > In code: use `domain_*` for new top-level processes; existing `*_venture` apps remain valid. Use `division_*` everywhere bounded contexts are involved.
 
@@ -203,7 +203,7 @@ The response to a HOPE.
 
 ### Tier Model
 
-Hecate's runtime is organized in tiers. (See `philosophy/HECATE_TIER_MODEL.md`.)
+Macula's runtime is organized in tiers. (See `philosophy/TIER_MODEL.md`.)
 
 | Tier | Name | Purpose |
 |------|------|---------|
@@ -224,7 +224,7 @@ sourced -- see `philosophy/alc/README.md`.
 | Crafting | The division's own codebase + `CHANGELOG.md` |
 
 A gate crossing (Design, Review, Release) is a git commit or merged PR,
-announced over mesh (`hecate.gate_passed`), not dispatched via a process
+announced over mesh (`macula.gate_passed`), not dispatched via a process
 manager.
 
 ### Walking Skeleton
@@ -266,7 +266,7 @@ Domain-specific commands work only when state is `open`.
 | `services/`, `utils/`, `helpers/` | Horizontal layers, graves where understanding dies | Vertical Desks |
 | `user_created`, `order_updated` | CRUD events leak implementation; they don't describe business | `user_registered`, `order_confirmed` |
 | `did:macula:...` legacy prefixes | Pre-MRI compatibility shim | `mri:...` |
-| `manage_X` for Hecate Processes | Hecate Processes are verb-centric | `{process_verb}_{subject}` (e.g., `design_division`) |
+| `manage_X` for Macula Processes | Macula Processes are verb-centric | `{process_verb}_{subject}` (e.g., `design_division`) |
 | `torch`, `cartwheel`, `spoke` | Pre-2026-02 vocabulary | `domain`, `division`, `desk` |
 | `created`, `updated`, `deleted` events | CRUD; no business meaning | Business verbs in past tense |
 

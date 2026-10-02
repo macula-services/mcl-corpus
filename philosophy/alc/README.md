@@ -5,7 +5,7 @@ audience: [agent, human]
 stage: stable
 ---
 
-# HECATE ALC -- The Division Application Lifecycle
+# The ALC — Division Application Lifecycle
 
 *Two processes. One chain. Planning feeds crafting. Tracked in git, not event sourced.*
 
@@ -17,7 +17,7 @@ The ALC governs how a **division** (bounded context, cohesive piece of software)
 
 Development itself is chaotic and non-linear — a design gets revisited after Crafting starts, a plan gets reopened after Discovery reveals something new. That doesn't fit a single-current-state aggregate, so neither process is event sourced. Instead, each process's output is a git-tracked artifact, and the human-approval gates that matter are git commits or merged PRs -- genuinely append-only, audit-worthy facts, with git log supplying the history for free.
 
-The ALC applies to **divisions specifically**. Domains have their own lifecycle (`HECATE_DOMAIN_LIFECYCLE.md`). Nodes run continuously. The division is where craft happens.
+The ALC applies to **divisions specifically**. Domains have their own lifecycle (`DOMAIN_LIFECYCLE.md`). Nodes run continuously. The division is where craft happens.
 
 ---
 
@@ -62,21 +62,21 @@ Planning produces a document. Crafting produces the thing the document describes
 
 ## Coordination
 
-Concluding Planning doesn't dispatch a command to start Crafting -- there's no process manager, because there's no event stream to subscribe to. Whichever harness makes the Design Gate commit is responsible for publishing a mesh fact announcing it (e.g. `hecate.gate_passed`, with the division id and `gate: "design"` in the payload, never the topic). A DevOps-role harness `mesh_watch`-ing for it picks up Crafting.
+Concluding Planning doesn't dispatch a command to start Crafting -- there's no process manager, because there's no event stream to subscribe to. Whichever harness makes the Design Gate commit is responsible for publishing a mesh fact announcing it (e.g. `macula.gate_passed`, with the division id and `gate: "design"` in the payload, never the topic). A DevOps-role harness `mesh_watch`-ing for it picks up Crafting.
 
 If two harnesses both act on the same document, resolution is git's own: whichever pushes or merges first wins, and the second hits a conflict and backs off. No aggregate, no lock service -- the same thing that already happens whenever more than one contributor touches a shared file.
 
-See `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md` for the full multi-agent design this feeds. There is no `hecate-martha` backend service; this is a git-and-mesh convention, not infrastructure to build.
+See `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md` for the full multi-agent design this feeds. There is no crew backend service; this is a git-and-mesh convention, not infrastructure to build.
 
 ---
 
 ## Three Lifecycles
 
-The ALC is one of three lifecycle types in the Hecate ecosystem:
+The ALC is one of three lifecycle types in the Macula ecosystem:
 
 | Lifecycle | Scope | Nature |
 |-----------|-------|--------|
-| **Domain Lifecycle** | The overall business endeavor | Setup, discovery, orchestration -- see `HECATE_DOMAIN_LIFECYCLE.md` |
+| **Domain Lifecycle** | The overall business endeavor | Setup, discovery, orchestration -- see `DOMAIN_LIFECYCLE.md` |
 | **Division ALC** | A single bounded context | The two-process chain described here |
 | **Node Lifecycle** | Infrastructure | Continuous operation, no phases -- never a candidate for event sourcing; it's a running service, not a development process |
 
@@ -86,7 +86,7 @@ The ALC is one of three lifecycle types in the Hecate ecosystem:
 
 | Doctrine | Relevance | Description |
 |----------|-----------|--------------|
-| [Walking Skeleton](../HECATE_WALKING_SKELETON.md) | Crafting | Fully operational system from day one |
+| [Walking Skeleton](../WALKING_SKELETON.md) | Crafting | Fully operational system from day one |
 | [Dossier Principle](../DDD.md) | Planning | Process-centric domain modeling -- applies to a division's own production business logic, not to tracking the build |
 | [Vertical Slicing](../VERTICAL_SLICING.md) | Planning, Crafting | Features live together, no horizontal layers |
 | [Screaming Architecture](../SCREAMING_ARCHITECTURE.md) | Planning, Crafting | Names reveal intent |

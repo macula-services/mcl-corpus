@@ -7,7 +7,7 @@ stage: draft
 
 # The Task Model — Work as First-Class Citizen
 
-_How Hecate surfaces software development as a list of actionable tasks with AI assistance._
+_How Macula surfaces software development as a list of actionable tasks with AI assistance._
 
 Uses `domain`/`domain_id`/`domain_initiated_v1` terminology throughout,
 consistent with the Domain/Division/Department/Desk/Dossier model (see
@@ -32,7 +32,7 @@ phases — they happen continuously, not sequentially."
 
 ## The Insight
 
-The Domain Lifecycle (HECATE_DOMAIN_LIFECYCLE.md) defines the domain-level processes (setup, discovery), and the Division ALC (`alc/README.md`) defines two division-level processes, Planning and Crafting. This is the correct domain model — processes are real, phases are real, divisions are real.
+The Domain Lifecycle (DOMAIN_LIFECYCLE.md) defines the domain-level processes (setup, discovery), and the Division ALC (`alc/README.md`) defines two division-level processes, Planning and Crafting. This is the correct domain model — processes are real, phases are real, divisions are real.
 
 But in the **user experience**, phases are not what the user works with. The user works with **tasks**. A task is a concrete action: "Refine the vision," "Design the Auth Service," "Generate code for the Payment Gateway." The phase is just a property of the task — metadata that determines which AI role assists.
 
@@ -158,7 +158,7 @@ These tasks exist once per domain.
 
 **Initiate Domain** — Creates the domain. Name, brief description, scaffolding. This is the birth event. No AI needed — it's a form.
 
-**Refine Vision** — The user and Domain Expert collaborate to shape the domain's vision. What are we building? Why? For whom? What are the constraints? Domain Expert researches first — prior art, similar systems, existing patterns via `hecate-rag`/web search — before opining, then the chat is the work: asking questions, challenging assumptions, helping crystallize the vision. This task is **ongoing**: the user can return to refine further.
+**Refine Vision** — The user and Domain Expert collaborate to shape the domain's vision. What are we building? Why? For whom? What are the constraints? Domain Expert researches first — prior art, similar systems, existing patterns via `mcl-rag`/web search — before opining, then the chat is the work: asking questions, challenging assumptions, helping crystallize the vision. This task is **ongoing**: the user can return to refine further.
 
 **Submit Vision** — Locks the vision. An explicit confirmation action (button, not a task UI). After submission, the vision document becomes the foundation for division discovery.
 
@@ -182,7 +182,7 @@ These tasks are created when a division is **confirmed** during "Refine Division
 
 **Plan Division** — The user and Architect break down the design into an implementation plan. Sequencing, priorities, dependencies between desks. Ongoing — plans adapt.
 
-**Generate Division** — DevOps generates skeleton code — retrieving the matching corpus template and antipattern list from `hecate-rag` first, then filling it in, per the "coding should be almost mechanical" principle in `roles/AGENT_ARCHITECTURE.md`. This runs in the **background** — the user can work on other tasks while code is being generated. The task shows progress and generated files.
+**Generate Division** — DevOps generates skeleton code — retrieving the matching corpus template and antipattern list from `mcl-rag` first, then filling it in, per the "coding should be almost mechanical" principle in `roles/AGENT_ARCHITECTURE.md`. This runs in the **background** — the user can work on other tasks while code is being generated. The task shows progress and generated files.
 
 **Test Division** — QA runs tests and verifies the generated code against the same corpus DevOps retrieved from — the interesting failure mode is "wrong template" or "filled in wrong," which is exactly what this catches. Also background. Shows test results, coverage, issues found.
 
@@ -194,9 +194,9 @@ These tasks are created when a division is **confirmed** during "Refine Division
 
 ---
 
-## The Task List (Dev Studio)
+## The Task List
 
-The Dev Studio's primary view is the task list. It's a single, scrollable list with visual grouping.
+The primary view of the task model is the task list. It's a single, scrollable list with visual grouping.
 
 ### Layout
 
@@ -381,7 +381,7 @@ Division-level DAGs are completely independent. Auth Service can be deploying wh
 
 ## Verb-Based API
 
-The daemon API is organized around verbs — each endpoint IS a workflow action. Every task has lifecycle endpoints (start, pause, resume, complete) and task-specific action endpoints.
+The task API is organized around verbs — each endpoint IS a workflow action. Every task has lifecycle endpoints (start, pause, resume, complete) and task-specific action endpoints.
 
 ### API Pattern
 
@@ -528,13 +528,13 @@ GET    /api/domain/:domain_id/tasks
   }
 ```
 
-This single endpoint powers the Dev Studio's task list view. The frontend subscribes via the `hecate://` protocol for real-time updates. Timestamps from lifecycle events enable tracking ("Design paused 2 days ago", "Generation took 45 minutes").
+This single endpoint powers a task list view. The frontend polls it (or subscribes via WebSocket in the future) for updates. Timestamps from lifecycle events enable tracking ("Design paused 2 days ago", "Generation took 45 minutes").
 
 ---
 
 ## AI Role Auto-Selection
 
-Each task type knows which AI role it needs. The Dev Studio doesn't ask the user to switch roles — it's automatic.
+Each task type knows which AI role it needs. The task model doesn't ask the user to switch roles — it's automatic.
 
 | Task Type | AI Role | Personality Aspect |
 |-----------|---------|-------------------|
@@ -556,7 +556,7 @@ which role a task is *for*, not the only role ever present.
 The system prompt for each AI interaction is:
 
 ```
-[PERSONALITY.md]   — Hecate's core personality
+[PERSONALITY.md]   — Macula's core personality
 ---
 [role file]        — roles/{domain_expert,architect,devops,qa,reporter,mentor}.md
 ---
@@ -596,7 +596,7 @@ Ongoing tasks show as `✓` when their minimum criteria are met, but the user ca
 
 ---
 
-## Impact on Daemon Architecture
+## Service Shape
 
 ### What Changes
 
@@ -629,7 +629,7 @@ apps/design_division/src/
 └── design_division_aggregate.erl            (enforces lifecycle state machine)
 ```
 
-5. **Evolves: Fact stream** — Lifecycle events emit facts via pg so the Dev Studio updates in real-time. "Design Division started", "Generation paused", etc.
+5. **Evolves: Fact stream** — Lifecycle events emit facts on the mesh so a task view updates in real-time. "Design Division started", "Generation paused", etc.
 
 ### What Doesn't Change
 
@@ -641,17 +641,17 @@ apps/design_division/src/
 
 ---
 
-## Impact on Dev Studio
+## The Task View
 
-### Dev Studio Structure
+### Structure
 
-The Dev Studio becomes a task-driven workspace:
+The task view is a task-driven workspace:
 
 1. **Task List View** (default) — Shows all tasks, grouped by division, with state indicators.
 2. **Task UI View** (on Enter) — Opens the dedicated UI for the selected task.
 3. **Back to list** (Escape/q) — Returns to the task list.
 
-The Dev Studio does NOT share the LLM Studio's chat. Each AI-assisted task has its own embedded chat component with the appropriate AI role.
+The task view does NOT share a single chat. Each AI-assisted task has its own embedded chat component with the appropriate AI role.
 
 ### Key Components
 
@@ -673,7 +673,7 @@ The Dev Studio does NOT share the LLM Studio's chat. Each AI-assisted task has i
 
 | Document | Relationship |
 |----------|-------------|
-| `HECATE_DOMAIN_LIFECYCLE.md` | **Foundation** — The domain hierarchy and domain-level processes are unchanged. This document adds the UX layer on top. |
+| `DOMAIN_LIFECYCLE.md` | **Foundation** — The domain hierarchy and domain-level processes are unchanged. This document adds the UX layer on top. |
 | `alc/README.md` | **Foundation** — the two Division ALC processes (Planning, Crafting) are the basis for the division-scoped task catalog above; its doctrine that monitoring/rescue/debugging/refactoring are continuous, not sequential operational concerns, is why they appear as always-available branches in the DAG above, not gated phases. |
 | `roles/AGENT_ARCHITECTURE.md` | **Foundation** — the `ai_role` column above names roles from its current 6-role roster (Domain Expert, Architect, DevOps, QA, Reporter, Mentor), not the retired DnA/AnP/TnI/DnO scheme. |
 | `DDD.md` | **Unchanged** — The Dossier Principle still applies. Each task works on a dossier. |

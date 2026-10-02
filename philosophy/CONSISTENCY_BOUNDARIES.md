@@ -7,7 +7,7 @@ stage: stable
 
 # Consistency Boundaries
 
-*Where Hecate stands in the aggregate vs aggregateless debate, and why.*
+*Where Macula stands in the aggregate vs aggregateless debate, and why.*
 
 **Date:** 2026-05-26
 **Status:** Active doctrine
@@ -39,9 +39,9 @@ The two schools agree on what an event is. They disagree on what an aggregate is
 
 ---
 
-## Hecate's position: stream-per-Dossier, process-centric framing
+## Macula's position: stream-per-Dossier, process-centric framing
 
-Hecate stays firmly in School A, with a process-centric twist that goes beyond classical DDD.
+Macula stays firmly in School A, with a process-centric twist that goes beyond classical DDD.
 
 The Dossier is not just a write-side concurrency unit. It is:
 
@@ -63,11 +63,11 @@ The critique deserves a serious answer because parts of it are correct.
 
 True in classical DDD where aggregates are designed around *data shapes* (customer, order, account). Boundaries shift as the business shifts; stream migrations cost.
 
-Less true in Hecate. Dossiers are designed around *processes*, not data. A process has a clear scope and a clear lifetime by construction. Refactoring a Dossier boundary is rarer than refactoring a data-shape aggregate, because processes are stabler than data shapes.
+Less true in Macula. Dossiers are designed around *processes*, not data. A process has a clear scope and a clear lifetime by construction. Refactoring a Dossier boundary is rarer than refactoring a data-shape aggregate, because processes are stabler than data shapes.
 
 ### "Cross-entity invariants force you into sagas or process-manager dances."
 
-True. The cure in Hecate is **process guards using read models inside command pipelines** (see `philosophy/COMMAND_PIPELINES.md`). The pipeline pre-loads cross-entity state, enriches the command, and hands the aggregate a self-contained decision input. The Dossier records WHAT WE KNEW at decision time, including the cross-entity facts.
+True. The cure in Macula is **process guards using read models inside command pipelines** (see `philosophy/COMMAND_PIPELINES.md`). The pipeline pre-loads cross-entity state, enriches the command, and hands the aggregate a self-contained decision input. The Dossier records WHAT WE KNEW at decision time, including the cross-entity facts.
 
 This costs:
 - One extra step in the pipeline (a named, traceable read)
@@ -83,7 +83,7 @@ It pays:
 
 True, and the workaround (pipelines) is real machinery. Aggregateless ES doesn't have this constraint because the decision function is allowed to query whatever it needs.
 
-Hecate's answer: the constraint is the point. The structural separation between **decision data (loaded at the boundary)** and **commit data (the aggregate's own slips)** preserves replay determinism and makes audit straightforward. Aggregateless ES trades replay determinism for write-time flexibility. We chose the opposite trade deliberately.
+Macula's answer: the constraint is the point. The structural separation between **decision data (loaded at the boundary)** and **commit data (the aggregate's own slips)** preserves replay determinism and makes audit straightforward. Aggregateless ES trades replay determinism for write-time flexibility. We chose the opposite trade deliberately.
 
 ---
 
@@ -107,13 +107,13 @@ This covers ~90% of business work. Customers, orders, devices, capabilities, plu
 - Rate limits across a tenant
 - Anti-fraud / anomaly decisions over recent activity
 
-These do NOT fit the Dossier shape cleanly. Three options for handling them in Hecate today:
+These do NOT fit the Dossier shape cleanly. Three options for handling them in Macula today:
 
 1. **Invent a registry Dossier.** Make `email_uniqueness` or `license_seats` a Dossier in its own right. The "thing" becomes the registry, not the individual record. Works but feels forced.
 2. **Process guard via command pipeline.** Pre-load the relevant read-model slice at the boundary. Append into a fresh Dossier (e.g., the per-user signup Dossier) with the uniqueness fact embedded in metadata. The risk is a race-condition window between read and append; mitigation is idempotency keys + reconciliation.
 3. **Process Manager dance.** Issue a request, wait for a fact, condition the local command on the fact. Heaviest but most explicit.
 
-Aggregateless ES handles these natively with one query + one conditional append. Hecate handles them with one of the three options above. This is a real cost. We pay it.
+Aggregateless ES handles these natively with one query + one conditional append. Macula handles them with one of the three options above. This is a real cost. We pay it.
 
 ---
 
@@ -121,7 +121,7 @@ Aggregateless ES handles these natively with one query + one conditional append.
 
 The current doctrine is not unconditional. It would be revisited if:
 
-1. **A real Hecate process surfaces where all three workarounds above feel structurally wrong.** Not just inconvenient. Structurally wrong, repeatedly, across several Divisions.
+1. **A real Macula process surfaces where all three workarounds above feel structurally wrong.** Not just inconvenient. Structurally wrong, repeatedly, across several Divisions.
 2. **The 10% case grows to 30%+ in some Domain.** If a Domain's work is dominated by cross-cutting decisions without identity-carriers, the Dossier-first defaults are wrong for that Domain.
 3. **Khepri or Ra gain native tag-filter conditional append.** Today the cost of adding it to ReckonDB is non-trivial (one new behaviour callback, one new Khepri custom command, scan performance work). Upstream support would lower that cost dramatically.
 
@@ -224,7 +224,7 @@ None of these block normal Decision use — they're flagged so callers know the 
 
 - It is not a critique of FACTSTR or Rico Fritzsche's article. The aggregateless case is principled and well-argued.
 - It is not a dismissal of DCB. Sara Pellegrini's framework is the cleanest articulation of the alternative; her enrollment example is the canonical case to study.
-- It is not unconditional. It is a stance based on Hecate's current process-centric defaults, with clear conditions under which it would be revisited.
+- It is not unconditional. It is a stance based on Macula's current process-centric defaults, with clear conditions under which it would be revisited.
 
 ---
 
@@ -232,7 +232,7 @@ None of these block normal Decision use — they're flagged so callers know the 
 
 - [DDD.md](DDD.md) — the Dossier Principle, the foundation of the process-centric stance.
 - [CARTWHEEL.md](CARTWHEEL.md) — Division Architecture, where Dossiers live.
-- [HECATE_DOMAIN_LIFECYCLE.md](HECATE_DOMAIN_LIFECYCLE.md) — the venture-level process model.
+- [DOMAIN_LIFECYCLE.md](DOMAIN_LIFECYCLE.md) — the venture-level process model.
 - [COMMAND_PIPELINES.md](COMMAND_PIPELINES.md) — the structural cure for Demon 41; the mechanism that handles cross-entity decisions without leaving the Dossier model.
 - [../skills/antipatterns/event_sourcing.md](../skills/antipatterns/event_sourcing.md) — Demon 41 (reading from read models during event flow).
 - External: [PLAN_FUTURE_RESEARCH.md in reckon-db](https://github.com/reckon-db-org/reckon-db/blob/main/plans/PLAN_FUTURE_RESEARCH.md) — the technical research that grounds this doctrine.

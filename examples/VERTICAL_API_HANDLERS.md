@@ -17,11 +17,11 @@ Instead of grouping API handlers by domain in large files:
 
 ```
 ❌ WRONG: Monolithic API handlers (god modules)
-hecate_api/src/
-├── hecate_api_mentors.erl      # 289 lines, 16 init/2 clauses
-├── hecate_api_capabilities.erl # 215 lines, 5 init/2 clauses
-├── hecate_api_social.erl       # 136 lines, 8 init/2 clauses
-└── hecate_api_connectors.erl   # 149 lines, 4 init/2 clauses
+mcl_api/src/
+├── mcl_api_mentors.erl      # 289 lines, 16 init/2 clauses
+├── mcl_api_capabilities.erl # 215 lines, 5 init/2 clauses
+├── mcl_api_social.erl       # 136 lines, 8 init/2 clauses
+└── mcl_api_connectors.erl   # 149 lines, 4 init/2 clauses
 ```
 
 Put each API handler in its desk:
@@ -57,20 +57,20 @@ query_ventures/src/
 ## Dependency Graph
 
 ```
-shared/                         # Bottom - no hecate deps
-├── hecate_api_utils.erl       # json_response, format_error, etc.
+shared/                         # Bottom - no platform deps
+├── mcl_api_utils.erl       # json_response, format_error, etc.
 
 setup_venture/                  # Depends on: shared
 ├── initiate_venture/
-│   └── initiate_venture_api.erl # Uses hecate_api_utils
+│   └── initiate_venture_api.erl # Uses mcl_api_utils
 
 query_ventures/                 # Depends on: shared
 ├── get_venture_by_id/
-│   └── get_venture_by_id_api.erl # Uses hecate_api_utils
+│   └── get_venture_by_id_api.erl # Uses mcl_api_utils
 
-hecate_api/                     # Depends on: CMD apps, query_*, shared
-├── hecate_api_routes.erl      # References desk handlers
-└── hecate_api_sup.erl         # Cowboy setup only
+mcl_api/                     # Depends on: CMD apps, query_*, shared
+├── mcl_api_routes.erl      # References desk handlers
+└── mcl_api_sup.erl         # Cowboy setup only
 ```
 
 **Key insight:** `shared` app at the bottom prevents circular dependencies.
@@ -80,8 +80,8 @@ hecate_api/                     # Depends on: CMD apps, query_*, shared
 ## Shared Utilities
 
 ```erlang
-%% shared/src/hecate_api_utils.erl
--module(hecate_api_utils).
+%% shared/src/mcl_api_utils.erl
+-module(mcl_api_utils).
 
 -export([json_ok/2, json_ok/3, json_error/3]).
 -export([bad_request/2, not_found/1, method_not_allowed/1]).
@@ -128,22 +128,22 @@ get_field(Key, Map, Default) when is_atom(Key) ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"POST">> -> handle_post(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 %% Read JSON body
 handle_post(Req0, _State) ->
-    case hecate_api_utils:read_json_body(Req0) of
+    case mcl_api_utils:read_json_body(Req0) of
         {ok, Params, Req1} -> do_initiate(Params, Req1);
-        {error, invalid_json, Req1} -> hecate_api_utils:bad_request(<<"Invalid JSON">>, Req1)
+        {error, invalid_json, Req1} -> mcl_api_utils:bad_request(<<"Invalid JSON">>, Req1)
     end.
 
 %% Validate and dispatch
 do_initiate(Params, Req) ->
-    Name = hecate_api_utils:get_field(name, Params),
+    Name = mcl_api_utils:get_field(name, Params),
     case validate(Name) of
         ok -> create_venture(Name, Params, Req);
-        {error, Reason} -> hecate_api_utils:bad_request(Reason, Req)
+        {error, Reason} -> mcl_api_utils:bad_request(Reason, Req)
     end.
 
 %% Validation
@@ -155,11 +155,11 @@ validate(_) -> ok.
 create_venture(Name, Params, Req) ->
     CmdParams = #{
         name => Name,
-        brief => hecate_api_utils:get_field(brief, Params)
+        brief => mcl_api_utils:get_field(brief, Params)
     },
     case initiate_venture_v1:new(CmdParams) of
         {ok, Cmd} -> dispatch(Cmd, Req);
-        {error, Reason} -> hecate_api_utils:bad_request(Reason, Req)
+        {error, Reason} -> mcl_api_utils:bad_request(Reason, Req)
     end.
 
 %% Dispatch to handler
@@ -167,12 +167,12 @@ dispatch(Cmd, Req) ->
     case maybe_initiate_venture:handle(Cmd) of
         {ok, Events} ->
             EventMaps = [venture_initiated_v1:to_map(E) || E <- Events],
-            hecate_api_utils:json_ok(201, #{
+            mcl_api_utils:json_ok(201, #{
                 venture_id => initiate_venture_v1:get_venture_id(Cmd),
                 events => EventMaps
             }, Req);
         {error, Reason} ->
-            hecate_api_utils:bad_request(Reason, Req)
+            mcl_api_utils:bad_request(Reason, Req)
     end.
 ```
 
@@ -191,18 +191,18 @@ dispatch(Cmd, Req) ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"GET">> -> handle_get(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 handle_get(Req0, _State) ->
     VentureId = cowboy_req:binding(venture_id, Req0),
     case get_venture_by_id:execute(VentureId) of
         {ok, Domain} ->
-            hecate_api_utils:json_ok(#{domain => Domain}, Req0);
+            mcl_api_utils:json_ok(#{domain => Domain}, Req0);
         {error, not_found} ->
-            hecate_api_utils:not_found(Req0);
+            mcl_api_utils:not_found(Req0);
         {error, Reason} ->
-            hecate_api_utils:json_error(500, Reason, Req0)
+            mcl_api_utils:json_error(500, Reason, Req0)
     end.
 ```
 
@@ -217,7 +217,7 @@ handle_get(Req0, _State) ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"GET">> -> handle_get(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 handle_get(Req0, _State) ->
@@ -225,9 +225,9 @@ handle_get(Req0, _State) ->
     Filters = build_filters(QS),
     case get_ventures_page:execute(Filters) of
         {ok, Result} ->
-            hecate_api_utils:json_ok(#{domains => Result}, Req0);
+            mcl_api_utils:json_ok(#{domains => Result}, Req0);
         {error, Reason} ->
-            hecate_api_utils:json_error(500, Reason, Req0)
+            mcl_api_utils:json_error(500, Reason, Req0)
     end.
 
 build_filters(QS) ->
@@ -253,8 +253,8 @@ safe_int(V, Key, Acc) ->
 All routes MUST use the `/api/` prefix. Routes reference desk handlers directly — no `[action]` state args.
 
 ```erlang
-%% hecate_api/src/hecate_api_routes.erl
--module(hecate_api_routes).
+%% mcl_api/src/mcl_api_routes.erl
+-module(mcl_api_routes).
 -export([compile/0]).
 
 compile() ->
@@ -335,7 +335,7 @@ Before creating an API handler:
 
 - [ ] Does the desk exist? (cmd + event + handler)
 - [ ] Is `shared/` app in dependencies?
-- [ ] Is handler using `hecate_api_utils`?
+- [ ] Is handler using `mcl_api_utils`?
 - [ ] Is handler ~50 lines or less?
 - [ ] Does routes file reference the desk handler?
 
@@ -343,7 +343,7 @@ Before creating an API handler:
 
 ## Key Takeaways
 
-1. **API handlers live in desks** - not in hecate_api
+1. **API handlers live in desks** - not in a shared `mcl_api`
 2. **`shared/` app prevents circular deps** - utilities at bottom
 3. **~50 lines per handler** - easy to read
 4. **Routes just dispatch** - no logic in routes file
@@ -360,4 +360,4 @@ This example teaches:
 - Migration from monolithic to vertical
 
 *Date: 2026-02-10*
-*Origin: Hecate daemon god module refactoring (137 files, 50 desk handlers)*
+*Origin: a division god-module refactoring (137 files, 50 desk handlers)*

@@ -9,15 +9,6 @@ stage: reversed
 
 *Mistakes we've made and corrected. Read this. Don't repeat them.*
 
-> ⚠ **`hecate-daemon`, `hecate-web`, and `hecate-gitops` have been
-> REMOVED (2026-09-05) and no longer exist anywhere in this workspace.**
-> Several demons below name them as where a bug was originally found —
-> that provenance is accurate history and untouched. But do not treat
-> any of the three as live infrastructure to read, extend, deploy
-> through, or register a new component with. See the authoritative
-> note in [`../../philosophy/HECATE_TIER_MODEL.md`](../../philosophy/HECATE_TIER_MODEL.md)
-> (2026-09-05 amendment) for what replaced them and why.
-
 ---
 
 ## Demon Index
@@ -30,7 +21,7 @@ stage: reversed
 | 4 | Missing or Wrong "Birth" Event | Must use `{agg}_initiated_v1` | 2026-02-08 |
 | 5 | Auto-Creating Child Aggregates | Parent IDENTIFIES, child INITIATES | 2026-02-08 |
 | 6 | ~~Listeners as Separate Desks~~ (REVERSED 2026-05-24 → see Demon 18) | PMs/listeners ARE their own slices; this demon is reversed | 2026-02-08 |
-| 7 | Using Mesh for Internal Integration | Use pg internally, mesh for WAN only | 2026-02-08 |
+| 7 | Using Mesh for Internal Integration | Use evoq within a division, mesh only across services | 2026-02-08 |
 | 8 | Centralized Listener Supervisors | No central supervisor for all listeners | 2026-02-08 |
 | 9 | Direct Creation Endpoints for Child Aggregates | Children created through parents only | 2026-02-09 |
 | 10 | Wrong Aggregate Callback Argument Order | State first, Payload second | 2026-02-09 |
@@ -52,7 +43,6 @@ stage: reversed
 | 26 | PG Emitters "Dead Code" Without Subscribers | Pub/sub publishers are infrastructure — no subscribers ≠ dead code | 2026-02-23 |
 | 27 | Hardcoded User/Submitter IDs | Commands must carry the real actor identity, not placeholders | 2026-02-23 |
 | 28 | No Tests on Event-Sourced Domains | Tests written BEFORE (preferred) or IMMEDIATELY AFTER the code file, same session — never deferred to CI/workflow gates | 2026-02-23 |
-| 29 | Missing `/ui/[...]` Cowboy Route in Plugin Daemon | Plugin has manifest + socket but no static file route — hecate-web silently drops it | 2026-02-24 |
 | 30 | Forgetting to Bump `.app.src` Versions Before Tagging | Tag a release without bumping vsn in .app.src files — OCI image ships old version | 2026-02-24 |
 | 31 | Inline Projections After Command Dispatch | LiveViews writing to read models after evoq dispatch — bypasses PRJ department | 2026-03-02 |
 | 32 | Consolidating PRJ and QRY Into One Department | PRJ (event→write) and QRY (read→response) are ALWAYS separate departments | 2026-03-02 |
@@ -73,7 +63,7 @@ stage: reversed
 | 47 | Eager Peer Connection Explosion | Persistent peer_system per discovered peer → 692 handlers on 4 nodes | 2026-03-26 |
 | **48** | **DEBUG Logging on Critical Failure Paths** | **"Found 0 subscribers" at DEBUG level — failures invisible in production** | **2026-03-26** |
 | **49** | **Discarding `evoq_dispatcher:dispatch/2`'s Return Value** | **`_ = dispatch(...)` throws away the only error channel — events vanish silently** | **2026-05-26** |
-| **50** | **Daemon-as-Mesh-Middleman** | **L2-shaped work bridged through `hecate-daemon`'s `/api/mesh/publish` — wrong identity, wrong layer dependency, defeats reckon-db** | **2026-05-28** |
+| **50** | **Session-as-Mesh-Middleman** | **L2-shaped work bridged through a session-tier HTTP API — wrong identity, wrong layer dependency, defeats reckon-db** | **2026-05-28** |
 | **51** | **🔥🔥🔥 Human-Readable Aggregate IDs as Reckon Stream IDs** | **evoq AggregateId IS the reckon stream id (`^[a-z]{1,32}-[a-f0-9]{32}$`); a human slug fails the regex and a bare `catch` eats the rejection — empty store, no errors** | **2026-05-31** |
 | **52** | **Duplicate `{profiles}` Tuple in rebar.config** | **rebar3 keeps only the LAST top-level `{profiles}` — second one shadows `prod`, drops `include_erts` → ERTS-less release → exit-127 crash loop** | **2026-05-31** |
 | **53** | **🔥🔥🔥 Comments That State Intent as Fact** | **The comment records the design you meant to write; the code does something else; both land in the same commit. Four in one day.** | **2026-08-07** |
@@ -82,7 +72,7 @@ stage: reversed
 | 56 | Correct Behaviour With No Reporting | A graceful fallback that never says so, whose healthy and failed states publish identical numbers | 2026-08-07 |
 | **57** | **🔥🔥🔥 The Silent No-Op Edit** | **A scripted replacement whose anchor does not match changes nothing and reports success. Three times in one day: a red-check that was never red, a broken build, and every chart on a live page blank.** | **2026-08-08** |
 | 58 | History Narration in Operational Docs | A PLAN/guide/role file says "corrected 2026-09-01, first pass said X, second pass says Y" instead of just stating Y — and the moment a third pass happens, the narration is stale too, on top of being noise a RAG-fed reader never needed | 2026-09-01 |
-| 59 | Hand-Rolled Mesh Capability Advertising | A service calls `macula_response:advertise_direct` itself instead of declaring the capability in `hecate_om_service:capabilities/0` — library fixes (TTL, `reuse_sup`) never reach the duplicate; hit twice, five months apart, on the same file | 2026-09-01 |
+| 59 | Hand-Rolled Mesh Capability Advertising | A service calls `macula_response:advertise_direct` itself instead of declaring the capability in `mcl_om_service:capabilities/0` — library fixes (TTL, `reuse_sup`) never reach the duplicate; hit twice, five months apart, on the same file | 2026-09-01 |
 | **61** | **🔥🔥🔥 The Store That Stores Without Indexing** | **A barrel write with no vector, and a read-modify-write that drops the one it had (`get_doc` never returns `_embedding`) — both return `ok`, both silently remove the document from semantic search while exact fetch keeps working perfectly** | **2026-09-02** |
 | 60 | Mesh RPC Payloads Arrive Atom-Keyed AND CBOR-Value-Wrapped | Two compounding hazards, fixed a day apart: macula's frame decoder atomizes an inbound payload's keys (a hard `#{<<"key">> := V}` match silently never matches), AND a CBOR text-string value decodes to `{text, binary()}`, not a bare binary — fixing the keys alone still didn't resolve the live symptom until a diagnostic log found the second one | 2026-09-01 |
 | 62 | A Test That Passes For a Different Layer's Reason | A TTL-config-passthrough test slept past `expires_at` and asserted the doc was gone — passed even with the passthrough completely stubbed out, because barrel_docdb's own reads treat expired docs as gone unconditionally, sweep config or not. Caught by stubbing the fix and demanding RED first | 2026-09-05 |
@@ -125,7 +115,7 @@ Demons #1, #13, #16, #17. Naming violations where module, event, or command name
 
 ### [antipatterns/structure.md](structure.md) — Code Organization Violations
 
-Demons #3, #6, #8, #14, #18, #25, **#59**. Structural mistakes where code is organized by technical concern instead of business capability, and **a service hand-rolling shared mesh-advertising infrastructure instead of declaring it through `hecate_om_service:capabilities/0`**.
+Demons #3, #6, #8, #14, #18, #25, **#59**. Structural mistakes where code is organized by technical concern instead of business capability, and **a service hand-rolling shared mesh-advertising infrastructure instead of declaring it through `mcl_om_service:capabilities/0`**.
 
 ### [antipatterns/domain.md](domain.md) — Domain Modeling Mistakes
 
@@ -141,7 +131,7 @@ Demons #12, #22, #31, #32, **#68**, **#70**. Projection timing, manual event emi
 
 ### [antipatterns/integration.md](integration.md) — Subscriptions, Messaging, Process Managers
 
-Demons #7, #11, #15, #24, #26, #39, **#50**. pg vs mesh, hope acknowledgments, command IDs, subscription pipeline failures, emitter lifecycle, bypassing evoq behaviours, and **bridging L2-shaped work through hecate-daemon's REST API instead of using the Macula SDK directly**.
+Demons #7, #11, #15, #24, #26, #39, **#50**. pg vs mesh, hope acknowledgments, command IDs, subscription pipeline failures, emitter lifecycle, bypassing evoq behaviours, and **bridging L2-shaped work through a session-tier REST API instead of using the Macula SDK directly**.
 
 ### [antipatterns/erlang.md](erlang.md) — Erlang/OTP Gotchas
 

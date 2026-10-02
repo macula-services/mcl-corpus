@@ -5,7 +5,7 @@ audience: [agent, human]
 stage: stable
 ---
 
-# FAQ: How Do I Develop Macula/Hecate Edge Services in BEAM Languages?
+# FAQ: How Do I Develop Macula/Macula Edge Services in BEAM Languages?
 
 [Back to FAQ index](FAQ.md) · [Back to corpus index](../INDEX.md)
 
@@ -22,9 +22,9 @@ you're building:
 - **Raw `macula` SDK** ([`macula-io/macula`](https://github.com/macula-io/macula),
   Erlang, 96 modules at 10.17.0) — the low-level primitives: connect, publish,
   subscribe, advertise, call. Use this for a standalone tool or a small
-  daemon that only needs one or two mesh operations.
-- **`hecate_om_service` behaviour** (`hecate-services/hecate-om`) — the
-  scaffold-generated shape every production hecate-service in this
+  service that only needs one or two mesh operations.
+- **`mcl_om_service` behaviour** (`macula-services/mcl-om`) — the
+  scaffold-generated shape every production mcl-* service in this
   workspace actually uses. Six callbacks (`info/0`, `start/1`, `stop/1`,
   `health/0`, `capabilities/0`, `identity_spec/0`) get you generic
   capability advertisement, TTL management, org-scoped registration, and
@@ -32,7 +32,7 @@ you're building:
   [`skills/antipatterns/structure.md`, Demon 59](../skills/antipatterns/structure.md)
   for exactly what goes wrong when a service reinvents this instead. **This
   is the recommended default** for anything meant to run as a real
-  hecate-service, not just a script.
+  mcl-* service, not just a script.
 
 Since Erlang, Elixir, and Gleam all run on the same BEAM VM and share the
 same module/function calling convention, all three call the *identical*
@@ -106,28 +106,27 @@ The SDK's own guides cover every primitive beyond this in depth:
 `shared/AUTHORIZATION_GUIDE.md`.
 
 **A genuinely minimal real "hello world"**, if the guides above feel too
-low-level to start from: [`hecate-social/hecate-stub`](https://github.com/hecate-social/hecate-stub) —
-"Connects to a Macula relay, announces geo identity, and serves a health
-endpoint. That's it." Real `Dockerfile`, a real `docker run` one-liner
-(`MACULA_RELAYS`, `HECATE_MESH_REALM` default `io.macula`,
-`HECATE_GEO_CITY`/`COUNTRY`/`LAT`/`LNG`, `HEALTH_PORT` default `8080`), and
-a real `rebar3 shell` local-run path. Small enough to read start to finish
-in a sitting — a better first read than a full multi-app production
-service.
+low-level to start from: [`macula-services/mcl-echo`](https://github.com/macula-services/mcl-echo) —
+the mesh's always-on echo, the hello-world target every SDK quickstart
+calls. One capability, a real `Dockerfile` and compose file, a real
+`/health`, small enough to read start to finish in a sitting — a better
+first read than a full multi-app production service. (The old
+`hecate-social/hecate-stub` quickstart this paragraph used to link is
+gone; the repo is 404.)
 
-## Erlang — `hecate_om_service` (the recommended path for a real service)
+## Erlang — `mcl_om_service` (the recommended path for a real service)
 
 ```bash
-rebar3 new hecate_service
+rebar3 new mcl_service
 ```
 
 scaffolds the standard shape. The shortest real, currently-deployed
 example — one capability, no pubsub authority — is
-`hecate-services/hecate-stations/apps/hecate_stations/src/hecate_stations_service.erl`:
+`macula-services/mcl-stations/apps/mcl_stations/src/mcl_stations_service.erl`:
 
 ```erlang
--module(hecate_stations_service).
--behaviour(hecate_om_service).
+-module(mcl_stations_service).
+-behaviour(mcl_om_service).
 
 -export([info/0, start/1, stop/1, health/0, capabilities/0, identity_spec/0]).
 %% Two more exports beyond the six required callbacks, for its
@@ -135,42 +134,42 @@ example — one capability, no pubsub authority — is
 -export([read_model_id/0, data_dir/0]).
 
 info() ->
-    #{name => <<"hecate-stations">>,
+    #{name => <<"mcl-stations">>,
       version => <<"0.1.0">>,
       description => <<"Live, filterable directory of macula stations: geo, "
                         "health, and direct-dial IP, so clients never "
                         "hand-maintain a station list">>}.
 
-start(_Opts) -> hecate_stations_sup:start_link().
+start(_Opts) -> mcl_stations_sup:start_link().
 stop(_State) -> ok.
 health() -> ok.
 
 capabilities() ->
-    [#{name    => <<"hecate_stations.list_stations">>,
+    [#{name    => <<"mcl_stations.list_stations">>,
        version => 1,
        handler => {list_stations, []}}].
 
 identity_spec() ->
-    #{scope => <<"hecate-stations">>, actions => [], resources => [], ttl_days => 30}.
+    #{scope => <<"mcl-stations">>, actions => [], resources => [], ttl_days => 30}.
 
-read_model_id() -> <<"hecate_stations">>.
-data_dir() -> os:getenv("HECATE_DATA_DIR", "/var/lib/hecate-stations").
+read_model_id() -> <<"mcl_stations">>.
+data_dir() -> os:getenv("MCL_DATA_DIR", "/var/lib/mcl-stations").
 ```
 
-Declaring `handler` here is the whole story — `hecate_om:boot/1` handles
+Declaring `handler` here is the whole story — `mcl_om:boot/1` handles
 wiring the mesh pool, publishing the signed `procedure_advertisement` DHT
 record, periodic re-advertisement, and TTL, generically, for every service
 that uses this path. See
-[FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md)
+[FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md)
 for what happens after `rebar3 eunit` passes locally.
 
 ## Elixir
 
-Real precedent exists across several current Elixir hecate-services in
-this workspace (`hecate-services/hecate-whiteboard`, `macula-realm`,
+Real precedent exists across several current Elixir macula-services in
+this workspace (`macula-services/mcl-whiteboard`, `macula-realm`,
 `macula-portal`) — Elixir calls the Erlang SDK's modules directly, exactly
 as the "no wrapper" convention prescribes. Two small, complete, real
-examples from `hecate-whiteboard`:
+examples from `mcl-whiteboard`:
 
 Publisher (`guide_board_lifecycle/lib/guide_board_lifecycle/mesh_publisher.ex`,
 the full file):
@@ -180,7 +179,7 @@ defmodule GuideBoardLifecycle.MeshPublisher do
   # mesh-fact emitter in this app -- none of them need to react to the
   # publish outcome, they just want the supervised pid/mesh-fact
   # machinery macula_publisher already provides around a bare
-  # macula:publish/4. Mirrors hecate-tube's tube_mesh_publisher.erl.
+  # macula:publish/4. Mirrors mcl-tube's tube_mesh_publisher.erl.
   @behaviour :macula_publisher
 
   @impl true
@@ -203,7 +202,7 @@ Subscriber, started under a `DynamicSupervisor` — this `spec`/`start_child`
 call itself is real, but it's only ever reached from inside a ~60-line
 retry-loop `GenServer`
 (`track_presence/lib/track_presence/peer_departed_mesh_subscriber_starter.ex`)
-that waits for `:hecate_om.mesh_handles()` to succeed first, same reason
+that waits for `:mcl_om.mesh_handles()` to succeed first, same reason
 as the Phoenix LiveView FAQ's "Starting the subscriber" section — a naive
 one-shot call here races the mesh pool's async init and loses:
 ```elixir
@@ -221,7 +220,7 @@ Both patterns repeat throughout these codebases: an Elixir module
 implementing `:macula_publisher`/`:macula_subscriber`'s Erlang behaviour
 callbacks (`init/1`, `handle_published/2` or the subscriber equivalent),
 started via `:module.start_link(...)` with the pool/realm/topic obtained
-from `:hecate_om.mesh_handles()`. `macula-energy-mesh-poc` (an older
+from `:mcl_om.mesh_handles()`. `macula-energy-mesh-poc` (an older
 proof-of-concept) has its own per-app Elixir wrapper module around the
 Erlang client — that predates the current no-wrapper convention; treat it
 as historical, not a pattern to copy.
@@ -291,7 +290,7 @@ mcl-bookclub-gleam:
   unioned into the modules list — `gleam_otp`/`gleam_erlang` ship beams
   their own `.app` files omit, which is an `undef` at boot otherwise.
 
-See also: [FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md)
+See also: [FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md)
 
 ## See also
 
@@ -299,7 +298,7 @@ See also: [FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EV
 - [FAQ: Developing Edge Services in Rust](FAQ_DEVELOP_EDGE_SERVICES_RUST.md)
 - [FAQ: Developing Edge Services in C#/F# (.NET)](FAQ_DEVELOP_EDGE_SERVICES_DOTNET.md)
 - [FAQ: Developing Edge Services in PHP](FAQ_DEVELOP_EDGE_SERVICES_PHP.md)
-- [FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md)
-- [FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md) — the CMD department, once a raw `hecate_om_service` scaffold isn't enough
+- [FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md)
+- [FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md) — the CMD department, once a raw `mcl_om_service` scaffold isn't enough
 - [FAQ: How do I authorize a procedure or topic with UCAN?](FAQ_AUTHORIZE_WITH_UCAN.md) — gating a served procedure, including the Erlang reference implementation
-- [`skills/antipatterns/structure.md`, Demon 59](../skills/antipatterns/structure.md) — why `hecate_om_service.capabilities/0` beats hand-rolling mesh advertisement
+- [`skills/antipatterns/structure.md`, Demon 59](../skills/antipatterns/structure.md) — why `mcl_om_service.capabilities/0` beats hand-rolling mesh advertisement

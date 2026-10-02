@@ -19,7 +19,7 @@ The Division Architecture is a visual and conceptual model for organizing comple
 
 Think of it as a wheel:
 
-| Component | What it Represents | In Hecate |
+| Component | What it Represents | In Macula |
 |-----------|-------------------|-----------|
 | **Hub** | Aggregate State (the core domain) | Domain aggregates (`*_aggregate.erl`) |
 | **Desks** | Vertical Slices (business capabilities) | Command slices (`announce_capability/`, `track_rpc_call/`, etc.) |
@@ -182,9 +182,9 @@ Read model updated
 
 The key question: Does this external data need to affect your aggregate state? If yes, use Pattern 1. If you're just displaying/caching it, use Pattern 2.
 
-## Mapping to Hecate
+## Mapping to Macula
 
-| Division Concept | Hecate Implementation |
+| Division Concept | Macula Implementation |
 |-------------------|----------------------|
 | Hub (Aggregate) | `*_aggregate.erl` modules |
 | Desks (Slices) | `apps/manage_*/src/{command}/` directories |

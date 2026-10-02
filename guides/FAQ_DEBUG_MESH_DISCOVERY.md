@@ -13,7 +13,7 @@ Several existing FAQs mention pieces of this individually — the
 advertise-gossip propagation lag noted in
 [FAQ: How do I run macula-cli?](FAQ_MACULA_CLI.md)'s worked example, the
 demo fleet's short `station_endpoint` DHT TTL noted in the leaf-client
-SDK FAQs, `hecate_om`'s periodic re-advertisement noted in
+SDK FAQs, `mcl_om`'s periodic re-advertisement noted in
 [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md).
 This page consolidates them into one troubleshooting reference.
 
@@ -42,9 +42,9 @@ the wrong axis.
 
 ## 2. Advertisement timing is real and bounded, not instant
 
-`hecate_om_capabilities` (hecate-services/hecate-om) republishes every
+`mcl_om_capabilities` (macula-services/mcl-om) republishes every
 **30 seconds ± up to 3 seconds jitter**, with a TTL of **4× that interval
-= 2 minutes**. Concretely: a freshly-booted `hecate_om_service` can take
+= 2 minutes**. Concretely: a freshly-booted `mcl_om_service` can take
 up to ~33s for its *first* advertisement to land somewhere a caller can
 see it, and a service that crashed or was stopped without a clean
 unadvertise naturally disappears from discovery within 2 minutes, not

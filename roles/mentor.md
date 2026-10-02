@@ -20,7 +20,7 @@ Watch every agent's output as it's produced. Flag issues BEFORE downstream agent
 
 | After Agent | What to Check | Intervention |
 |-------------|--------------|-------------|
-| Domain Expert (vision stage) | Vision vague? Missing sections? Hand-waving? Skipped research? | Nudge to probe deeper, or actually query `hecate-rag`, before VISION GATE |
+| Domain Expert (vision stage) | Vision vague? Missing sections? Hand-waving? Skipped research? | Nudge to probe deeper, or actually query `mcl-rag`, before VISION GATE |
 | Domain Expert (discovery stage) | Boundaries too coarse? Over-splitting? Overlapping contexts? | Flag concern with rationale before BOUNDARY GATE |
 | Architect (storming stage) | CRUD event names? Missing walking skeleton? Missing parent IDs in events? | Flag for immediate correction before DESIGN GATE |
 | Architect (design stage) | Bit flags not powers of 2? Missing available_actions? Wrong naming pattern? | Flag before DevOps starts (cheapest fix point) |

@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Using Mesh for Internal Integration
 
 **Date:** 2026-02-08
-**Origin:** hecate-daemon walking skeleton debugging
+**Origin:** the removed daemon walking skeleton debugging
 
 ### The Antipattern
 
@@ -53,9 +53,8 @@ This uses WAN-grade infrastructure for intra-process communication.
 
 ```
 setup_venture (CMD app)
-    → venture_initiated_v1_to_pg.erl    # Internal via pg
-    → Direct Erlang message passing
-    → on_venture_initiated_v1_from_pg_project_to_sqlite_ventures.erl
+    → venture_initiated_v1 → projection via evoq (same division)
+    → venture_initiated_v1_to_sqlite_ventures.erl
     → query_ventures (PRJ+QRY app)
 ```
 
@@ -63,14 +62,13 @@ setup_venture (CMD app)
 
 | Layer | Transport | Scope |
 |-------|-----------|-------|
-| **Internal** | `pg` | Same BEAM VM, intra-daemon, intra-LAN (Erlang VM cluster) |
+| **Internal** | evoq (event store subscription) | Within the division |
 | **External** | `mesh` | NAT traversal, direct Internet, LAN ↔ LAN (QUIC, addressable URIs required) |
 
 ### Naming Convention
 
 | Transport | Emitter | Listener |
 |-----------|---------|----------|
-| pg | `emit_{event}_to_pg.erl` | `on_{event}_from_pg_*.erl` |
 | mesh | `emit_{event}_to_mesh.erl` | `on_{event}_from_mesh_*.erl` |
 
 See [INTEGRATION_TRANSPORTS.md](../../philosophy/INTEGRATION_TRANSPORTS.md) for full details.
@@ -88,8 +86,8 @@ Performing side effects (file I/O, state changes) in a client based on a command
 
 **Example (WRONG):**
 ```javascript
-// Client sends command to daemon
-const res = await fetch('hecate://localhost/api/domains/refine-vision', {
+// Client sends command to the service
+const res = await fetch('https://localhost/api/domains/refine-vision', {
     method: 'POST', body: JSON.stringify(params)
 });
 if (res.ok) {
@@ -108,13 +106,13 @@ The 200 OK means "I received your hope." Not "the vision was refined." Between a
 
 ```javascript
 // Client subscribes to event stream
-const events = new EventSource('hecate://localhost/api/domains/events');
+const events = new EventSource('https://localhost/api/domains/events');
 events.addEventListener('vision_refined_v1', (e) => {
     updateVisionDisplay(JSON.parse(e.data));  // NOW it's safe
 });
 
 // Client sends hope (fire and forget the response)
-fetch('hecate://localhost/api/domains/refine-vision', {
+fetch('https://localhost/api/domains/refine-vision', {
     method: 'POST', body: JSON.stringify(params)
 });  // 202 Accepted — don't act on the response
 ```
@@ -124,7 +122,7 @@ fetch('hecate://localhost/api/domains/refine-vision', {
 - Commands can be rejected by aggregate business rules AFTER acknowledgment
 - Event store writes can fail
 - Async processing means acknowledgment ≠ completion
-- The frontend is an **external system** — it must treat the daemon as eventually consistent
+- The frontend is an **external system** — it must treat the service as eventually consistent
 
 ### Reference
 
@@ -135,7 +133,7 @@ See [HOPE_FACT_SIDE_EFFECTS.md](../HOPE_FACT_SIDE_EFFECTS.md) for the full archi
 ## Demon 15: Consumer-Generated Command IDs for Framework Idempotency
 
 **Date exorcised:** 2026-02-11
-**Where it appeared:** All 76 dispatch modules across hecate-daemon CMD apps
+**Where it appeared:** All 76 dispatch modules across the removed daemon CMD apps
 **Cost:** 9/9 L4b dispatch tests returning cached first-command results (silent data loss)
 
 ### The Lie
@@ -279,7 +277,7 @@ This is a general rule for any trigger/filter/subscription system: **the selecto
 > **If you can't prove delivery with an integration test, you can't trust it.**
 > **Silent failure + no integration tests = days of debugging that one CT test would have prevented.**
 
-### For Hecate Agents Specifically
+### For Macula Agents Specifically
 
 When generating code that uses ReckonDB subscriptions:
 
@@ -300,7 +298,7 @@ When generating code that uses ReckonDB subscriptions:
 ## 🔥 Demon 26: Calling PG Emitters "Dead Code" Without Subscribers
 
 **Date exorcised:** 2026-02-23
-**Where it appeared:** hecate-app-appstored audit — 6 `*_to_pg.erl` emitters
+**Where it appeared:** a removed app audit — 6 `*_to_pg.erl` emitters
 **Cost:** Nearly deleted working infrastructure that enables inter-domain integration
 
 ### The Lie
@@ -309,7 +307,7 @@ When generating code that uses ReckonDB subscriptions:
 
 ### What Happened
 
-During an audit of `hecate-app-appstored`, all 6 PG emitters were flagged as "dead code" because no process currently calls `pg:join/3` on their topics. The reasoning was:
+During an audit of `a removed app`, all 6 PG emitters were flagged as "dead code" because no process currently calls `pg:join/3` on their topics. The reasoning was:
 
 1. No module subscribes to these pg groups → nobody receives the broadcasts → the emitters do nothing
 2. Therefore they are dead code and should be removed to reduce complexity
@@ -383,7 +381,7 @@ Before calling any emitter "dead code," ask:
 ## Demon 39: Bypassing Evoq Behaviours with Raw gen_servers
 
 **Date exorcised:** 2026-03-07
-**Where it appeared:** ALL 63 event-handling modules across hecate-daemon (PMs, projections, emitters)
+**Where it appeared:** ALL 63 event-handling modules across the removed daemon (PMs, projections, emitters)
 **Cost:** Auto-start bug — containers started on EVERY event, not just `plugin_execution_started_v1`. Unfiltered event delivery caused invisible production-grade bugs.
 
 ### The Lie
@@ -392,7 +390,7 @@ Before calling any emitter "dead code," ask:
 
 ### What Happened
 
-Every single event-handling module in hecate-daemon was implemented as a raw `gen_server` that called `evoq_subscriptions:subscribe/5` directly in `init/1`:
+Every single event-handling module in the removed daemon was implemented as a raw `gen_server` that called `evoq_subscriptions:subscribe/5` directly in `init/1`:
 
 ```erlang
 %% WRONG — Raw gen_server, no evoq behaviour
@@ -528,7 +526,7 @@ Before writing ANY module that handles domain events:
 
 ---
 
-## 🔥 Demon 50: Daemon-as-Mesh-Middleman
+## 🔥 Demon 50: Session-as-Mesh-Middleman
 
 **Date:** 2026-05-28
 **Origin:** First-draft `venus-macula` skeleton (deleted same session)
@@ -536,7 +534,7 @@ Before writing ANY module that handles domain events:
 ### The Antipattern
 
 A Layer-2-shaped service (vendor adapter, file watcher, smart-meter
-readout, …) gets the mesh via HTTP POSTs to `hecate-daemon`'s
+readout, …) gets the mesh via HTTP POSTs to a session-tier process's
 `/api/mesh/publish` instead of via the Macula SDK directly.
 
 **Example (WRONG):**
@@ -549,15 +547,14 @@ readout, …) gets the mesh via HTTP POSTs to `hecate-daemon`'s
   venus-macula (Python sidecar on the GX)
        │ POST {topic, fact}
        ▼
-  hecate-daemon /api/mesh/publish          ← Layer-3 daemon
-       │                                     forced into being
-       ▼                                     the bridge
+  the session process /api/mesh/publish           ← forced into being
+       │                                     the bridge
   Macula mesh
 ```
 
 The Python script subscribes to the local broker, transforms each
-notification, and POSTs it to the daemon's REST API. The daemon
-then dispatches a `publish_mesh_fact_v1` command, stores an event in
+notification, and POSTs it to the session process's REST API. That
+process then dispatches a `publish_mesh_fact_v1` command, stores an event in
 its own reckon-db, and emits to the mesh asynchronously.
 
 It looks reasonable until you list what's wrong with it.
@@ -565,17 +562,17 @@ It looks reasonable until you list what's wrong with it.
 ### Why It's Wrong
 
 1. **Wrong identity shape.** The fact is published under
-   `hecate-daemon`'s identity — anonymous or per-user. The data
+   a session process's identity — anonymous or per-user. The data
    source is a non-human always-on appliance; the correct mesh
    identity is a **realm-signed service principal**, not whatever
-   user the laptop's daemon was configured for.
-2. **Wrong layer dependency.** L2-shaped work now depends on L3
-   being installed, configured, joined to a realm, and running.
-   An L2 service needs no daemon. It uses the Macula SDK against
-   its local `macula-station`.
-3. **Defeats reckon-db offline-first.** The daemon's reckon-db
-   buffers — but that's the daemon's store, indexed by the
-   daemon's domain. The vendor data has no canonical local stream
+   user that session was configured for.
+2. **Wrong layer dependency.** L2-shaped work now depends on a
+   session-tier process being installed, configured, joined to a
+   realm, and running. An L2 service needs none of it. It uses the
+   Macula SDK against its local `macula-station`.
+3. **Defeats reckon-db offline-first.** The session process's
+   reckon-db buffers — but that's the session's store, indexed by the
+   session's domain. The vendor data has no canonical local stream
    of its own. Restarts replay the wrong events; queries hit the
    wrong tables.
 4. **Wrong contract surface.** `/api/mesh/publish` validates
@@ -594,18 +591,10 @@ It looks reasonable until you list what's wrong with it.
 
 > **L2 services connect directly to their local `macula-station`
 > via the Macula SDK. They never bridge through a session-tier HTTP
-> API.**
->
-> `hecate-daemon` (the specific daemon this demon was named for) has
-> since been removed, along with the Layer-3/Layer-4 architecture it
-> hosted — see [`HECATE_TIER_MODEL.md`](../../philosophy/HECATE_TIER_MODEL.md).
-> Its `/api/mesh/*` HTTP API no longer exists, so this exact bridge is
-> no longer even possible. The principle below still applies to
-> whatever, if anything, ever plays a session-tier role again: an L2
-> service is never a Layer-4 plugin, an external stdio integration, or
-> a quick one-off script, and should never depend on a session-tier
-> process being installed, configured, and running just to reach the
-> mesh.
+> API. An L2 service is never a per-user plugin, an external stdio
+> integration, or a quick one-off script, and should never depend on
+> a session-tier process being installed, configured, and running
+> just to reach the mesh.**
 
 ### The Correct Pattern
 
@@ -615,7 +604,7 @@ It looks reasonable until you list what's wrong with it.
        │
        ▼ (TCP, LAN-local)
 [Realm infrastructure node — or lone-deployment host]
-  hecate-victron (Layer-2 service, OCI container)
+  mcl-victron (Layer-2 service, OCI container)
        │
        │ subscriber slice ──► command ──► reckon-db
        │                                    │
@@ -634,8 +623,8 @@ It looks reasonable until you list what's wrong with it.
 ```
 
 - Service-principal cert at
-  `/etc/hecate/secrets/hecate-victron/service-cert.pem`
-- `hecate_om_service` behaviour
+  `/etc/mcl/secrets/mcl-victron/service-cert.pem`
+- `mcl_om_service` behaviour
 - `store_id/0` + `data_dir/0` optional callbacks → reckon-db
   auto-wired
 - Inbound writes (mesh → Cerbo) are advertised via
@@ -643,24 +632,24 @@ It looks reasonable until you list what's wrong with it.
   command, the emitter projects to the Cerbo's `W/...` MQTT
   topic.
 
-### Worked Example: venus-macula → hecate-victron (2026-05-28)
+### Worked Example: venus-macula → mcl-victron (2026-05-28)
 
 A first-draft `venus-macula` repo (since deleted)
-followed the wrong pattern: Python sidecar POSTing to the local
-`hecate-daemon`'s `/api/mesh/publish`. It was deleted within a
-day and refrained as `github.com/hecate-services/hecate-victron`
+followed the wrong pattern: Python sidecar POSTing to a local
+session process's `/api/mesh/publish`. It was deleted within a
+day and refrained as `github.com/macula-services/mcl-victron`
 following this antipattern's correct pattern. Three reasons made
 the switch immediately worth it:
 
 1. The Cerbo GX is headless infrastructure, not a user laptop —
-   running a Layer-3 daemon there violates tier semantics.
+   running a session-tier process there violates tier semantics.
 2. Vendor data publishes under a realm-signed service principal,
    not under an inherited user identity.
-3. Reckon-db offline-first is built into `hecate_om_service` —
+3. Reckon-db offline-first is built into `mcl_om_service` —
    no reason to skip it.
 
 See memory `[[project-track-a-eu-open-energy-axis]]` for the
-broader context and the OpenEMS sibling design (`hecate-openems`).
+broader context and the OpenEMS sibling design (`mcl-openems`).
 
 ### Detecting It
 
@@ -669,20 +658,20 @@ demon:
 
 - A Python / shell / non-BEAM script that POSTs to `/api/mesh/*`
   to do the work of an "adapter" or "bridge" or "connector"
-- A `hecate_X` repo that does not depend on `hecate_om` but does
-  depend on `hecate-daemon`'s HTTP port being open
+- A service repo that does not depend on `mcl_om` but does
+  depend on a session-tier process's HTTP port being open
 - A "sidecar" that turns an external data source into mesh facts
-  but lives outside `hecate-services/`
-- A README explaining how the adapter "publishes via the daemon"
+  but lives outside `macula-services/`
+- A README explaining how the adapter "publishes via the session"
 
 ### The Meta-Lesson
 
-> **L2 work goes in L2 services. The daemon is an L3 plugin host,
-> not a publish gateway. When you're tempted to bridge through
+> **L2 work goes in L2 services. A session-tier process is not a
+> publish gateway. When you're tempted to bridge through
 > `/api/mesh/publish`, ask: "Is this an always-on institution of
-> the realm, or a per-user plugin?" If the former, it belongs in
-> `hecate-services/`. If the latter, write it as an L4 plugin
-> inside the daemon's BEAM, not as an external HTTP client.**
+> the realm, or a per-user client?" If the former, it belongs in
+> `macula-services/`. If the latter, write it as a client that
+> talks to those services, not as an external HTTP bridge.**
 
 ---
 

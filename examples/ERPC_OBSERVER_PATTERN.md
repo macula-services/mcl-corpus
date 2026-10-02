@@ -10,14 +10,14 @@ stage: stable
 _A gen_server that polls another BEAM node for state via erpc._
 
 **Date:** 2026-03-01
-**Used in:** `hecate-apps/hecate-app-meshview/hecate-app-meshviewd/src/mesh_observer.erl`
+**Used in:** a since-removed mesh-observer service (`mesh_observer.erl`)
 
 ---
 
 ## The Problem
 
 You need to read state from another BEAM node (e.g. a sibling
-hecate-* service) without that node knowing about you. One-way
+mcl-* service) without that node knowing about you. One-way
 dependency.
 
 ## The Solution
@@ -106,7 +106,7 @@ ensure_target(#state{target_node = Node} = State) ->
 discover_target(State) ->
     %% Resolve target node from own hostname
     Hostname = hostname(),
-    TargetNode = list_to_atom("hecate@" ++ Hostname),
+    TargetNode = list_to_atom("mcl@" ++ Hostname),
     case net_adm:ping(TargetNode) of
         pong ->
             logger:info("[my_observer] Connected to ~p", [TargetNode]),

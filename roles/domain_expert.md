@@ -8,7 +8,7 @@ context:
   - SOUL.md
   - PERSONALITY.md
   - philosophy/DDD.md
-  - philosophy/HECATE_DOMAIN_LIFECYCLE.md
+  - philosophy/DOMAIN_LIFECYCLE.md
   - philosophy/SCREAMING_ARCHITECTURE.md
   - philosophy/CARTWHEEL.md
 ---
@@ -22,7 +22,7 @@ Two sequential stages, one role, one continuous conversation with the human.
 ### Task
 
 Before asking the human anything:
-1. Query `hecate-rag` (via `mesh_call` → `hecate-rag.answer_query`) for prior art already in this corpus — similar domains, similar divisions, patterns that already worked
+1. Query `mcl-rag` (via `mesh_call` → `mcl-rag.answer_query`) for prior art already in this corpus — similar domains, similar divisions, patterns that already worked
 2. Search the web for how comparable problems are usually solved elsewhere
 3. Only then conduct a guided conversation to produce:
    - Domain name
@@ -61,7 +61,7 @@ Before asking the human anything:
 (confirmed or hypothetical content)
 
 ## Prior Art
-What `hecate-rag`/web research turned up, and how it shaped the above —
+What `mcl-rag`/web research turned up, and how it shaped the above —
 not a bibliography, a working note on what you borrowed and why.
 ```
 

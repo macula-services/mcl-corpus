@@ -154,7 +154,7 @@ calling them yet).
 ## What actually touches the mesh, beyond identity
 
 Android's `StationDiscovery.kt`/`MeshSessionPool.kt` auto-connects to the
-3 nearest stations via `hecate_stations.list_stations` — real, live code,
+3 nearest stations via `mcl_stations.list_stations` — real, live code,
 larger than the identity snippet above; read it directly in the repo for
 the full pattern rather than a partial quote here.
 

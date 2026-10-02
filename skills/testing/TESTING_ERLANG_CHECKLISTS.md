@@ -79,7 +79,7 @@ Per event module:
 ### Layer 4: Side Effects
 
 Per emitter:
-- [ ] `emit_reaches_members` — pg broadcast delivers message
+- [ ] `emit_reaches_members` — mesh publish delivers message
 - [ ] `emit_message_format` — message is `{group_atom, EventMap}` tuple
 - [ ] `emit_with_no_members` — no crash when group is empty
 - [ ] `emit_reaches_multiple_members` — all members receive

@@ -109,7 +109,7 @@ dispatch_event(Params, Req) ->
     case maybe_initiate_venture:dispatch(Cmd) of
         {ok, Version, Events} ->
             %% Return aggregate state in response — not just "ok"
-            hecate_api_utils:json_ok(200, #{
+            mcl_api_utils:json_ok(200, #{
                 <<"ok">> => true,
                 <<"venture_id">> => VentureId,
                 <<"name">> => Name,
@@ -121,7 +121,7 @@ dispatch_event(Params, Req) ->
                 <<"version">> => Version
             }, Req);
         {error, Reason} ->
-            hecate_api_utils:bad_request(Reason, Req)
+            mcl_api_utils:bad_request(Reason, Req)
     end.
 ```
 
@@ -188,7 +188,7 @@ The projection remains the **source of truth for queries**. Session-level consis
 
 ## See Also
 
-- [HECATE_WALKING_SKELETON.md](HECATE_WALKING_SKELETON.md) — The skeleton's `initiate_*` desk should follow this pattern from day 1
+- [WALKING_SKELETON.md](WALKING_SKELETON.md) — The skeleton's `initiate_*` desk should follow this pattern from day 1
 - [CARTWHEEL.md](CARTWHEEL.md) — CMD department architecture
 - [antipatterns/INDEX.md](../skills/antipatterns/INDEX.md) — Demon #24 (Silent Subscription Pipeline Failures) is a consequence of ignoring this pattern
 

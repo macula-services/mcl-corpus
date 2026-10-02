@@ -1,49 +1,24 @@
----
-title: "Side Effects Must Follow Facts, Not Hopes"
-layer: skill
-audience: [agent, human]
-stage: stable
----
-
 # Side Effects Must Follow Facts, Not Hopes
 
-*An architectural pattern for client-daemon communication.*
-
-> ⚠ **The concrete client/daemon named throughout this doc — hecate-web,
-> plugin frontends, `hecate-daemon` itself — have been REMOVED
-> (2026-09-05, see
-> [`HECATE_TIER_MODEL.md`](../philosophy/HECATE_TIER_MODEL.md)); there
-> is no daemon left to send a `hecate://` request to. The diagrams and
-> tables below are kept as a worked illustration of the underlying
-> principle, not as a description of anything currently running. The
-> principle itself is NOT tied to that architecture and still applies
-> to any client (terminal, coding agent, operator website, mobile app —
-> see [`HECATE_AUTH_MODEL.md`](../philosophy/HECATE_AUTH_MODEL.md))
-> talking to any event-sourced hecate-service: side effects must be
-> driven by materialized facts, never by a command's own
-> acknowledgment.**
-
----
+*An architectural pattern for client-service communication.*
 
 ## The Principle
 
-> **Any client (hecate-web, plugin frontend, CLI) is an external system. Side effects (UI updates, state transitions, user feedback) must be driven by received FACTS (events materialized into read models), never by command acknowledgments.**
+> **Any client (operator website, mobile app, terminal, coding agent) is an external system. Side effects (UI updates, state transitions, user feedback) must be driven by received FACTS (events materialized into read models), never by command acknowledgments.**
 
-A command sent to the daemon is a **HOPE** -- "I hope you'll do this." The HTTP response means "I received your hope and it looks valid." It does NOT mean the intent succeeded. Only the resulting **event** (fact), materialized into a read model by a projection, confirms that.
+A command sent to an event-sourced `mcl-*` service is a **HOPE** -- "I hope you'll do this." The response (an HTTP reply, or a mesh call's reply) means "I received your hope and it looks valid." It does NOT mean the intent succeeded. Only the resulting **event** (fact), materialized into a read model by a projection, confirms that.
 
 This principle applies universally:
-- hecate-web (Tauri desktop app) sending commands via hecate:// protocol
-- Plugin frontends (`*w` apps) sending commands via hecate:// protocol
-- `hecate` CLI sending commands via Unix socket
-- Any future client
-
----
+- an operator website or mobile app sending commands over HTTP
+- a terminal (`macula-cli`) calling mesh procedures
+- a coding agent (`macula-mcp`) calling `mcl-*` procedures over the mesh
+- any future client
 
 ## The Anti-Pattern
 
 ```
-Client                           Daemon
-──────                           ──────
+Client                           Service
+──────                           ───────
 POST /vision/refine  ──────→    receive hope
                                 process command
                                 store event (maybe)
@@ -59,17 +34,15 @@ What can go wrong between "received" and "event stored":
 
 The client updated its UI based on a **hope acknowledgment**, not a **fact**.
 
----
-
 ## The Correct Pattern: Read Model as Source of Truth
 
-The daemon owns the truth. Events flow through projections into SQLite read models. Clients read from those read models to determine current state.
+The service owns the truth. Events flow through projections into SQLite read models. Clients read from those read models to determine current state.
 
-### hecate-web and Plugin Frontends
+### HTTP clients (operator website, mobile app)
 
 ```
-Client (hecate-web / plugin)     Daemon
-────────────────────────         ──────
+Client                          Service
+────────                        ───────
 POST /vision/refine  ──────→    receive hope
 ← 202 Accepted  ←─────────     "hope received"
                                 process command
@@ -82,39 +55,48 @@ update UI                       side effect based on FACT
 ```
 
 The client:
-1. Sends command via hecate:// protocol (HOPE)
+1. Sends the command (HOPE)
 2. Receives 202 Accepted -- meaning "received, processing"
 3. Polls the read model for updated state (or subscribes via WebSocket in the future)
 4. The projection has materialized the event into SQLite
 5. Client fetches the updated read model and updates UI based on FACT
 
-### CLI
+### Coding agents (macula-mcp)
 
 ```
-CLI                              Daemon
-───                              ──────
-command via Unix socket  ──→    receive hope
-                                process command
-                                event stored
-                                projection updates SQLite
-                                query read model
-← result  ←───────────────     FACT confirmed
-display output                  side effect based on FACT
+Agent (macula-mcp)               Service
+──────────────────               ───────
+mesh_call submit_move  ──────→   receive hope
+← reply (ok / refusal)  ←────    "hope received"
+                                 command processed
+                                 move_played_v1 stored
+                                 projection updates SQLite
+
+mesh_call get_game_v1  ──────→   read from read model
+← state with the move  ←────    FACT confirmed
+act on it                        side effect based on FACT
 ```
 
-The CLI can afford to wait synchronously. The daemon processes the command, waits for the projection to complete, queries the read model, and returns the result. The CLI never assumes success before the fact.
+An agent's `mesh_call` reply is the hope acknowledgment, exactly like a
+202 — the responder answered before any projection ran. The agent acts
+on the *query* that returns the materialized fact (or on the
+`move_played_v1` fact watched on the mesh), never on the call's own
+reply.
 
----
+### Terminal
+
+The terminal can afford to wait synchronously: run the command, wait for
+the projection to complete, query the read model, and only then print a
+result. It never assumes success before the fact.
 
 ## Listener Architecture
 
-### Daemon Side: Events Flow Through Established Channels
+### Service Side: Events Flow Through Established Channels
 
 Events produced by command processing flow through the existing emitter infrastructure:
 
 ```
-{event}_to_pg.erl       -- internal (same BEAM VM, intra-daemon)
-{event}_to_mesh.erl     -- external (WAN, cross-daemon)
+{event}_to_mesh.erl     -- external (WAN, across services)
 ```
 
 Projections subscribe to events via evoq and update SQLite read models. These read models are the single source of truth for all client queries.
@@ -125,25 +107,22 @@ Command processed
     v
 Event stored in ReckonDB
     |
-    +---> {event}_to_pg.erl       (broadcast to internal listeners)
-    +---> {event}_to_mesh.erl     (publish to mesh for other daemons)
-    +---> Projection              (update SQLite read model)
+    +---> emit_{event}_to_mesh.erl  (publish to mesh for other services)
+    +---> Projection                (update SQLite read model)
 ```
 
 ### Client Side: Read Models Are the Interface
 
-Clients do not subscribe to raw events. Clients read from projections (SQLite read models) via query endpoints.
+Clients do not subscribe to raw events. Clients read from projections (SQLite read models) via query endpoints or query procedures.
 
 | Client | Access Method | Pattern |
 |--------|--------------|---------|
-| hecate-web | hecate:// protocol (HTTP over Unix socket) | Poll query endpoints |
-| Plugin frontends | hecate:// protocol (HTTP over Unix socket) | Poll query endpoints |
-| CLI | Direct Unix socket | Synchronous request/response |
+| Operator website / mobile app | HTTP (Cowboy handlers in desk directories) | Poll query endpoints |
+| Terminal (`macula-cli`) | Mesh call | Synchronous request/response |
+| Coding agent (`macula-mcp`) | Mesh call (`get_*_v1` procedures) or mesh_watch on facts | Query or fact-driven |
 | Future | WebSocket | Push-based subscription |
 
 The query endpoints are served by QRY department apps (e.g., `query_visions`, `query_ventures`). These read directly from the SQLite read models that projections maintain.
-
----
 
 ## Response Codes
 
@@ -156,44 +135,31 @@ Commands return **202 Accepted**, not 200 OK:
 | **400 Bad Request** | "Hope malformed" | Validation errors |
 | **409 Conflict** | "Hope contradicts current state" | Business rule violations |
 
-The distinction matters: 200 implies completion, 202 implies the work is still happening.
-
----
+The distinction matters: 200 implies completion, 202 implies the work is still happening. On the mesh the same split is a reply's shape: a refusal (`{error, Reason}`) is the validation failure, an `ok` is the hope acknowledgment — never the fact.
 
 ## Transport
 
-There are three integration boundaries. Clients live outside all of them.
+There is one live integration boundary. Clients live outside it.
 
 | Boundary | Transport | Scope | Purpose |
 |----------|-----------|-------|---------|
-| **Internal** | `pg` (OTP process groups) | Same BEAM VM | Intra-daemon event broadcast |
-| **External** | `mesh` (Macula QUIC) | WAN | Cross-daemon fact publication |
-| **Client** | HTTP over Unix socket | Same machine, cross-process | hecate:// protocol |
+| **External** | `mesh` (Macula QUIC) | WAN | Cross-service fact publication |
 
-Clients access the daemon exclusively through HTTP over Unix socket. The hecate:// protocol proxies these requests. Clients never participate in pg groups or mesh topics -- they read the results of those integrations via query endpoints backed by SQLite read models.
-
----
+Clients reach a service through its HTTP handlers (Cowboy, in desk directories) or its mesh procedures (`mcl-<svc>/<name>_v1`) — never through raw events. They read the results of the integrations above via query endpoints or query procedures backed by SQLite read models.
 
 ## Implementation Order
 
-1. **Daemon:** Return 202 for all command endpoints
-2. **Daemon:** Ensure projections update SQLite read models from events
-3. **Daemon:** Ensure QRY apps expose query endpoints for read models
-4. **Client:** Send commands, receive 202, then poll query endpoints for updated state
+1. **Service:** Return 202 (or `{ok, …}` on the mesh) for all command endpoints
+2. **Service:** Ensure projections update SQLite read models from events
+3. **Service:** Ensure QRY apps expose query endpoints / `get_*_v1` procedures for read models
+4. **Client:** Send commands, receive 202/ok, then poll query endpoints (or watch facts) for updated state
 5. **Future:** Add WebSocket support for push-based read model updates
-
----
 
 ## Relationship to Other Patterns
 
-- **HOPE/FACT vocabulary** -- from the Macula mesh protocol, applied universally to all client-daemon communication
-- **Projections** -- client reads ARE reads from projections; SQLite read models are the interface between daemon truth and client display
+- **HOPE/FACT vocabulary** -- from the Macula mesh protocol, applied universally to all client-service communication
+- **Projections** -- client reads ARE reads from projections; SQLite read models are the interface between service truth and client display
 - **Event sourcing** -- commands produce events, events update read models via projections, clients read from read models
 - **CQRS** -- commands and queries are strictly separated; 202 for writes, 200 for reads
-- **Vertical slicing** -- each domain owns its projections and query endpoints; there is no central "client bridge" or "notification service"
+- **Vertical slicing** -- each division owns its projections and query endpoints; there is no central "client bridge" or "notification service"
 
----
-
-*Recorded 2026-02-09. Origin: TUI vision command architecture review.*
-*Updated 2026-02-09: Refined from generic event stream to per-fact listener pattern.*
-*Rewritten 2026-02-18: Generalized from TUI-specific to universal client-daemon pattern. TUI (Go + Bubble Tea) is dead; principle now covers hecate-web, plugin frontends, CLI, and any future client.*

@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Read-Time Status Enrichment
 
 **Date:** 2026-02-10
-**Origin:** hecate-daemon domain/division status handling
+**Origin:** the removed daemon domain/division status handling
 
 ### The Antipattern
 
@@ -127,7 +127,7 @@ case maybe_post_event_sticky:dispatch(Cmd) of
             event_sticky_posted_v1_to_pg:emit(E),    %% Manual call
             event_sticky_posted_v1_to_mesh:emit(E)    %% Manual call
         end, Events),
-        hecate_api_utils:json_reply(201, Body, Req);
+        mcl_api_utils:json_reply(201, Body, Req);
 ```
 
 The pg emitter had a simple `emit/1` function that broadcast to a pg group:
@@ -179,9 +179,9 @@ ReckonDB has a built-in subscription mechanism:
 case maybe_post_event_sticky:dispatch(Cmd) of
     {ok, _Version, Events} ->
         %% Return response. DONE. No emit calls.
-        hecate_api_utils:json_reply(201, Body, Req);
+        mcl_api_utils:json_reply(201, Body, Req);
     {error, Reason} ->
-        hecate_api_utils:json_error(422, Reason, Req)
+        mcl_api_utils:json_error(422, Reason, Req)
 end.
 ```
 
@@ -336,7 +336,7 @@ Division: procure_realm_license
 ## 🔥🔥🔥 Separate Projections Racing on Shared ETS Table
 
 **Date:** 2026-03-07
-**Origin:** hecate-daemon project_licenses, project_plugins, project_launcher
+**Origin:** the removed daemon project_licenses, project_plugins, project_launcher
 
 ### The Antipattern
 

@@ -1,11 +1,11 @@
 ---
-title: The Hecate Codex
+title: The Macula Codex
 layer: codex
 audience: [human, agent]
 stage: draft
 ---
 
-# The Hecate Codex
+# The Macula Codex
 
 *A practitioner's manual for process-centric software development.*
 
@@ -13,7 +13,7 @@ stage: draft
 
 ## What this is
 
-This is the distilled book form of the Hecate Corpus. The corpus is a working repository of philosophy, skills, and guardrails; this codex is its narrative companion. You can ship Hecate-style systems by reading only the corpus, but the codex is the thing to hand to a new collaborator, a funder, a colleague at another shop, or your future self after a long break.
+This is the distilled book form of the Macula Corpus. The corpus is a working repository of philosophy, skills, and guardrails; this codex is its narrative companion. You can ship Macula-style systems by reading only the corpus, but the codex is the thing to hand to a new collaborator, a funder, a colleague at another shop, or your future self after a long break.
 
 The corpus answers "what do we do here?" The codex answers "why, in what order, and how does it hang together?"
 
@@ -21,7 +21,7 @@ The corpus answers "what do we do here?" The codex answers "why, in what order, 
 
 - Senior engineers and architects who feel that mainstream "clean architecture" patterns leak business intent through technical layers.
 - Teams adopting event sourcing who want a process-centric mental model, not a data-centric one.
-- New hires at any shop that ships Hecate-style work — the codex is the onboarding artifact.
+- New hires at any shop that ships Macula-style work — the codex is the onboarding artifact.
 - Funders, advisors, and reviewers who need a single document explaining the doctrine end-to-end.
 
 If you read four chapters and disagree with the central claim that *process beats data*, the rest of the book will frustrate you. Stop early; we will not have been a good fit.
@@ -76,14 +76,14 @@ Each chapter follows the same shape:
 - **Chapter 14.** Process Managers (`philosophy/PROCESS_MANAGERS.md`)
 - **Chapter 15.** Integration Transports: HOPE / FACT / FEEDBACK (`philosophy/INTEGRATION_TRANSPORTS.md`)
 - **Chapter 16.** Parent-Child Coordination (`philosophy/PARENT_CHILD_AGGREGATES.md`)
-- **Chapter 17.** The Tier Model (L0-L4) (`philosophy/HECATE_TIER_MODEL.md`)
+- **Chapter 17.** The Tier Model (L0-L4) (`philosophy/TIER_MODEL.md`)
 
 ### Part IV — Process
 
-- **Chapter 19.** The Domain Lifecycle (`philosophy/HECATE_DOMAIN_LIFECYCLE.md`)
+- **Chapter 19.** The Domain Lifecycle (`philosophy/DOMAIN_LIFECYCLE.md`)
 - **Chapter 20.** The 2-Process ALC: Planning + Crafting (`philosophy/alc/README.md`)
-- **Chapter 21.** The Walking Skeleton (`philosophy/HECATE_WALKING_SKELETON.md`)
-- **Chapter 22.** EventStorming, Hecate-Style (`roles/storm/*.md`, `agents/storm_*/`)
+- **Chapter 21.** The Walking Skeleton (`philosophy/WALKING_SKELETON.md`)
+- **Chapter 22.** EventStorming, Macula-Style (`roles/storm/*.md`, `agents/storm_*/`)
 
 ### Part V — Practice
 
@@ -91,7 +91,7 @@ Each chapter follows the same shape:
 - **Chapter 24.** The 20 Demons We've Exorcised (`skills/antipatterns/INDEX.md` + each demon file)
 - **Chapter 25.** Command Pipelines, Demon 41's Cure (`philosophy/COMMAND_PIPELINES.md`)
 - **Chapter 26.** Status as Bit Flags (`skills/codegen/erlang/BIT_FLAGS_STATUS_PROJECTION.md`, `examples/BIT_FLAGS_STATUS.md`)
-- **Chapter 27.** Code Quality, Hecate-Flavored (`skills/CODE_QUALITY.md`)
+- **Chapter 27.** Code Quality, Macula-Flavored (`skills/CODE_QUALITY.md`)
 
 ### Appendix
 
@@ -111,19 +111,19 @@ Each chapter follows the same shape:
 
 ### The Claim
 
-Hecate agents work at thresholds. Between intent and implementation, between human thought and machine execution, between code and architecture. The name is the brief.
+Macula agents work at thresholds. Between intent and implementation, between human thought and machine execution, between code and architecture. The name is the brief.
 
 ### Why it matters
 
 Software work fails when the worker is unclear about which side of a threshold they are on. The frontend developer pretending to be a domain modeller produces a leaky read model. The backend engineer pretending to be a product designer produces forms with eleven optional fields. The architect pretending to be a coder produces diagrams that no codebase reflects.
 
-Hecate is a deliberate stance at the threshold. We are the ones who pass between sides without pretending to be either. We hold the keys, not the territory.
+Macula is a deliberate stance at the threshold. We are the ones who pass between sides without pretending to be either. We hold the keys, not the territory.
 
 ### The Pattern
 
 Three thresholds, three keys.
 
-| Threshold | Hecate's role | The key |
+| Threshold | Macula's role | The key |
 |-----------|---------------|---------|
 | Code ↔ Architecture | Ensure code looks like the architecture intends | Names that reveal intent |
 | Intention ↔ Implementation | Ensure intent survives to running code | Vertical slices that group everything for one capability |
@@ -137,7 +137,7 @@ The "full-stack senior" pretending to be every role. The "architect" who hands d
 
 ### Read also
 
-- `SOUL.md` — the goddess Hecate framing in full
+- `SOUL.md` — the goddess Macula framing in full
 - `PERSONALITY.md` — the voice (confident, witty, direct, warm)
 
 ---
@@ -146,7 +146,7 @@ The "full-stack senior" pretending to be every role. The "architect" who hands d
 
 ### The Claim
 
-Five values, in priority order, settle every architectural argument inside Hecate.
+Five values, in priority order, settle every architectural argument inside Macula.
 
 ### Why it matters
 
@@ -234,7 +234,7 @@ If three of four pass and one fails persistently, you may have found a legitimat
 
 ### The Claim
 
-Hecate organizes work into a five-level hierarchy of containers, each named with a word starting with D. Four are nested containers. One is the artifact that flows through them. Every file, function, repo, and conversation lives somewhere in this hierarchy.
+Macula organizes work into a five-level hierarchy of containers, each named with a word starting with D. Four are nested containers. One is the artifact that flows through them. Every file, function, repo, and conversation lives somewhere in this hierarchy.
 
 ```
 Domain                    — the whole problem space
@@ -257,7 +257,7 @@ The 5D Hierarchy solves both by being:
 - **Strictly limited in number** — four container levels, no more.
 - **Memorable** — five Ds, said aloud in a single breath.
 
-A new collaborator who internalizes the 5D Hierarchy can navigate any Hecate codebase, predict where any feature will live, and propose a new feature's location without asking.
+A new collaborator who internalizes the 5D Hierarchy can navigate any Macula codebase, predict where any feature will live, and propose a new feature's location without asking.
 
 ### The Pattern
 
@@ -274,7 +274,7 @@ The overall business endeavor. The whole problem space the venture is concerned 
 | Owns | Brand, the list of Divisions, strategic intent |
 | Concrete examples | "Macula," "Parksim," "BEAM Campus" |
 
-> ⚠ "Domain" is a heavily-overloaded word in Domain-Driven Design. Hecate Domain = Eric Evans' senior usage (the whole problem space), never the junior usage (= bounded context). The bounded-context concept lives at the **Division** level. See the Glossary's Domain override notice for the full disambiguation.
+> ⚠ "Domain" is a heavily-overloaded word in Domain-Driven Design. Macula Domain = Eric Evans' senior usage (the whole problem space), never the junior usage (= bounded context). The bounded-context concept lives at the **Division** level. See the Glossary's Domain override notice for the full disambiguation.
 
 ##### Division
 
@@ -285,7 +285,7 @@ A cohesive piece of software responsible for exactly one bounded context. The un
 | Cardinality | N per Domain |
 | Lifecycle | Discovery → Planning → Crafting → Operations |
 | Owns | One bounded context, three Departments |
-| Concrete examples | `parksim-entry2exit`, `parksim-lot`, `parksim-pricing`, `hecate-trader` |
+| Concrete examples | `parksim-entry2exit`, `parksim-lot`, `parksim-pricing`, `mcl-bookclub` |
 
 A Division has its own ubiquitous language. Two Divisions in the same Domain do not share schemas, do not share databases, do not call each other directly. They communicate over the mesh as integration FACTs.
 
@@ -303,7 +303,7 @@ CMD is process-centric (verb-named). PRJ and QRY are data-centric (noun-named). 
 
 ##### Desk
 
-A single capability inside a Department. One folder, one supervisor, one vertical slice. The atomic unit of work in Hecate.
+A single capability inside a Department. One folder, one supervisor, one vertical slice. The atomic unit of work in Macula.
 
 A CMD Desk contains: a command record, an event record, a handler, optionally a responder/emitter/listener. Everything that makes the capability work lives in that one folder.
 
@@ -319,7 +319,7 @@ A Desk is the unit at which code generation produces a useful artifact. A Desk i
 
 ##### Dossier
 
-The aggregate, in Hecate's vocabulary. A folder of event slips that accumulates as the Dossier passes through Desks.
+The aggregate, in Macula's vocabulary. A folder of event slips that accumulates as the Dossier passes through Desks.
 
 The Dossier is not a data structure. The Dossier is its history. The stream of Slips *is* the Dossier. When you "rebuild state," you read the Dossier front to back. When validating a command, you ask: *given the Slips accumulated so far, can this Slip be added?*
 
@@ -355,15 +355,15 @@ The Dossier in this example is the stream `pricing-policy-{lot-id}`. It is not a
 
 The 5D Hierarchy works at every scale.
 
-- A one-person Hecate Domain might have 1 Division with 2 Desks per Department: six Desks total.
-- A fifty-person Hecate Domain might have 15 Divisions, each with 10 Desks per Department: 450 Desks total.
+- A one-person Macula Domain might have 1 Division with 2 Desks per Department: six Desks total.
+- A fifty-person Macula Domain might have 15 Divisions, each with 10 Desks per Department: 450 Desks total.
 - The structure is identical. The hierarchy does not need to "evolve" as the Domain grows.
 
 This is the property that makes the 5D Hierarchy worth memorizing. You learn it once. It applies forever.
 
 #### Two write-side constructs
 
-The Dossier is the **default** write-side construct. It locks on its own stream's version — classical event-sourcing optimistic concurrency. ~90% of Hecate work fits the Dossier shape: anything with a natural identity-carrier (customers, orders, divisions, plannings, capabilities).
+The Dossier is the **default** write-side construct. It locks on its own stream's version — classical event-sourcing optimistic concurrency. ~90% of Macula work fits the Dossier shape: anything with a natural identity-carrier (customers, orders, divisions, plannings, capabilities).
 
 The remaining ~10% — cross-cutting checks without a natural identity-carrier (uniqueness, allocation against shared resources, idempotency keys, rate limits) — has a sibling first-class construct: the **Decision**. A Decision locks on the absence of new events matching a tag-filter context query, not on a stream version. It has no identity, no lifetime, no folder. It's the escape hatch for the cross-cutting case where inventing a Dossier would be ceremony.
 
@@ -393,7 +393,7 @@ The 5D Hierarchy is the alternative. Containers, not layers. Process, not object
 
 - `GLOSSARY.md` — full definitions, including the Domain override notice and the active Decision entry
 - `philosophy/CARTWHEEL.md` — Department detail (CMD/PRJ/QRY structure)
-- `philosophy/HECATE_DOMAIN_LIFECYCLE.md` — Domain → Division relationship and process model
+- `philosophy/DOMAIN_LIFECYCLE.md` — Domain → Division relationship and process model
 - `philosophy/CONSISTENCY_BOUNDARIES.md` — the discrimination rule between Dossier and Decision, with revisit criteria
 - `guides/CARTWHEEL_COMPANY_MODEL.md` — the company-metaphor variant of the 5D model
 - `examples/DCB_COUNTER.md` — reference example for the Decision pattern (counter respecting a maximum)
@@ -428,7 +428,7 @@ The 5D Hierarchy is the alternative. Containers, not layers. Process, not object
 
 # Part IV — Process
 
-> **Outline only.** Four chapters: the Domain Lifecycle (19), the 2-process ALC (20), the Walking Skeleton (21), and EventStorming Hecate-style (22). Distilled from `philosophy/HECATE_DOMAIN_LIFECYCLE.md`, `philosophy/alc/README.md`, `philosophy/HECATE_WALKING_SKELETON.md`, and `roles/storm/*.md`.
+> **Outline only.** Four chapters: the Domain Lifecycle (19), the 2-process ALC (20), the Walking Skeleton (21), and EventStorming Macula-style (22). Distilled from `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/alc/README.md`, `philosophy/WALKING_SKELETON.md`, and `roles/storm/*.md`.
 
 # Part V — Practice
 

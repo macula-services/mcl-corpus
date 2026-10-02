@@ -38,7 +38,7 @@ Let's break down each component:
 The entry point for external requests:
 
 ```erlang
-%% hecate_api_capabilities.erl
+%% mcl_api_capabilities.erl
 handle_post(Req, State) ->
     {ok, Body, Req2} = cowboy_req:read_body(Req),
     #{<<"name">> := Name, <<"tags">> := Tags} = json:decode(Body),
@@ -60,7 +60,7 @@ When calling another agent via the mesh:
 ```erlang
 %% The Requester sends a HOPE (RPC request)
 %% "HOPE" because we optimistically hope the remote agent will execute it
-hecate_rpc:call(<<"io.macula.other-agent.analyze">>, Args, Timeout)
+mcl_om:call(<<"io.macula.other-agent.analyze">>, Args, Timeout)
 ```
 
 The Requester:
@@ -264,14 +264,14 @@ handle_event(#capability_announced_v1{} = Event) ->
     },
 
     %% Publish to mesh
-    hecate_mesh:publish(<<"capabilities.available">>, Fact).
+    mcl_mesh:publish(<<"capabilities.available">>, Fact).
 ```
 
 **Critical**: The FACT structure may be different from the EVENT structure. The EVENT is an implementation detail; the FACT is a public contract.
 
-## Hecate Implementation
+## Macula Implementation
 
-In Hecate, each domain follows this pattern:
+In Macula, each domain follows this pattern:
 
 ```
 apps/manage_capabilities/

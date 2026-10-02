@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Wrong Aggregate Callback Argument Order
 
 **Date:** 2026-02-09
-**Origin:** hecate-daemon division auto-initiation bug
+**Origin:** the removed daemon division auto-initiation bug
 
 ### The Antipattern
 
@@ -100,7 +100,7 @@ execute_argument_order_test() ->
 ## 🔥 Demon 23: Raw #event{} Records Passed to Projections
 
 > ⚠⚠ **RECURRED IN FULL ON 2026-08-07, five months and three weeks after being
-> written down here.** `hecate-dronex/apps/hecate_dronex/src/breed_a_roster/roster_log.erl`
+> written down here.** `a since-removed service/apps/removed_service/src/breed_a_roster/roster_log.erl`
 > read events from the same library, called `maps:find/2` on the same record,
 > restored nothing and reported nothing. Every island in the archipelago had been
 > starting its population from seed on every deploy for weeks.
@@ -330,7 +330,7 @@ If `POST` succeeds but `GET` returns empty:
 ## 🔥 Flattening Event Envelopes Into Business Data
 
 **Date:** 2026-03-06
-**Origin:** hecate-daemon — `projection_event:to_map/1` caused silent field collisions
+**Origin:** the removed daemon — `projection_event:to_map/1` caused silent field collisions
 
 ### The Antipattern
 
@@ -416,7 +416,7 @@ end
 ## 🔥 Reading Business Fields Directly from Event Envelope
 
 **Date:** 2026-03-08
-**Origin:** hecate-daemon — all license domain PMs silently got `undefined` for every business field
+**Origin:** the removed daemon — all license domain PMs silently got `undefined` for every business field
 
 ### The Antipattern
 
@@ -425,8 +425,8 @@ In `evoq_event_handler` callbacks, reading business fields directly from the `Ev
 **Example (WRONG):**
 ```erlang
 handle_event(_EventType, Event, _Metadata, State) ->
-    LicenseId = hecate_api_utils:get_field(license_id, Event),  %% WRONG!
-    FeeCents = hecate_api_utils:get_field(fee_cents, Event),    %% WRONG!
+    LicenseId = mcl_api_utils:get_field(license_id, Event),  %% WRONG!
+    FeeCents = mcl_api_utils:get_field(fee_cents, Event),    %% WRONG!
     ...
 ```
 
@@ -448,8 +448,8 @@ In our case:
 ```erlang
 handle_event(_EventType, Event, _Metadata, State) ->
     Data = maps:get(data, Event),
-    LicenseId = hecate_api_utils:get_field(license_id, Data),
-    FeeCents = hecate_api_utils:get_field(fee_cents, Data),
+    LicenseId = mcl_api_utils:get_field(license_id, Data),
+    FeeCents = mcl_api_utils:get_field(fee_cents, Data),
     ...
 ```
 
@@ -492,7 +492,7 @@ Free license install flow: POST /api/appstore/install returned 201, but the plug
 ## 🔥🔥🔥 Demon 41: Reading from Read Models During Event Flow — THE Cardinal Sin
 
 **Date:** 2026-03-08
-**Origin:** hecate-daemon — `on_license_granted_install_plugin` PM read from `project_licenses_store` to build the `install_plugin_v1` command. Race condition caused "stuck at downloading" — projection hadn't caught up when PM fired.
+**Origin:** the removed daemon — `on_license_granted_install_plugin` PM read from `project_licenses_store` to build the `install_plugin_v1` command. Race condition caused "stuck at downloading" — projection hadn't caught up when PM fired.
 **Severity:** THE most important antipattern in event sourcing. If you learn only one rule, learn this one.
 
 ### The Antipattern
@@ -504,7 +504,7 @@ A Process Manager, Event Handler, or Projection reading from a read model (ETS, 
 %% PM receives license_granted_v1, needs plugin details for install command
 handle_event(_EventType, Event, _Metadata, State) ->
     Data = maps:get(data, Event),
-    LicenseId = hecate_api_utils:get_field(license_id, Data),
+    LicenseId = mcl_api_utils:get_field(license_id, Data),
     %% WRONG! Reading from read model during event flow!
     case project_licenses_store:get_license(LicenseId) of
         {ok, License} ->
@@ -559,8 +559,8 @@ handle(Cmd, #license_state{} = State) ->
 %% on_license_granted_install_plugin.erl — self-contained
 handle_event(_EventType, Event, _Metadata, State) ->
     Data = maps:get(data, Event),
-    PluginId = hecate_api_utils:get_field(plugin_id, Data),
-    OciImage = hecate_api_utils:get_field(oci_image, Data),
+    PluginId = mcl_api_utils:get_field(plugin_id, Data),
+    OciImage = mcl_api_utils:get_field(oci_image, Data),
     %% Everything comes from the event. No read model. No race condition.
     CmdParams = #{
         plugin_id => PluginId,
@@ -735,7 +735,7 @@ event_data(Event) ->                              %% raw in-memory event
 ## 🔥 Demon 49: Discarding `evoq_dispatcher:dispatch/2`'s Return Value
 
 **Date exorcised:** 2026-05-26
-**Where it appeared:** `hecate-services/hecate-parksim/apps/simulate_visit/src/simulate_visit.erl` — three call sites, `_ = maybe_X:dispatch(...)`
+**Where it appeared:** `macula-services/a since-removed service/apps/simulate_visit/src/simulate_visit.erl` — three call sites, `_ = maybe_X:dispatch(...)`
 **Cost:** ~2 hours of "events vanish silently" debugging across multiple boot probes
 
 ### The Lie
@@ -821,7 +821,7 @@ other "the result IS the answer" API across the family.
 ## 🔥🔥🔥 Demon 51: Human-Readable Aggregate IDs as Reckon Stream IDs
 
 **Date:** 2026-05-31
-**Where it bit:** hecate-parksim ClankerCab fleet — trips=0, revenue=0, empty read model, no errors anywhere.
+**Where it bit:** a since-removed service ClankerCab fleet — trips=0, revenue=0, empty read model, no errors anywhere.
 
 ### The Mistake
 

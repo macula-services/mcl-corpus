@@ -9,7 +9,7 @@ stage: stable
 
 [Back to FAQ index](FAQ.md) · [Back to corpus index](../INDEX.md)
 
-[FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md)
+[FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md)
 covers the in-process BEAM path (evoq + reckon-db). This page is the
 equivalent for a caller that isn't on the BEAM at all: `reckon-gateway`
 exposes ReckonDB's event-store API over gRPC and plain HTTP/JSON.
@@ -91,4 +91,4 @@ code.
 
 ## See also
 
-- [FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md) — the in-process BEAM/evoq side this gRPC path is an alternative to
+- [FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md) — the in-process BEAM/evoq side this gRPC path is an alternative to

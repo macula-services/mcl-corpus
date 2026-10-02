@@ -1,11 +1,11 @@
 ---
-title: HECATE_WALKING_SKELETON
+title: The Walking Skeleton
 layer: philosophy
 audience: [agent, human]
 stage: stable
 ---
 
-# HECATE_WALKING_SKELETON — Fully Operational from Day 1
+# The Walking Skeleton — Fully Operational from Day 1
 
 *Build the thinnest possible slice through all layers, deployed to all environments, before adding features.*
 
@@ -322,7 +322,7 @@ The Walking Skeleton is not optional. It is the **first task** of every project.
 
 ## See Also
 
-- [HECATE_ALC](alc/README.md) — The full lifecycle (the walking skeleton lives in the Crafting process)
+- [The ALC](alc/README.md) — The full lifecycle (the walking skeleton lives in the Crafting process)
 - [CODEGEN_ERLANG_TEMPLATES.md](../skills/codegen/erlang/CODEGEN_ERLANG_TEMPLATES.md) — Templates for desks
 - [CODEGEN_ERLANG_CHECKLISTS.md](../skills/codegen/erlang/CODEGEN_ERLANG_CHECKLISTS.md) — Generation checklists
 

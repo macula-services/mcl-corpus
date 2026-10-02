@@ -20,28 +20,28 @@ _Complete module templates for generating Division Architecture (Cartwheel) code
 
 ## Service Shell (umbrella root)
 
-For a new `hecate-<svc>` daemon, **DON'T hand-write the shell**.
-Use the canonical scaffolder in `hecate-om`:
+For a new `mcl-<svc>` service, **DON'T hand-write the shell**.
+Use the canonical scaffolder in `mcl-om`:
 
 ```bash
-cd ~/work/github.com/hecate-services/hecate-om
+cd ~/work/github.com/macula-services/mcl-om
 ./scripts/scaffold-service.sh \
-    ~/work/github.com/hecate-services/hecate-<svc> \
-    hecate-<svc> \
+    ~/work/github.com/macula-services/mcl-<svc> \
+    mcl-<svc> \
     "One-line description of <svc>"
 ```
 
-This renders, from `hecate-om/templates/`:
+This renders, from `mcl-om/templates/`:
 
 | File | Purpose |
 |------|---------|
 | `Containerfile` | Multi-stage OTP build image |
-| `quadlet/hecate-<svc>.container` | Podman Quadlet unit |
-| `manifest.json` | hecate-realm capability declaration |
+| `quadlet/mcl-<svc>.container` | Podman Quadlet unit |
+| `manifest.json` | macula-realm capability declaration |
 | `.github/workflows/build-push.yml` | ghcr.io publish on push to main |
-| `src/<app>_app.erl` | OTP entry — one line: `hecate_om:boot(<service_module>)` |
-| `src/<app>_service.erl` | hecate_om_service callbacks (incl. optional `store_id/0` + `data_dir/0`) |
-| `config/sys.config.src` | Canonical reckon_db + evoq + hecate_om blocks |
+| `src/<app>_app.erl` | OTP entry — one line: `mcl_om:boot(<service_module>)` |
+| `src/<app>_service.erl` | mcl_om_service callbacks (incl. optional `store_id/0` + `data_dir/0`) |
+| `config/sys.config.src` | Canonical reckon_db + evoq + mcl_om blocks |
 
 ### What you still write by hand
 
@@ -54,11 +54,11 @@ This renders, from `hecate-om/templates/`:
 
 ### Why `_app.erl` is one line
 
-`hecate_om:boot/1` does everything: persistent-term registration of
+`mcl_om:boot/1` does everything: persistent-term registration of
 the service module, capability advertisement, /health wiring, and
 (when the service exports `store_id/0` + `data_dir/0`)
 `reckon_db_sup:start_store/1` + `evoq_store_subscription:start_link/1`.
-The wiring is in `hecate_om_store`, shipped in hecate_om ≥ 0.3.0.
+The wiring is in `mcl_om_store`, shipped in mcl_om ≥ 0.3.0.
 
 If the service is **producer-only** (no event store of its own —
 e.g. a simulator, a metrics exporter), delete the two optional
@@ -322,7 +322,7 @@ can_execute(_Cmd, _State) ->
 
 -include_lib("kernel/include/logger.hrl").
 
--define(TOPIC, <<"hecate.{domain_noun}.{command}">>).
+-define(TOPIC, <<"macula.{domain_noun}.{command}">>).
 
 %%====================================================================
 %% API
@@ -337,7 +337,7 @@ start_link() ->
 
 init([]) ->
     %% Subscribe to HOPE topic on mesh
-    ok = hecate_mesh:subscribe(?TOPIC),
+    ok = mcl_mesh:subscribe(?TOPIC),
     ?LOG_INFO("[~s] Responder started, subscribed to ~s", [?MODULE, ?TOPIC]),
     {ok, #{}}.
 
@@ -357,7 +357,7 @@ handle_info({mesh_hope, Topic, Hope, ReplyTo}, State) ->
         {error, Reason} ->
             #{ok => false, error => Reason}
     end,
-    ok = hecate_mesh:publish(ReplyTo, Feedback),
+    ok = mcl_mesh:publish(ReplyTo, Feedback),
     {noreply, State};
 
 handle_info(_Info, State) ->
@@ -405,10 +405,10 @@ interested_in() -> [<<"{event}_v1">>].
 init(_ConfigOrArgs) -> {ok, #{}}.
 
 %% The stored envelope is #{event_type, data, metadata, ...}: business
-%% fields live under `data' (Demon 40). hecate_om owns the mesh pool and
+%% fields live under `data' (Demon 40). mcl_om owns the mesh pool and
 %% realm; a service never opens its own connection.
 handle_event(_EventType, #{data := Data}, _Metadata, State) ->
-    publish(hecate_om:mesh_handles(), event_to_fact(Data)),
+    publish(mcl_om:mesh_handles(), event_to_fact(Data)),
     {ok, State}.
 
 publish({ok, Pool, Realm}, Fact) ->
@@ -429,8 +429,8 @@ handle_published(Result, State) ->
 %% wire -- use 0/1.
 event_to_fact(Data) ->
     #{
-        {field1} => {text, hecate_om_wire:field({field1}, Data)},
-        {field2} => {text, hecate_om_wire:field({field2}, Data)},
+        {field1} => {text, mcl_om_wire:field({field1}, Data)},
+        {field2} => {text, mcl_om_wire:field({field2}, Data)},
         published_at => erlang:system_time(millisecond)
     }.
 ```
@@ -506,8 +506,8 @@ should_trigger(_Data) ->
 
 event_to_command_params(Data) ->
     #{
-        {field1} => hecate_om_wire:field({trigger_field}, Data),
-        {field2} => hecate_om_wire:field({other_field}, Data, <<>>)
+        {field1} => mcl_om_wire:field({trigger_field}, Data),
+        {field2} => mcl_om_wire:field({other_field}, Data, <<>>)
     }.
 ```
 
@@ -585,9 +585,9 @@ handle_event(_EventType, #{data := Data}, _Metadata, State) ->
 
 project(Data) ->
     Row = #{
-        {pk_field} => hecate_om_wire:field({pk_field}, Data),
-        {field1}   => hecate_om_wire:field({field1}, Data),
-        {field2}   => hecate_om_wire:field({field2}, Data),
+        {pk_field} => mcl_om_wire:field({pk_field}, Data),
+        {field1}   => mcl_om_wire:field({field1}, Data),
+        {field2}   => mcl_om_wire:field({field2}, Data),
         updated_at => erlang:system_time(millisecond)
     },
     %% Upsert for idempotency (replay-safe)
@@ -921,36 +921,41 @@ apply_submitted(#{noun}_state{status = Status} = State) ->
 
 ---
 
-## Internal Emitter Template (pg)
+## Mesh Emitter Template
 
-### {event}\_to\_pg.erl
+### emit\_{event}\_to\_mesh.erl
 
-**For intra-daemon integration** (projections, process managers within the same BEAM VM).
-pg emitters are `evoq_event_handler`s started by the owning slice's supervisor
+**For cross-service integration** (facts on the mesh).
+Mesh emitters are `evoq_event_handler`s started by the owning slice's supervisor
 (`{evoq_event_handler, start_link, [Mod, #{}]}`) -- evoq subscribes them; the
 module only says which event and where it goes.
 
 **They are NOT called manually from API handlers.** See [EVENT_SUBSCRIPTION_FLOW.md](../../../philosophy/EVENT_SUBSCRIPTION_FLOW.md).
 
 ```erlang
-%%% @doc Emitter: {event}_v1 -> pg (internal pub/sub).
-%%% Receives events via evoq_event_handler, broadcasts to the pg group.
--module({event}_v1_to_pg).
+%%% @doc Emitter: {event}_v1 -> one mesh fact.
+%%% Receives events via evoq_event_handler, publishes to the mesh.
+-module(emit_{event}_v1_to_mesh).
 -behaviour(evoq_event_handler).
 
--export([interested_in/0, init/1, handle_event/4]).
-
--define(PG_GROUP, {event}_v1).
+-export([interested_in/0, init/1, handle_event/4, replay_policy/0]).
 
 interested_in() -> [<<"{event}_v1">>].
+
+%% A restart's replay must not re-publish facts that already went out.
+replay_policy() -> skip.
 
 init(_Config) -> {ok, #{}}.
 
 handle_event(_EventType, Event, _Metadata, State) ->
-    Members = pg:get_members(pg, ?PG_GROUP),
-    Msg = {?PG_GROUP, Event},
-    lists:foreach(fun(Pid) -> Pid ! Msg end, Members),
-    {ok, State}.
+    Data = maps:get(data, Event, Event),
+    publish(mcl_{app}_facts:to_wire(mcl_{app}_facts:{event}(Data)), State).
+
+publish(Fact, State) ->
+    case mcl_om:mesh_handles() of
+        {ok, Pool, Realm} -> publish_on(Pool, Realm, Fact, State);
+        {error, _} = Error -> Error
+    end.
 ```
 
 ---
@@ -1063,37 +1068,30 @@ archive_sets_flag_test() ->
 
 ### Emitter Tests
 
+The publish path itself is verified by the live check (a real mesh round
+trip), not by a unit test. The unit test pins what a unit test can:
+which event the emitter subscribes to, and the wire shape of the fact it
+builds (the same shape `{app}_facts_tests` pins — see
+[MESH_TOPIC_TIERING](../../../skills/MESH_TOPIC_TIERING.md)).
+
 ```erlang
--module(emit_{event}_to_pg_tests).
+-module(emit_{event}_v1_to_mesh_tests).
 -include_lib("eunit/include/eunit.hrl").
 
--define(GROUP, {event}).
--define(SCOPE, pg).
+interested_in_test() ->
+    ?assertEqual([<<"{event}_v1">>], emit_{event}_v1_to_mesh:interested_in()).
 
-emit_test() ->
-    ensure_pg(),
-    ok = pg:join(?SCOPE, ?GROUP, self()),
-    Event = #{id => <<"test">>},
-    ok = emit_{event}_to_pg:emit(Event),
-    receive
-        {{event}, Received} -> ?assertEqual(Event, Received)
-    after 1000 -> ?assert(false)
-    end,
-    ok = pg:leave(?SCOPE, ?GROUP, self()).
-
-ensure_pg() ->
-    case pg:start(?SCOPE) of
-        {ok, _} -> ok;
-        {error, {already_started, _}} -> ok
-    end.
+replay_policy_test() ->
+    %% Lifecycle facts must not re-publish on a store replay.
+    ?assertEqual(skip, emit_{event}_v1_to_mesh:replay_policy()).
 ```
 
 ---
 
 ## API Handler Templates
 
-API handlers are Cowboy `init/2` handlers that live **inside desk directories**, not in `hecate_api`.
-All handlers use `hecate_api_utils` from the `shared` app.
+API handlers are Cowboy `init/2` handlers that live **inside desk directories**, not in `mcl_api`.
+All handlers use `mcl_api_utils` from the `shared` app.
 
 ### CMD API Handler Template — {command}\_api.erl
 
@@ -1110,15 +1108,15 @@ routes() ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"POST">> -> handle_post(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 handle_post(Req0, _State) ->
-    case hecate_api_utils:read_json_body(Req0) of
+    case mcl_api_utils:read_json_body(Req0) of
         {ok, Params, Req1} ->
             do_command(Params, Req1);
         {error, invalid_json, Req1} ->
-            hecate_api_utils:bad_request(<<"Invalid JSON">>, Req1)
+            mcl_api_utils:bad_request(<<"Invalid JSON">>, Req1)
     end.
 
 do_command(Params, Req) ->
@@ -1131,13 +1129,13 @@ do_command(Params, Req) ->
         {ok, Cmd} ->
             dispatch_result(maybe_{command}:dispatch(Cmd), Req);
         {error, Reason} ->
-            hecate_api_utils:json_error(400, Reason, Req)
+            mcl_api_utils:json_error(400, Reason, Req)
     end.
 
 dispatch_result({ok, Version, Events}, Req) ->
-    hecate_api_utils:json_ok(201, #{version => Version, events => Events}, Req);
+    mcl_api_utils:json_ok(201, #{version => Version, events => Events}, Req);
 dispatch_result({error, Reason}, Req) ->
-    hecate_api_utils:json_error(400, Reason, Req).
+    mcl_api_utils:json_error(400, Reason, Req).
 ```
 
 **Variations:**
@@ -1161,7 +1159,7 @@ routes() ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"GET">> -> handle_get(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 handle_get(Req0, _State) ->
@@ -1169,9 +1167,9 @@ handle_get(Req0, _State) ->
     Filters = build_filters(QS),
     case get_{nouns}_page:execute(Filters) of
         {ok, Result} ->
-            hecate_api_utils:json_ok(#{{nouns} => Result}, Req0);
+            mcl_api_utils:json_ok(#{{nouns} => Result}, Req0);
         {error, Reason} ->
-            hecate_api_utils:json_error(500, Reason, Req0)
+            mcl_api_utils:json_error(500, Reason, Req0)
     end.
 
 build_filters(QS) ->
@@ -1206,25 +1204,25 @@ routes() ->
 init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"GET">> -> handle_get(Req0, State);
-        _ -> hecate_api_utils:method_not_allowed(Req0)
+        _ -> mcl_api_utils:method_not_allowed(Req0)
     end.
 
 handle_get(Req0, _State) ->
     Id = cowboy_req:binding({noun}_id, Req0),
     case get_{noun}_by_id:execute(Id) of
         {ok, {Noun}} ->
-            hecate_api_utils:json_ok(#{{noun} => {Noun}}, Req0);
+            mcl_api_utils:json_ok(#{{noun} => {Noun}}, Req0);
         {error, not_found} ->
-            hecate_api_utils:not_found(Req0);
+            mcl_api_utils:not_found(Req0);
         {error, Reason} ->
-            hecate_api_utils:json_error(500, Reason, Req0)
+            mcl_api_utils:json_error(500, Reason, Req0)
     end.
 ```
 
 ### Route Ownership (Auto-Discovery)
 
 **Each handler exports `routes/0`.** There are no centralized route files.
-The aggregator (`hecate_api_routes.erl`) discovers handlers automatically via OTP module introspection.
+The aggregator (`mcl_api_routes.erl`) discovers handlers automatically via OTP module introspection.
 
 **Adding a new endpoint requires touching exactly ONE file** — the handler itself.
 

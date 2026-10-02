@@ -41,7 +41,7 @@ The query originates from:
 
 ```erlang
 %% Example: HTTP GET /api/capabilities?agent_id=did:macula:agent123
-%% Example: WAMP call to io.macula.hecate.capabilities.list
+%% Example: WAMP call to io.macula.mcl.capabilities.list
 ```
 
 ### 2. Controller
@@ -49,7 +49,7 @@ The query originates from:
 The Controller receives the request and extracts query parameters:
 
 ```erlang
-%% hecate_api_capabilities.erl
+%% mcl_api_capabilities.erl
 handle_get(Req, State) ->
     %% Extract query parameters
     AgentId = cowboy_req:binding(agent_id, Req),
@@ -197,7 +197,7 @@ GET /api/agents/did:macula:agent123/reputation
 ### Controller
 
 ```erlang
-%% hecate_api_reputation.erl
+%% mcl_api_reputation.erl
 handle_get(Req, State) ->
     AgentId = cowboy_req:binding(agent_id, Req),
 
@@ -400,7 +400,7 @@ case query:get(Id) of
 end.
 ```
 
-## Hecate Implementation
+## Macula Implementation
 
 **CRITICAL: Query module naming must scream intent. See `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` and `skills/NAMING_CONVENTIONS.md`.**
 

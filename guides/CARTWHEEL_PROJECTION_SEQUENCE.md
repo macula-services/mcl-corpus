@@ -229,10 +229,10 @@ handle_event(_EventType, #{data := EventData}, _Metadata, State) ->
     %% Transform EVENT to FACT (different structure!)
     Fact = event_to_fact(EventData),
 
-    %% "Project" to mesh instead of database -- hecate_om owns the pool
+    %% "Project" to mesh instead of database -- mcl_om owns the pool
     %% and realm, macula_publisher supervises the publish (see
     %% skills/codegen/erlang/CODEGEN_ERLANG_TEMPLATES.md, {event}_to_mesh).
-    {ok, Pool, Realm} = hecate_om:mesh_handles(),
+    {ok, Pool, Realm} = mcl_om:mesh_handles(),
     {ok, _} = macula_publisher:start_link(?MODULE, Pool, Realm,
                                           <<"capability/available">>, Fact),
 
@@ -479,7 +479,7 @@ rebuild() ->
 - New read model table added
 - Schema migration required
 
-## Hecate Implementation
+## Macula Implementation
 
 ```
 apps/query_capabilities/

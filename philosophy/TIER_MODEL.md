@@ -1,44 +1,17 @@
 ---
-title: The Hecate four-tier model
+title: The Macula tier model
 layer: philosophy
 audience: [agent, human]
 stage: stable
 ---
 
-# The Hecate four-tier model
+# The Macula tier model
 
-Adopted 2026-05-18. Codifies the cut between **per-user agent surface**
-and **always-on realm services** that the Hecate stack drew
-when `serve_llm` migrated out of `hecate-daemon` into the new
-`hecate-services/*` family.
-
-Amended 2026-08-10. The original text said Layer-2 services run on
-realm infrastructure nodes and "NOT on user laptops", and hung a
-"lone-deployment exception" off that rule. That was backwards. Layer 2
-is **edge-first**: a service dials out to a `macula-station`, needs no
-inbound port and no public address, and is a first-class citizen of the
-mesh from behind a domestic NAT. The tiers cut by lifecycle and
-identity, never by hardware. See "Placement rules" below for what
-actually holds.
-
-Amended 2026-09-01. Layers 3 (session: `hecate-daemon`) and 4 (apps:
-in-VM plugins) below are now **obsolete** — `hecate-daemon`, `hecate-web`,
-and `hecate-gitops` are declared dead now that mobile-app tooling exists.
-User interaction moves to (a) the terminal, (b) a coding agent, (c) an
-"operator website" hosted by an edge service, or (d) a mobile app /
-classic public website for the general public. Layers 0-2 (kernel,
-identity, services) are unaffected and remain current — this is exactly
-the boundary the amendment above already drew, and it holds. The
-identity/auth design for the four channels is drafted in
-[HECATE_AUTH_MODEL.md](HECATE_AUTH_MODEL.md); no replacement for the rest
-of what Layers 3-4 covered exists yet.
-
-Amended 2026-09-05. `hecate-daemon`, `hecate-web`, and `hecate-gitops`
-have gone from declared-obsolete to actually **deleted**. These names
-no longer refer to anything present in this workspace; treat every
-mention of them below (and in the diagram that follows) as historical
-description of a since-deleted architecture, not as live
-infrastructure to read, extend, or deploy through.
+The cut between the **user surface** and the **always-on realm services**.
+A user reaches the mesh through one of four channels: the terminal, a
+coding agent (`macula-mcp`), an "operator website" hosted by an edge
+service, or a mobile app / classic public website. The identity/auth
+design for the four channels is in [AUTH_MODEL.md](AUTH_MODEL.md).
 
 This document is shaping material. Future Claude sessions, future
 contributors, and grant-reviewer audiences should be able to read it
@@ -47,31 +20,17 @@ anyone.
 
 ---
 
-## The four tiers
+## The tiers
 
 ```
-Layer 4 — apps        REMOVED 2026-09-05. Was: hecate-app-martha,
-                      hecate-app-rag, hecate-app-scribe, … — user-facing
-                      plugins, per-identity, per-session, living inside
-                      hecate-daemon's BEAM as in_vm plugins. The
-                      in-VM-plugin hosting mechanism no longer exists;
-                      whether any individual app moved elsewhere is not
-                      tracked here.
-
-Layer 3 — session     REMOVED 2026-09-05. Was: hecate-daemon — one per
-                      human identity, plugin host, owner of the
-                      desktop-shell connection, SSE streams, and the
-                      user's local Macula client pool. Ran on user
-                      laptops + MaculaOS edge devices.
-
-Layer 2 — services    hecate-services/hecate-{om, rag, dns, git, llm, …}
+Layer 2 — services    macula-services/mcl-{om, rag, git, …}
                       Always-on, multi-tenant, realm-bound, each with
                       its own SERVICE-PRINCIPAL identity.
                       EDGE-FIRST: hosted wherever the operator puts
                       them (BEAM cluster, relay box, lab machine,
                       laptop, Cerbo) and DIALLING OUT to a station.
 
-Layer 1 — identity    hecate-realm / macula-realm
+Layer 1 — identity    macula-realm
                       Issues human realm-membership certs AND service
                       principal certs.
 
@@ -80,10 +39,9 @@ Layer 0 — kernel      macula-station
                       Realm-agnostic. One per node, every node.
 ```
 
-Every node runs Layer 0 (`macula-station`). Layer 1 (`hecate-realm`)
+Every node runs Layer 0 (`macula-station`). Layer 1 (`macula-realm`)
 runs where the realm's stewards put it. Layer 2 services dial out to a
-station from wherever they are hosted. Layers 3 and 4 are removed — see
-the 2026-09-05 amendment above.
+station from wherever they are hosted.
 
 **The cut is lifecycle and identity, never hardware.** What makes
 something Layer 2 is that it runs without a logged-in user and answers
@@ -93,27 +51,6 @@ inbound port and no public address: it dials out over QUIC and the
 station does the peering, the DHT and the routing. That is what lets a
 service behind a domestic NAT be reachable by every other service in
 the realm.
-
-## Why this cut
-
-Three forces pushed the line into existence:
-
-1. **`hecate-daemon` was becoming a grab-bag.** It hosted
-   `serve_llm` (heavy, multi-tenant, always-on), Martha (19-app
-   agent runtime), and UI surfaces (Scribe, IRC, weather, …) in
-   one BEAM. Different lifecycles, different resource shapes,
-   different failure domains — wrong to mix.
-
-2. **Mesh-as-infrastructure needs infrastructure SERVICES.** A
-   federated mesh is not just plumbing for chat — it can host
-   DNS, blob, git, LLM, RAG, build runners, archival. Those are
-   capabilities the realm offers, not apps the user runs. They
-   want their own deployment unit.
-
-3. **The four workload classes in the strategic anchor**
-   (conventional / LLM serving / federated AI / cooperative
-   compute) are all Layer-2 or below. None are Layer-3 or 4.
-   The tier model maps cleanly to the framing we already pitch.
 
 ## Cut criteria
 
@@ -129,10 +66,10 @@ When deciding where a new capability belongs, walk the list:
 - Has its own external dependency (API keys, model weights, …)
 - Translates an external data source (vendor MQTT, file watcher,
   smart-meter readout, IoT gateway, …) into mesh facts. These
-  **ingestion adapters** are L2 by default — never L3 sidecars or
-  L4 plugins. See "Offline operation via reckon-db" below.
+  **ingestion adapters** are L2 by default — never session sidecars or
+  per-user plugins. See "Offline operation via reckon-db" below.
 
-**App (Layer 4)** if **all** of:
+**Client surface (one of the four channels)** if **all** of:
 
 - User-facing UI surface, or a per-session event handler
 - Per-session state only
@@ -141,7 +78,7 @@ When deciding where a new capability belongs, walk the list:
   the actual work)
 
 If you can't decide, default to Layer 2 (be paranoid about the
-grab-bag). It's easier to merge a small service into the daemon
+grab-bag). It's easier to merge a small service into a bigger one
 later than to extract a heavy plugin under load.
 
 ### Format contracts belong in the protocol layer
@@ -163,7 +100,7 @@ downstream storage module to do basic shape checks. If you see
 `reckon_db_*` referenced from `reckon_evoq_*`'s code, the cut is in the
 wrong place — the type moved out of layer.
 
-**Worked example** (2026-05-26): the user-stream-id regex
+**Worked example:** the user-stream-id regex
 `^[a-z]{1,32}-[a-f0-9]{32}$` and its `validate/1` + `new/1` helpers
 lived in `reckon_db_stream_id` (inside the storage backend). Anyone
 wanting to validate or mint stream ids without running reckon-db
@@ -176,23 +113,23 @@ implementation.
 
 Every Layer-2 service:
 
-1. Lives at `github.com/hecate-services/hecate-X`
-2. Implements the `hecate_om_service` behaviour (six callbacks:
+1. Lives at `github.com/macula-services/mcl-<name>`
+2. Implements the `mcl_om_service` behaviour (six callbacks:
    `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`,
    `identity_spec/0`)
-3. Ships as an OCI container to `ghcr.io/hecate-services/hecate-X`
+3. Ships as an OCI container to `ghcr.io/macula-services/mcl-<name>`
 4. Declares a Quadlet unit in `quadlet/` for system-wide
    systemd-managed Podman
 5. Carries a `manifest.json` with `tenancy: realm`,
    `runs_on: infrastructure_node`, and the advertised capability list
 6. Receives a realm-signed service-principal credential at install
-   time, mounted at `/etc/hecate/secrets/service-cert.pem`
+   time, mounted at `/etc/mcl/secrets/service-cert.pem`
 7. Connects to the local `macula-station` and advertises every
    capability via `macula:advertise/5`
 8. Exposes `/health` on loopback (port 8470) for Podman's
    HEALTHCHECK; no externally-routable ports
 
-The substrate library [`hecate-om`](https://github.com/hecate-services/hecate-om)
+The substrate library [`mcl-om`](https://github.com/macula-services/mcl-om)
 provides 1, 7, and 8 for free. Services just implement the
 behaviour and wire their `_mesh_rpc.erl` dispatch table.
 
@@ -227,7 +164,7 @@ external source ──► subscriber slice ──► command
                         macula:publish/4
 ```
 
-The substrate already supports this directly. `hecate_om_service`
+The substrate already supports this directly. `mcl_om_service`
 declares two optional callbacks:
 
 ```erlang
@@ -235,7 +172,7 @@ declares two optional callbacks:
 -callback data_dir() -> string().   %% on-disk root for the store
 ```
 
-When both are exported, `hecate_om:boot/1` starts a `single`-mode
+When both are exported, `mcl_om:boot/1` starts a `single`-mode
 reckon-db store at `<data_dir>/<store_id>/` and an evoq subscription
 **before** the service's own `start/1` fires. Producer-only services
 (no event store) omit both callbacks and pay nothing.
@@ -262,12 +199,12 @@ has its own keypair and a realm-signed credential. The metaphor:
 > issuer (the town clerk), narrower scope. The library doesn't
 > borrow Alice's citizen ID to lend her a book.
 
-In Hecate terms:
+In Macula terms:
 
 - **Citizens** (humans, via whichever of the four channels in
-  [HECATE_AUTH_MODEL.md](HECATE_AUTH_MODEL.md) they're using) carry
+  [AUTH_MODEL.md](AUTH_MODEL.md) they're using) carry
   realm-membership certs.
-- **Institutions** (hecate-services/*) carry service-principal
+- **Institutions** (macula-services/*) carry service-principal
   certs, also signed by the realm, but with narrower `actions`
   and `resources`.
 - A user logging out doesn't take services with them. Services
@@ -275,18 +212,18 @@ In Hecate terms:
 
 v1 implementation: long-lived service-principal certs provisioned
 by a realm-admin script. v2 (when policy + UCAN delegation land):
-short-lived UCANs auto-rotated against a `hecate-realm` HTTP
-endpoint. The swap-in lives entirely behind `hecate_om_identity`;
+short-lived UCANs auto-rotated against a `macula-realm` HTTP
+endpoint. The swap-in lives entirely behind `mcl_om_identity`;
 consumers don't notice.
 
-See `hecate-om/guides/identity_model.md` for the full
+See `mcl-om/guides/identity_model.md` for the full
 town/library walkthrough and the v1 / v2 trigger.
 
 ## Anti-patterns
 
 Three things this model explicitly forbids:
 
-1. **No user-bound services.** A `hecate-rag` that exists "for
+1. **No user-bound services.** A `mcl-rag` that exists "for
    Alice", starts when Alice logs in and answers with Alice's
    citizen cert is wrong. The fault is the binding, not the box.
    That same service on that same laptop, running under a
@@ -303,13 +240,9 @@ Three things this model explicitly forbids:
    plumbing". The realm coordinates through Macula RPC, not a
    service framework.
 4. **No bridging L2-shaped work through a session-tier HTTP API.**
-   `hecate-daemon` (now removed) used to expose exactly this
-   temptation via `/api/mesh/publish`, `/api/mesh/call`, etc. The
-   specific daemon is gone, but the principle outlives it: an L2
-   service uses the Macula SDK directly against its local
-   `macula-station` — no HTTP middleman, no Layer-3/session
-   dependency, correct identity — regardless of what, if anything,
-   ever plays a session-tier role again. See
+   An L2 service uses the Macula SDK directly against its local
+   `macula-station` — no HTTP middleman, no per-user session
+   dependency, correct identity. See
    `skills/antipatterns/integration.md` Demon 50.
 
 ## Placement rules
@@ -359,14 +292,14 @@ useful.
 
 ## How callers reach services
 
-A plugin (Layer 4) or an agent inside the daemon (Layer 3) reaches
-a Layer-2 service via Macula RPC:
+A caller — a terminal, a coding agent, an operator website, a mobile
+app — reaches a Layer-2 service via Macula RPC:
 
 ```erlang
 %% Unary
 {ok, Result} = macula:call(
     LocalPool, Realm,
-    <<"hecate-rag.answer_query">>,
+    <<"mcl-rag.answer_query">>,
     #{query => Q, top_k => 5},
     Timeout
 ).
@@ -374,7 +307,7 @@ a Layer-2 service via Macula RPC:
 %% Streaming
 {ok, Stream} = macula:call_stream(
     LocalPool, Realm,
-    <<"hecate-llm.stream_chat">>,
+    <<"mcl-llm.stream_chat">>,
     #{model => Model, messages => Msgs},
     #{}
 ).
@@ -390,48 +323,47 @@ own credential; the realm verifies both sides.
 | Prefix | Means | Examples |
 |--------|-------|----------|
 | `macula-` | Realm-agnostic infrastructure (Layer 0–1) | `macula-station`, `macula-realm`, `macula-rag` (federation protocol — uses SDK), `macula-mcp` |
-| `hecate-` | Realm-aware service (Layer 2; Layers 3-4 removed 2026-09-05) | `hecate-realm`, `hecate-rag`, `hecate-llm`, `hecate-app-martha` |
+| `mcl-` | Realm-aware service (Layer 2) | `mcl-om`, `mcl-rag`, `mcl-git`, `mcl-search`, `mcl-dns`, `mcl-llm`, … |
 
 The `macula-X` prefix means *"depends on the Macula SDK"*, not
 *"runs inside macula-station"*. `macula-rag` (the federation
 library) runs in Layer 2 service consumers as a dep, alongside
-`hecate-rag` itself.
+`mcl-rag` itself.
 
-## What lives in `hecate-services/` (as of 2026-05-18)
+## What lives in `macula-services/`
 
 | Repo | Role |
 |------|------|
-| `hecate-om` | Substrate library — `hecate_om_service` behaviour, identity loader, capability advertiser, `/health` handler, container + Quadlet templates |
-| `hecate-rag` | Retrieval-augmented generation over the realm's corpora |
-| `hecate-dns` | DNS-over-mesh name resolution |
-| `hecate-git` | Git-over-mesh repository server (companion to `git-remote-mesh`) |
-| `hecate-llm` | LLM gateway (Anthropic / OpenAI / Google / Ollama) |
+| `mcl-om` | Substrate library — `mcl_om_service` behaviour, identity loader, capability advertiser, `/health` handler, container + Quadlet templates |
+| `mcl-rag` | Retrieval-augmented generation over the realm's corpora |
+| `mcl-dns` | DNS-over-mesh name resolution |
+| `mcl-git` | Git-over-mesh repository server (companion to `git-remote-mesh`) |
+| `mcl-llm` | LLM gateway (Anthropic / OpenAI / Google / Ollama) |
 
 Future watchlist (not yet built):
-- `hecate-blob` — content-addressed blob store
-- `hecate-cron` — scheduled task runner
-- `hecate-runner` — CI / build runner
-- `hecate-faber` — federated neuroevolution
-- `hecate-tools` — agent tool surfaces (web_fetch, web_search,
-  synthesize_speech, transcribe_audio, …) — the bits dropped from
-  `hecate-llm`'s extract on 2026-05-18
-- `hecate-victron` — Victron Venus OS ingestion adapter
+- `mcl-blob` — content-addressed blob store
+- `mcl-cron` — scheduled task runner
+- `mcl-runner` — CI / build runner
+- `mcl-faber` — federated neuroevolution
+- `mcl-tools` — agent tool surfaces (web_fetch, web_search,
+  synthesize_speech, transcribe_audio, …) — the bits split out of
+  `mcl-llm`'s extract
+- `mcl-victron` — Victron Venus OS ingestion adapter
   (dbus-flashmq MQTT → mesh facts; reckon-db offline-first)
-- `hecate-openems` — OpenEMS Edge ingestion adapter
+- `mcl-openems` — OpenEMS Edge ingestion adapter
   (JSON-RPC over WS → mesh facts; reckon-db offline-first)
-- `hecate-shelly` — Shelly Pro local-MQTT ingestion adapter
+- `mcl-shelly` — Shelly Pro local-MQTT ingestion adapter
 
 ## Reading order for a new contributor
 
 1. This file — overall shape
-2. `hecate-om/README.md` — the substrate
-3. `hecate-om/guides/service_anatomy.md` — what every service looks like
-4. `hecate-om/guides/identity_model.md` — town / library metaphor + v1/v2
-5. `hecate-om/guides/container_deployment.md` — how a service lands on a node
-6. Pick one shipped service (`hecate-rag` is the most fleshed-out)
+2. `mcl-om/README.md` — the substrate
+3. `mcl-om/guides/service_anatomy.md` — what every service looks like
+4. `mcl-om/guides/identity_model.md` — town / library metaphor + v1/v2
+5. `mcl-om/guides/container_deployment.md` — how a service lands on a node
+6. Pick one shipped service (`mcl-rag` is the most fleshed-out)
    and read it end-to-end
 
-Memory references for context:
-- `[[project_hecate_services_tier]]` — the migration log
+Memory reference for context:
 - `[[feedback_stations_route_daemons_publish]]` — why Layer 0 is
   realm-agnostic

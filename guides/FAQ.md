@@ -30,11 +30,11 @@ sync with it — when in doubt, follow the link.
 | How do I develop an edge service in Rust? | [`FAQ_DEVELOP_EDGE_SERVICES_RUST.md`](FAQ_DEVELOP_EDGE_SERVICES_RUST.md) |
 | How do I develop an edge service in C# or F# (.NET)? | [`FAQ_DEVELOP_EDGE_SERVICES_DOTNET.md`](FAQ_DEVELOP_EDGE_SERVICES_DOTNET.md) |
 | How do I develop an edge service in PHP? | [`FAQ_DEVELOP_EDGE_SERVICES_PHP.md`](FAQ_DEVELOP_EDGE_SERVICES_PHP.md) |
-| How do I add event sourcing (reckon-db + evoq) to a new hecate service? | [`FAQ_ADD_EVENT_SOURCING.md`](FAQ_ADD_EVENT_SOURCING.md) |
+| How do I add event sourcing (reckon-db + evoq) to a new mcl-* service? | [`FAQ_ADD_EVENT_SOURCING.md`](FAQ_ADD_EVENT_SOURCING.md) |
 | How do I query a read model (QRY+PRJ)? | [`FAQ_QUERY_READ_MODELS.md`](FAQ_QUERY_READ_MODELS.md) |
 | How do I wire a Process Manager for cross-domain integration? | [`FAQ_WIRE_A_PROCESS_MANAGER.md`](FAQ_WIRE_A_PROCESS_MANAGER.md) |
 | How do I call event sourcing from a non-BEAM app (Go/Rust/C#+F#/PHP)? | [`FAQ_CALL_RECKON_GATEWAY.md`](FAQ_CALL_RECKON_GATEWAY.md) |
-| How do I deploy my own hecate service to the fleet? | [`FAQ_DEPLOY_HECATE_SERVICES.md`](FAQ_DEPLOY_HECATE_SERVICES.md) |
+| How do I deploy my own mcl-* service to the fleet? | [`FAQ_DEPLOY_SERVICES.md`](FAQ_DEPLOY_SERVICES.md) |
 | How do I build a mobile app for the mesh? | [`FAQ_BUILD_MOBILE_APPS.md`](FAQ_BUILD_MOBILE_APPS.md) |
 | How do I connect a Phoenix LiveView site to the mesh? | [`FAQ_CONNECT_PHOENIX_LIVEVIEW.md`](FAQ_CONNECT_PHOENIX_LIVEVIEW.md) |
 | How do I connect a Blazor site to the mesh? | [`FAQ_CONNECT_BLAZOR.md`](FAQ_CONNECT_BLAZOR.md) — ⚠ draft, no prior art exists yet |
@@ -74,7 +74,7 @@ FAQ_JOIN_THE_MESH           — the station you connect to
                 ├── FAQ_WIRE_A_PROCESS_MANAGER — react to another domain's event
                 ├── FAQ_CALL_RECKON_GATEWAY    — same event store, no BEAM required
                 │
-                ├── FAQ_DEPLOY_HECATE_SERVICES         — ship it
+                ├── FAQ_DEPLOY_SERVICES         — ship it
                 │
                 └── client-shape patterns, all built on the SDKs above:
                       FAQ_BUILD_MOBILE_APPS            — Android/iOS via macula-rust's UniFFI
@@ -85,6 +85,6 @@ FAQ_JOIN_THE_MESH           — the station you connect to
 Railroad terms used throughout, if unfamiliar: `macula` SDK = the
 **track** (QUIC/HTTP-3 transport), `macula-station` = the **station**
 (DHT/SWIM/routing), `macula-realm` = the **train company** (identity and
-certs), a hecate-service = a **passenger** (outbound-only,
+certs), a mcl-* service = a **passenger** (outbound-only,
 connects out, never accepts inbound connections directly). See
 [`GLOSSARY.md`](../GLOSSARY.md) for the full canonical vocabulary.

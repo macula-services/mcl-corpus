@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 History Narration in Operational Docs
 
 **Date:** 2026-09-01
-**Origin:** Martha roster redesign session — `roles/AGENT_ARCHITECTURE.md`,
+**Origin:** the crew roster redesign session — `roles/AGENT_ARCHITECTURE.md`,
 `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md`, and four role files all
 picked up the same habit independently, in the same afternoon.
 
@@ -29,21 +29,21 @@ stating the current fact:
 **Corrected 2026-09-01, twice.** First pass: the original design routed
 every agent call through `serve_llm` unconditionally — wrong once roles
 are exposed to arbitrary MCP harnesses. Second pass, a real mistake
-caught the same day: the first correction still had `hecate-martha`
-calling a model directly for "background" work...
+caught the same day: the first correction still described a removed
+backend service calling a model directly for "background" work...
 ```
 
 This reads fine the moment it's written, because the author (human or
 agent) just lived through the correction and the story is fresh. It
 reads as noise to everyone else: a reader who wants to know "does
-`hecate-martha` call a model" has to parse two abandoned positions to
+any service call a model" has to parse two abandoned positions to
 find the one that's still true. And it doesn't even stay accurate on its
 own terms — this exact passage needed a **third** correction later the
 same day, at which point "corrected... twice" was itself wrong, and nothing
 caught that until a human did.
 
 **Why this one is worse than an ordinary stale comment**: this corpus is
-the retrieval source for `hecate-rag`. A role querying "how does model
+the retrieval source for `mcl-rag`. A role querying "how does model
 routing work" gets back whatever text is there — it doesn't know to
 discount the "first pass said X, that was wrong" clause as scaffolding
 around the real answer. Narration written for a human mid-conversation

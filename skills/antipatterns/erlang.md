@@ -86,11 +86,11 @@ row_to_map_test() ->
 
 Command modules used function calls as `maps:get/3` defaults:
 ```erlang
-%% WRONG — hecate_identity:agent_id() is ALWAYS called
-SubmitterId = maps:get(<<"submitter_id">>, Map, hecate_identity:agent_id()),
+%% WRONG — identity_module:agent_id() is ALWAYS called
+SubmitterId = maps:get(<<"submitter_id">>, Map, identity_module:agent_id()),
 ```
 
-In Erlang, `maps:get(Key, Map, Default)` evaluates `Default` **before** checking if `Key` exists. When `Default` is a function call to a gen_server (`hecate_identity`), it crashes with `noproc` if that server isn't running — even when the key IS present in the map.
+In Erlang, `maps:get(Key, Map, Default)` evaluates `Default` **before** checking if `Key` exists. When `Default` is a function call to a gen_server (`identity_module`), it crashes with `noproc` if that server isn't running — even when the key IS present in the map.
 
 ### The Correct Pattern
 
@@ -98,7 +98,7 @@ In Erlang, `maps:get(Key, Map, Default)` evaluates `Default` **before** checking
 %% CORRECT — lazy evaluation via case
 SubmitterId = case maps:find(<<"submitter_id">>, Map) of
     {ok, V} -> V;
-    error -> hecate_identity:agent_id()
+    error -> identity_module:agent_id()
 end,
 ```
 
@@ -117,7 +117,7 @@ end,
 | `maps:get(k, M, undefined)` | Yes | Atom literal |
 | `maps:get(k, M, 0)` | Yes | Integer literal |
 | `maps:get(k, M, gen_server:call(...))` | **NO** | Evaluated even when key exists |
-| `maps:get(k, M, hecate_identity:agent_id())` | **NO** | gen_server call, crashes if down |
+| `maps:get(k, M, identity_module:agent_id())` | **NO** | gen_server call, crashes if down |
 | `maps:get(k, M, os:timestamp())` | **NO** | Side effect always runs |
 
 ### The Lesson
@@ -225,7 +225,7 @@ maybe_start_emitter_pool(StoreId, Key, Sub, _SupPid) ->
 
 **Date exorcised:** 2026-03-06
 **Where it appeared:** `project_launcher_store:create_tables/1` and 3 projection modules
-**Cost:** `badarg` crash on startup — daemon crash-loops, never boots
+**Cost:** `badarg` crash on startup — the service crash-loops, never boots
 
 ### The Lie
 
@@ -285,9 +285,9 @@ For SQL DDL (CREATE TABLE), use empty string defaults — the actual emoji value
 
 ## 🔥 Demon 60: Mesh RPC Payloads Arrive Atom-Keyed AND CBOR-Value-Wrapped
 
-**Date exorcised:** 2026-09-01 (two-part fix: keys in `hecate_om` 0.19.0, values in 0.20.0 — see "Part 2" below, found live only after the key fix alone still didn't resolve the symptom)
-**Where it appeared:** 12+ entry points across `hecate-rag` (`route/2` clauses, every `*_v1.erl` command's `from_map/1`, `search_chunks_semantic`, `list_chunks_by_source`, `list_sources_page`, `maybe_classify_topics`) — `hecate_om_wire.erl`'s own moduledoc names `hecate-dns`/`-git`/`-llm`/`-rag` as the same "zero tolerance" victims for the key half; the value half lived inside `hecate_om_wire.erl` itself, so it affects every consumer of `field/2,3` project-wide, not just the services named there
-**Cost:** Most of `hecate-rag`'s mesh RPC surface silently broken for real callers, for BOTH reasons simultaneously — three failure shapes for the key mismatch, and a fourth (a correctly-found field that's still the wrong Erlang shape) for the value one — none of them looking like "this request was well-formed and still failed"
+**Date exorcised:** 2026-09-01 (two-part fix: keys in `mcl_om` 0.19.0, values in 0.20.0 — see "Part 2" below, found live only after the key fix alone still didn't resolve the symptom)
+**Where it appeared:** 12+ entry points across `mcl-rag` (`route/2` clauses, every `*_v1.erl` command's `from_map/1`, `search_chunks_semantic`, `list_chunks_by_source`, `list_sources_page`, `maybe_classify_topics`) — `mcl_om_wire.erl`'s own moduledoc names `mcl-dns`/`-git`/`-llm`/`-rag` as the same "zero tolerance" victims for the key half; the value half lived inside `mcl_om_wire.erl` itself, so it affects every consumer of `field/2,3` project-wide, not just the services named there
+**Cost:** Most of `mcl-rag`'s mesh RPC surface silently broken for real callers, for BOTH reasons simultaneously — three failure shapes for the key mismatch, and a fourth (a correctly-found field that's still the wrong Erlang shape) for the value one — none of them looking like "this request was well-formed and still failed"
 
 ## Part 1: The Key Lie
 
@@ -295,14 +295,14 @@ For SQL DDL (CREATE TABLE), use empty string defaults — the actual emoji value
 
 ### What Happened
 
-macula's frame decoder round-trips an inbound RPC payload's keys through `binary_to_existing_atom/1` on the way in. A caller that sends `{"corpus_id": "x"}` over the wire gets it delivered server-side as `#{corpus_id => <<"x">>}` — an **atom**-keyed map — not `#{<<"corpus_id">> => <<"x">>}`. Every handler in `hecate-rag` was written assuming the opposite, and this produced three different-looking failures depending on exactly where the assumption lived:
+macula's frame decoder round-trips an inbound RPC payload's keys through `binary_to_existing_atom/1` on the way in. A caller that sends `{"corpus_id": "x"}` over the wire gets it delivered server-side as `#{corpus_id => <<"x">>}` — an **atom**-keyed map — not `#{<<"corpus_id">> => <<"x">>}`. Every handler in `mcl-rag` was written assuming the opposite, and this produced three different-looking failures depending on exactly where the assumption lived:
 
 ```erlang
 %% route/2 destructuring the key directly (get_document_verbatim,
 %% get_chunk_by_id, get_source_by_id) -- the clause's OWN pattern fails
 %% to match, Erlang falls through every other clause, and lands on the
 %% generic catch-all:
-route(<<"hecate-rag.get_document_verbatim">>, #{<<"source_path">> := Path}) ->
+route(<<"mcl-rag.get_document_verbatim">>, #{<<"source_path">> := Path}) ->
     get_document_verbatim:handle(Path);
 ...
 route(Other, _P) ->
@@ -342,19 +342,19 @@ handle(Params) when is_map(Params) -> {error, query_text_or_vector_required}.
 
 ### The Correct Pattern
 
-Use `hecate_om_wire:field/2,3` (ships with `hecate_om`) everywhere a payload's own field is read — it tries the atom form first, then the binary form, so it's correct for BOTH a mesh-delivered (atom-keyed) payload and an HTTP/jsx-decoded (binary-keyed only) payload hitting the same code path:
+Use `mcl_om_wire:field/2,3` (ships with `mcl_om`) everywhere a payload's own field is read — it tries the atom form first, then the binary form, so it's correct for BOTH a mesh-delivered (atom-keyed) payload and an HTTP/jsx-decoded (binary-keyed only) payload hitting the same code path:
 
 ```erlang
 %% route/2 -- pass the whole map through instead of destructuring in
 %% the clause head, and look the field up where it's actually needed:
-route(<<"hecate-rag.get_document_verbatim">>, P) ->
-    get_document_verbatim:handle(hecate_om_wire:field(<<"source_path">>, P));
+route(<<"mcl-rag.get_document_verbatim">>, P) ->
+    get_document_verbatim:handle(mcl_om_wire:field(<<"source_path">>, P));
 
 %% from_map/1 -- dispatch on the field's presence via a second function
 %% clause (idiomatic, no case/if) instead of pattern-matching it in the
 %% head:
 from_map(Map) when is_map(Map) ->
-    from_map_(hecate_om_wire:field(<<"corpus_id">>, Map), Map);
+    from_map_(mcl_om_wire:field(<<"corpus_id">>, Map), Map);
 from_map(_) ->
     {error, missing_aggregate_id}.
 
@@ -362,7 +362,7 @@ from_map_(undefined, _Map) -> {error, missing_aggregate_id};
 from_map_(Id, Map) ->
     {ok, #detect_corpus_change_v1{
         corpus_id = Id,
-        source_path = hecate_om_wire:field(<<"source_path">>, Map),
+        source_path = mcl_om_wire:field(<<"source_path">>, Map),
         ...
     }}.
 ```
@@ -371,7 +371,7 @@ Deploying this fix alone did NOT resolve the live symptom — see Part 2. The re
 
 ## Part 2: The Value Lie
 
-"Now that `hecate_om_wire:field/2` finds the right key, the value it returns is the plain Erlang term I asked for."
+"Now that `mcl_om_wire:field/2` finds the right key, the value it returns is the plain Erlang term I asked for."
 
 ### What Happened
 
@@ -381,11 +381,11 @@ After Part 1 shipped, `get_document_verbatim`/`get_source_by_id`/`get_chunk_by_i
 #{source_path => {text, <<"hecate-corpus/CODEX.md">>}}
 ```
 
-The key was exactly right. The VALUE was wrapped in a 2-tuple. Per `macula_record_cbor`'s own documented value representation, a JSON string sent as an RPC arg is encoded as a CBOR text string (major type 3), which decodes to `{text, binary()}` in Erlang — a bare `binary()` is reserved for a CBOR BYTE string (major type 2), a genuinely different wire type CBOR itself distinguishes and Erlang binaries alone cannot. `hecate_om_wire:field/2,3` found the key correctly and returned the tuple unchanged, so every `is_binary/1` guard downstream kept failing — indistinguishable, again, from a missing field. This recurses: a `topics :: [binary()]` field decodes to a list of `{text, _}` tuples, and a `hits :: [map()]` field (a caller round-tripping a prior response's hits back in) decodes to a list of maps whose OWN values need the identical unwrap.
+The key was exactly right. The VALUE was wrapped in a 2-tuple. Per `macula_record_cbor`'s own documented value representation, a JSON string sent as an RPC arg is encoded as a CBOR text string (major type 3), which decodes to `{text, binary()}` in Erlang — a bare `binary()` is reserved for a CBOR BYTE string (major type 2), a genuinely different wire type CBOR itself distinguishes and Erlang binaries alone cannot. `mcl_om_wire:field/2,3` found the key correctly and returned the tuple unchanged, so every `is_binary/1` guard downstream kept failing — indistinguishable, again, from a missing field. This recurses: a `topics :: [binary()]` field decodes to a list of `{text, _}` tuples, and a `hits :: [map()]` field (a caller round-tripping a prior response's hits back in) decodes to a list of maps whose OWN values need the identical unwrap.
 
 ### The Correct Pattern (Part 2)
 
-Fixed inside `hecate_om_wire.erl` itself (`hecate_om` 0.20.0), so every existing `field/2,3` call site gets it automatically — no changes needed at any of the Part 1 call sites:
+Fixed inside `mcl_om_wire.erl` itself (`mcl_om` 0.20.0), so every existing `field/2,3` call site gets it automatically — no changes needed at any of the Part 1 call sites:
 
 ```erlang
 -spec unwrap(term()) -> term().
@@ -406,13 +406,13 @@ lookup(AtomKey, BinKey, Payload, Default) ->
 
 1. `from_map/1` *reads* as "decode this map from the wire," so writing it as "the wire always sends binary keys" feels self-evidently true — it's exactly backwards for macula specifically.
 2. The four failure shapes across both parts (`unknown_method`, a believable domain error, a believable "you forgot a field" error, and Part 2's "found the key, still says missing") are all indistinguishable from a genuinely different, unrelated bug — none of them look like an argument-decoding problem, so debugging effort gets spent everywhere except the actual mechanism. A multi-hour investigation chased tombstone races, gossip propagation lag, and ADVERTISE-burst rate limits before Part 1 was even found — all plausible, all wrong.
-3. `hecate_om_wire.erl` — the Part 1 fix already existed, shipped with `hecate_om`, and its own moduledoc names this exact codebase as a known victim — but nothing forced any of the affected `route/2`/`from_map/1` call sites to actually adopt it. A correct library sitting unused fixes nothing.
+3. `mcl_om_wire.erl` — the Part 1 fix already existed, shipped with `mcl_om`, and its own moduledoc names this exact codebase as a known victim — but nothing forced any of the affected `route/2`/`from_map/1` call sites to actually adopt it. A correct library sitting unused fixes nothing.
 4. A test that reaches a downstream, domain-shaped error looks like a passing test at a glance. `detect_corpus_change_from_map_does_not_silently_lose_a_real_corpus_id_test` — asserting the result is NOT `{error, missing_aggregate_id}` given a real corpus_id — is the shape of test Part 1 needed; a test that only checks "does this return an error tuple of SOME kind" would pass on both the broken and fixed code.
 5. Verifying Part 1's fix worked "in isolation" (a direct `erl -pa` call, or a unit test hand-constructing an atom-keyed map with plain binary values) proved the LOGIC was correct for the shape it was tested against — but that hand-built shape wasn't the real wire shape. Only a live diagnostic against the actual running system surfaced the `{text, _}` wrapping; no amount of reasoning about the fix from first principles found it, because the fix was reasoning about a payload shape that didn't match what was actually on the wire.
 
 ### The Lesson
 
-> **Any function reading a field out of a payload that arrived over the mesh — `route/2` clauses, every `from_map/1`, every `handle/1` — must use `hecate_om_wire:field/2,3` (>= 0.20.0), never a hard `#{<<"key">> := V}` pattern or `maps:get(<<"key">>, Map, Default)` literal. If `hecate_om_wire.erl`'s own moduledoc names your service, grep your `route/2` and every `from_map/1` for `#{<<"` in a function head — don't wait to find each one live.**
+> **Any function reading a field out of a payload that arrived over the mesh — `route/2` clauses, every `from_map/1`, every `handle/1` — must use `mcl_om_wire:field/2,3` (>= 0.20.0), never a hard `#{<<"key">> := V}` pattern or `maps:get(<<"key">>, Map, Default)` literal. If `mcl_om_wire.erl`'s own moduledoc names your service, grep your `route/2` and every `from_map/1` for `#{<<"` in a function head — don't wait to find each one live.**
 > **A fix that's correct against a hand-constructed test payload is not yet confirmed correct against the real wire shape — when a fix doesn't resolve the live symptom, get a live diagnostic of the ACTUAL payload before revising the theory further. Guessing from documentation and source code alone found Part 1; only reading real bytes off the wire found Part 2.**
 > **When a fresh finding overturns your own recent conclusion mid-investigation, say so plainly and explain the mechanism precisely, rather than quietly folding it in as if it were expected.**
 
@@ -421,7 +421,7 @@ lookup(AtomKey, BinKey, Payload, Default) ->
 ## 🔥🔥🔥 Demon 61: The Store That Stores Without Indexing
 
 **Date:** 2026-09-02
-**Repo:** hecate-services/hecate-rag (barrel: `barrel_docdb` + `barrel_vectordb`)
+**Repo:** macula-services/mcl-rag (barrel: `barrel_docdb` + `barrel_vectordb`)
 
 ### The Lie
 

@@ -176,12 +176,11 @@ Generate:
 - [ ] `src/announce_capability/maybe_announce_capability.erl`
 - [ ] `src/announce_capability/announce_capability_api.erl` — API handler (see CMD API Template)
 - [ ] `src/announce_capability/announce_capability_responder_v1.erl`
-- [ ] `src/announce_capability/emit_capability_announced_to_mesh.erl`
-- [ ] `src/announce_capability/emit_capability_announced_to_pg.erl` — internal emitter
-- [ ] `test/emit_capability_announced_to_pg_tests.erl` — emitter test
+- [ ] `src/announce_capability/emit_capability_announced_to_mesh.erl` — mesh emitter
+- [ ] `test/emit_capability_announced_to_mesh_tests.erl` — emitter test
 - [ ] Update `manage_capabilities_sup.erl` to include desk supervisor
 - [ ] Update `rebar.config` src_dirs
-- [ ] Add route to `hecate_api_routes.erl`
+- [ ] Add route to `mcl_api_routes.erl`
 
 ### New QRY Desk
 
@@ -191,13 +190,13 @@ Given: `noun=capability`, `query_app=query_capabilities`
 - [ ] `src/get_capabilities_page/get_capabilities_page.erl` — query module
 - [ ] `src/get_capabilities_page/get_capabilities_page_api.erl` — API handler (see QRY Paged API Template)
 - [ ] Update `rebar.config` src_dirs
-- [ ] Add route to `hecate_api_routes.erl`: `GET /api/capabilities`
+- [ ] Add route to `mcl_api_routes.erl`: `GET /api/capabilities`
 
 **For single-by-id query:**
 - [ ] `src/get_capability_by_mri/get_capability_by_mri.erl` — query module
 - [ ] `src/get_capability_by_mri/get_capability_by_mri_api.erl` — API handler (see QRY By-ID API Template)
 - [ ] Update `rebar.config` src_dirs
-- [ ] Add route to `hecate_api_routes.erl`: `GET /api/capabilities/:mri`
+- [ ] Add route to `mcl_api_routes.erl`: `GET /api/capabilities/:mri`
 
 ### New PRJ Desk
 
@@ -221,7 +220,7 @@ Given: `src_event=llm_model_detected`, `action=announce`, `target=capability`
 Generate a SIBLING SLICE in the target CMD app (not nested inside the desk):
 
 - [ ] `src/on_llm_model_detected_announce_capability/on_llm_model_detected_announce_capability_sup.erl` (single-worker supervisor)
-- [ ] `src/on_llm_model_detected_announce_capability/on_llm_model_detected_announce_capability.erl` (gen_server: `pg:join` in `init/1`, spawn worker for dispatch in `handle_info`)
+- [ ] `src/on_llm_model_detected_announce_capability/on_llm_model_detected_announce_capability.erl` (evoq_event_handler: declares `interested_in/0`, dispatches in `handle_event/4`)
 - [ ] Add `on_llm_model_detected_announce_capability_sup` as a child of the **domain supervisor** (`{domain}_sup.erl`), peer to desk sups — NOT a child of `announce_capability_desk_sup.erl`
 
 ---

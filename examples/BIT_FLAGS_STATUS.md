@@ -469,4 +469,4 @@ This example teaches:
 - Flag definition rules (powers of 2)
 
 *Date: 2026-02-08*
-*Origin: Hecate daemon aggregate patterns*
+*Origin: a division's aggregate patterns*

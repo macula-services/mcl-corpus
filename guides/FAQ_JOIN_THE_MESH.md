@@ -403,7 +403,7 @@ guarantee.
   the full version of this document, with citations into the actual source
 - [`macula-io/macula-station/docs/CASCADE_INVESTIGATION.md`](https://github.com/macula-io/macula-station/blob/main/docs/CASCADE_INVESTIGATION.md) —
   a real production incident and its fix
-- [FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md) —
+- [FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md) —
   the equivalent walkthrough for a service, not a station
 - [FAQ: How do I run macula-cli?](FAQ_MACULA_CLI.md) — connecting to a
   station as a client, without running one yourself

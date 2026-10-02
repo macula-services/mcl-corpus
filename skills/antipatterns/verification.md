@@ -18,7 +18,7 @@ believing the technical mistakes were caught.*
 ## 🔥🔥🔥 Demon 53: Comments That State Intent as Fact
 
 **Date exorcised:** 2026-08-07
-**Where it appeared:** `hecate-dronex` (four files in one day), `beam-campus-net/CLAUDE.md`
+**Where it appeared:** `a since-removed service` (four files in one day), `beam-campus-net/CLAUDE.md`
 **Cost:** Every island in an archipelago restarted its population from seed on
 every deploy, for weeks, while a module header explained in detail how it did not.
 
@@ -71,7 +71,7 @@ in tests. When in doubt, write less prose: **a shorter comment cannot be as wron
 ## 🔥 Demon 54: A Test for the Name and None for the Fold
 
 **Date exorcised:** 2026-08-07
-**Where it appeared:** `hecate-dronex/apps/hecate_dronex/src/breed_a_roster/roster_log.erl`
+**Where it appeared:** `a since-removed service/apps/removed_service/src/breed_a_roster/roster_log.erl`
 **Cost:** the same as Demon 53 — every lineage, every deploy, for weeks
 
 ### The Lie
@@ -135,7 +135,7 @@ mistake the code made, so the test passes cheerfully beside the bug.
 ReckonDB emitters send records; the consumer called map functions on a tuple; read
 models were permanently empty and nothing errored.*
 
-**2026-08-07, `hecate-dronex`:** `roster_log` read events from the same library,
+**2026-08-07, `a since-removed service`:** `roster_log` read events from the same library,
 called `maps:find/2` on the same record, restored nothing, and reported nothing.
 A different repository, a different author-session, an identical bug.
 
@@ -258,7 +258,7 @@ of `sed -i`, of `grep -c` on a minified file, and of every helpful default.
 ## 🔥 Demon 62: A Test That Passes For a Different Layer's Reason
 
 **Date exorcised:** 2026-09-05
-**Where it appeared:** `hecate-social/hecate-om`, `hecate_om_read_model.erl`'s new
+**Where it appeared:** `macula-services/mcl-om`, `mcl_om_read_model.erl`'s new
 per-database TTL-sweep-config passthrough
 **Cost:** would have shipped, standing green, a passthrough that did nothing —
 caught before merge, not after, only because the author checked
@@ -270,7 +270,7 @@ caught before merge, not after, only because the author checked
 ### What Happened
 
 The task: thread `ttl_sweep_interval`/`ttl_sweep_batch` config through
-`hecate_om:boot/1` into `barrel_docdb:create_db/2`'s options, so a service can
+`mcl_om:boot/1` into `barrel_docdb:create_db/2`'s options, so a service can
 opt a database into barrel's own document-expiry sweep. The first test: write a
 doc with `expires_at` a few hundred ms in the future, sleep past it, assert the
 doc is gone.

@@ -136,7 +136,7 @@ If you feel the urge to create one of these:
 apps/
 ├── manage_capabilities/    # Domain
 ├── query_capabilities/     # Domain
-└── hecate_mesh/            # Library (shared infrastructure)
+└── mcl_mesh/            # Library (shared infrastructure)
 ```
 
 Libraries are:

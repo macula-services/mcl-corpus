@@ -12,7 +12,7 @@ stage: stable
 The hard rule first, from `macula-io/CLAUDE.md`: **LiveViews must never
 call backend or library services directly.** A LiveView only ever
 subscribes to `Phoenix.PubSub` and reacts; something else calls the mesh
-and broadcasts the result. `hecate-services/hecate-whiteboard` is a real,
+and broadcasts the result. `macula-services/mcl-whiteboard` is a real,
 live app that follows this, verified below with the actual code — not
 just the documented rule.
 
@@ -53,7 +53,7 @@ defmodule ProjectBoards.BoardLifecycleMeshSubscriber do
       raw = normalize(payload)
       fact = %{board_id: field(:board_id, raw), title: field(:title, raw),
                owner: field(:owner, raw), host: field(:host, raw)}
-      Phoenix.PubSub.broadcast(HecateWhiteboardWeb.PubSub, "boards:remote",
+      Phoenix.PubSub.broadcast(MaculaWhiteboardWeb.PubSub, "boards:remote",
         {:remote_board_event, event_type(topic), fact})
     end
     {:noreply, state}
@@ -82,7 +82,7 @@ should match what your LiveViews actually need to subscribe to.
 
 **Starting the subscriber** goes through a "Starter" `GenServer` in the
 supervision tree, not the raw `:macula_subscriber` directly — it retries
-until `:hecate_om.mesh_handles()` returns `{:ok, pool, realm}` (the mesh
+until `:mcl_om.mesh_handles()` returns `{:ok, pool, realm}` (the mesh
 pool connects asynchronously off its own init path, so a naive one-shot
 start can race it and lose). `:macula_subscriber`'s topic argument is one
 binary, not a list, so the starter spawns **one subscriber process per
@@ -91,7 +91,7 @@ one (`board_lifecycle_mesh_subscriber_starter.ex`):
 
 ```elixir
 def handle_info(:start_subscribers, state) do
-  case :hecate_om.mesh_handles() do
+  case :mcl_om.mesh_handles() do
     {:ok, pool, realm} ->
       Enum.each(
         ProjectBoards.BoardLifecycleMeshSubscriber.topics(),
@@ -131,7 +131,7 @@ end
 
 defp render_board(socket, board_id, board, shapes) do
   if connected?(socket) do
-    Phoenix.PubSub.subscribe(HecateWhiteboardWeb.PubSub, "board:" <> board_id)
+    Phoenix.PubSub.subscribe(MaculaWhiteboardWeb.PubSub, "board:" <> board_id)
   end
   # ... assign board_id, peer presence, etc.
 end
@@ -153,13 +153,13 @@ end
 ```
 
 No clause anywhere calls `:macula`, `:macula_subscriber`, `:macula_publisher`,
-or `:hecate_om` — confirmed by reading the whole module, not assumed from
+or `:mcl_om` — confirmed by reading the whole module, not assumed from
 the rule.
 
 ## Outbound: browser → your app → the mesh
 
 This one has more hops than "LiveView calls a service" suggests, because
-this codebase (like every hecate-service) is event-sourced end to end —
+this codebase (like every mcl-* service) is event-sourced end to end —
 the "service" the rule refers to is really the whole CMD→event→PM chain:
 
 ```
@@ -176,7 +176,7 @@ event. A separate process-manager module,
 **asynchronously** and does the actual mesh publish:
 
 ```elixir
-{:ok, pool, realm} = :hecate_om.mesh_handles()
+{:ok, pool, realm} = :mcl_om.mesh_handles()
 :macula_publisher.start_link(GuideBoardLifecycle.MeshPublisher, pool, realm,
                               topic(event_type), fact, [])
 ```
@@ -190,7 +190,7 @@ defmodule GuideBoardLifecycle.MeshPublisher do
   # mesh-fact emitter in this app -- none of them need to react to the
   # publish outcome, they just want the supervised pid/mesh-fact
   # machinery macula_publisher already provides around a bare
-  # macula:publish/4. Mirrors hecate-tube's tube_mesh_publisher.erl.
+  # macula:publish/4. Mirrors mcl-tube's tube_mesh_publisher.erl.
   @behaviour :macula_publisher
 
   @impl true
@@ -231,7 +231,7 @@ applied to "publish to the mesh" as the cross-cutting concern instead of
    pipeline own it: a PM subscribed to the relevant evoq event type calls
    `:macula_publisher`, not the LiveView or the command handler directly.
 
-Only `hecate-whiteboard` was verified firsthand for this FAQ — treat it as
+Only `mcl-whiteboard` was verified firsthand for this FAQ — treat it as
 one confirmed real example, not a claim that every Phoenix+macula app in
 this workspace follows an identical shape.
 

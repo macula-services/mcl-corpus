@@ -1,11 +1,11 @@
 ---
-title: Hecate Examples Library
+title: Macula Examples Library
 layer: example
 audience: [agent, human]
 stage: stable
 ---
 
-# Hecate Examples Library
+# Macula Examples Library
 
 *Canonical examples for training and documentation.*
 
@@ -13,7 +13,7 @@ stage: stable
 
 ## Purpose
 
-This directory contains well-documented examples of correct patterns used in the Hecate ecosystem. These examples serve as:
+This directory contains well-documented examples of correct patterns used in the Macula ecosystem. These examples serve as:
 
 1. **Training data** for fine-tuning Ollama models
 2. **Reference implementations** for developers
@@ -93,5 +93,5 @@ The examples are written to be self-contained and teachable.
 
 ---
 
-*Maintained by: Hecate Team*
+*Maintained by: Macula Team*
 *Last updated: 2026-02-10*

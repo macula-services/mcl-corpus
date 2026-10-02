@@ -19,7 +19,7 @@ stage: stable
 >
 > Every component in the pubsub chain returned `ok`. The sender said "sent." The relay said "delivered." The receiver said "callback invoked." But no challenger joined.
 >
-> 13 fixes later — across 3 repos (macula, hecate-daemon, macula-boot) — the announcement finally reached the seeker. The root cause wasn't one bug. It was a chain of silent failures, each hidden by the one before it.
+> 13 fixes later — across 3 repos (macula, the removed daemon, macula-boot) — the announcement finally reached the seeker. The root cause wasn't one bug. It was a chain of silent failures, each hidden by the one before it.
 
 ---
 

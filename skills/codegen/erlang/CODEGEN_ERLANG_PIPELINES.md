@@ -220,7 +220,7 @@ dispatched({error, Reason}) ->
     ?LOG_WARNING("[on_card_read] dispatch failed: ~p", [Reason]).
 ```
 
-The PM module stays small — `evoq_event_handler:start_link/2` in the slice's supervisor does the subscription, and the pipeline does the work. (`pg:join` plus a hand-rolled gen_server is the older shape; every shipped PM in this workspace is an `evoq_event_handler` — see `guides/FAQ_WIRE_A_PROCESS_MANAGER.md`.)
+The PM module stays small — `evoq_event_handler:start_link/2` in the slice's supervisor does the subscription, and the pipeline does the work. (A hand-rolled gen_server plus `pg:join` is the retired, pre-mesh shape; every shipped PM in this workspace is an `evoq_event_handler` — see `guides/FAQ_WIRE_A_PROCESS_MANAGER.md`.)
 
 ---
 

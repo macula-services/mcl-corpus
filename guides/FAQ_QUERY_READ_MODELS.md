@@ -10,16 +10,16 @@ stage: stable
 [Back to FAQ index](FAQ.md) · [Back to corpus index](../INDEX.md)
 
 The companion to
-[FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md) —
+[FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md) —
 projections turn events into a read model, and a query desk answers
 questions against it. Real examples below from
-`hecate-services/hecate-whiteboard` and `hecate-services/hecate-stations`.
+`macula-services/mcl-whiteboard` and `macula-services/mcl-stations`.
 
 ---
 
 ## The real `query_{read_model}` app, and its desks
 
-`hecate-whiteboard`'s `query_boards` is a genuinely separate Mix app,
+`mcl-whiteboard`'s `query_boards` is a genuinely separate Mix app,
 with desks named exactly per this workspace's own convention:
 `get_board_snapshot_by_id/`, `get_board_snapshot_by_id_over_mesh/`,
 `list_hosted_boards/`, `list_archived_boards/`, `list_boards_over_mesh/`,
@@ -85,7 +85,7 @@ defmodule ProjectBoards.BoardLifecycleToBoards.BoardLifecycleToBoards do
     end
     updated = apply_event(event_type, existing, data)
     :ets.insert(table, {board_id, updated})
-    Phoenix.PubSub.broadcast(HecateWhiteboardWeb.PubSub, "board:" <> board_id, {:board_updated, updated})
+    Phoenix.PubSub.broadcast(MaculaWhiteboardWeb.PubSub, "board:" <> board_id, {:board_updated, updated})
     {:ok, state}
   end
 
@@ -111,8 +111,8 @@ mesh-worthy, projection decides what's read-model-worthy" split.
 
 ## A second, genuinely different real pattern: no separate QRY app at all
 
-`hecate-services/hecate-stations` does **not** split into a
-`query_stations` app — it's a single `hecate_stations` app whose RPC
+`macula-services/mcl-stations` does **not** split into a
+`query_stations` app — it's a single `mcl_stations` app whose RPC
 handler reads directly from a `barrel_docdb`-backed module, with no
 aggregate, command, or event anywhere in this path:
 
@@ -129,11 +129,11 @@ handle_request(Payload, State) ->
 (`ingest_node_records/`), not by evoq events at all. **The
 `query_{read_model}` app-per-department split is a convention for
 larger, multi-desk services — not an absolute rule.** A single-capability
-service like `hecate-stations` keeping read-model ingestion and
+service like `mcl-stations` keeping read-model ingestion and
 query-answering in one app is a legitimate, real, deployed pattern too.
 
 ## See also
 
-- [FAQ: How do I add event sourcing to a new hecate service?](FAQ_ADD_EVENT_SOURCING.md) — the CMD side these projections consume from
+- [FAQ: How do I add event sourcing to a new mcl-* service?](FAQ_ADD_EVENT_SOURCING.md) — the CMD side these projections consume from
 - [FAQ: Connecting Phoenix LiveView to the Mesh](FAQ_CONNECT_PHOENIX_LIVEVIEW.md) — `board_live.ex` calling `GetBoardSnapshotById`/`GetBoardSnapshotByIdOverMesh` directly
-- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — `hecate_stations_service.erl`'s `read_model_id/0`/`data_dir/0` barrel_docdb pattern
+- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — `mcl_stations_service.erl`'s `read_model_id/0`/`data_dir/0` barrel_docdb pattern

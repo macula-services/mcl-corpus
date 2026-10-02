@@ -1,11 +1,11 @@
 ---
-title: Martha Notation
+title: Role Notation
 layer: role
 audience: [agent]
 stage: stable
 ---
 
-# Martha Notation
+# Role Notation
 
 *Compact inter-agent protocol for the domain pipeline.*
 
@@ -83,7 +83,7 @@ AGG invoice invoice-{invoice_id}
 ```
 APP {app_name} {CMD|PRJ|QRY}
   SUP {sup_name} {strategy}
-    EMIT {event}_v1_to_pg
+    EMIT {event}_v1_to_mesh
     PM {pm_name}
   STORE {store_name}
     TABLE {table} [{col:type} ...]
@@ -95,10 +95,10 @@ Example:
 ```
 APP guide_billing CMD
   SUP guide_billing_sup one_for_one
-    EMIT invoice_issued_v1_to_pg
-    EMIT invoice_paid_v1_to_pg
-    EMIT invoice_voided_v1_to_pg
-    EMIT invoice_archived_v1_to_pg
+    EMIT invoice_issued_v1_to_mesh
+    EMIT invoice_paid_v1_to_mesh
+    EMIT invoice_voided_v1_to_mesh
+    EMIT invoice_archived_v1_to_mesh
     PM on_invoice_paid_notify_customer
 
 APP project_billings PRJ

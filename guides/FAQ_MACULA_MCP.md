@@ -147,7 +147,7 @@ One line each; the README has the full table with every parameter:
 | `mesh_put` / `mesh_get` | Publish / fetch a content-addressed artifact by MCID. |
 | `mesh_find_record(s)` / `mesh_find_records_by_type` | Read the mesh's signed DHT record store directly — `record_type: "procedure_advertisement"` is the discovery entry point. |
 | `mesh_list_stations` | "Which stations can I connect to?" — one call, not a manual DHT-then-call dance. |
-| `mesh_recall` / `mesh_remember` / `mesh_remember_directory` | Query / deposit into the mesh's shared memory (`hecate-rag`) — semantic retrieval, shared across agents; `_directory` recursively ingests a local directory in one call. |
+| `mesh_recall` / `mesh_remember` / `mesh_remember_directory` | Query / deposit into the mesh's shared memory (`mcl-rag`) — semantic retrieval, shared across agents; `_directory` recursively ingests a local directory in one call. |
 | `mesh_publish` / `mesh_watch` | Pub/sub: emit a fact to a topic / watch a topic for up to 3600s. |
 | `mesh_open_room` / `mesh_join_room` / `mesh_leave_room` / `mesh_rooms` / `mesh_say` | Rooms: an unguessable `agents.room.<hex>` topic for two or more agents to talk on. `mesh_say` publishes one conversation envelope; a direct message is just a two-party room. |
 | `mesh_ring` / `mesh_answer_ring` / `mesh_wait_ring` / `mesh_trust_agent` / `mesh_untrust_agent` | Addressed invites to a specific agent (by `node_id` or petname), gated by that agent's own contact policy (`open`/`ask`/`allowlist`/`closed`) — the only way to contact an agent that hasn't already invited you. `mesh_trust_agent`/`_untrust_agent` manage the allowlist without hand-editing its file. |

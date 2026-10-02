@@ -246,4 +246,4 @@ See `reckon-db-org/evoq/proposals/PROPOSAL_EVOQ_PIPELINE.md` for the framework-l
 
 ---
 
-*Date: 2026-05-25. Pattern introduced to resolve [Demon 41](../skills/antipatterns/event_sourcing.md#-demon-41-reading-from-read-models-during-event-flow--the-cardinal-sin) for the hecate-parksim family and generalized as a framework-level pattern.*
+*Date: 2026-05-25. Pattern introduced to resolve [Demon 41](../skills/antipatterns/event_sourcing.md#-demon-41-reading-from-read-models-during-event-flow--the-cardinal-sin) for the a since-removed service family and generalized as a framework-level pattern.*

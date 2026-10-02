@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Technical Names Don't Scream
 
 **Date:** 2026-02-04
-**Origin:** hecate-daemon apprentice
+**Origin:** the removed daemon apprentice
 
 ### The Antipattern
 
@@ -74,7 +74,7 @@ Read your slice name aloud. If it sounds like infrastructure, rename it.
 ## 🔥 Ambiguous Query Module Names
 
 **Date:** 2026-02-10
-**Origin:** hecate-daemon get_venture/list_ventures rename
+**Origin:** the removed daemon get_venture/list_ventures rename
 
 ### The Antipattern
 
@@ -119,7 +119,7 @@ apps/query_ventures/src/
 
 ### Why It Matters
 
-- **Scaling**: `list_ventures` returning 10,000 rows will kill the daemon
+- **Scaling**: `list_ventures` returning 10,000 rows will kill the node
 - **Screaming architecture**: A stranger knows exactly what each module does
 - **Extensibility**: Adding `get_venture_by_name` later doesn't conflict
 - **Client expectations**: "page" in the name tells clients to expect pagination metadata

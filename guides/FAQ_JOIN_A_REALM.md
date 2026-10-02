@@ -101,9 +101,9 @@ admission, station links," with no cert-issuance code in it. Don't
 confuse the two despite the similar names; this page is entirely about
 `macula-portal`.
 
-Every hecate-service running on realm infrastructure carries its own
+Every mcl-* service running on realm infrastructure carries its own
 realm-signed credential — an institution of the realm, not a user's
-identity (`hecate-corpus/philosophy/HECATE_TIER_MODEL.md`'s
+identity (`hecate-corpus/philosophy/TIER_MODEL.md`'s
 citizens-vs-institutions framing). The real endpoint
 (`macula-portal`'s `ServicePrincipalIssuanceController`):
 
@@ -114,7 +114,7 @@ Content-Type: application/json
 
 {
   "public_key":   "base64-encoded-ed25519-public-key",
-  "service_name": "hecate-rag",
+  "service_name": "mcl-rag",
   "node_name":    "beam00"
 }
 ```
@@ -124,8 +124,8 @@ Content-Type: application/json
 ```json
 {
   "org_identity":  "mri:org:io.macula/rgfaber",
-  "service_mri":   "mri:app:io.macula/rgfaber/_service-hecate-rag-beam00",
-  "service_name":  "hecate-rag",
+  "service_mri":   "mri:app:io.macula/rgfaber/_service-mcl-rag-beam00",
+  "service_name":  "mcl-rag",
   "node_name":     "beam00",
   "cert_pem":      "-----BEGIN CERTIFICATE-----…",
   "org_ca_pem":    "-----BEGIN CERTIFICATE-----…",
@@ -139,13 +139,13 @@ time — not automated by anything running on a schedule):
 1. Generate a fresh Ed25519 keypair for the service.
 2. POST the pubkey + `service_name` + `node_name` to the endpoint above,
    presenting a refresh token as bearer auth. `service_name` must match
-   `^hecate-[a-z][a-z0-9-]{0,55}$`.
+   `^mcl-[a-z][a-z0-9-]{0,55}$`.
 3. Write the response's `cert_pem`/private key to
-   `/etc/hecate/secrets/<service-name>/service-cert.pem` (+
+   `/etc/mcl/secrets/<service-name>/service-cert.pem` (+
    `service-key.pem`) on the target node.
 4. The Quadlet/compose unit mounts that directory read-only into the
-   container at `/etc/hecate/secrets/service-cert.pem`, which
-   `hecate_om_identity` (hecate-services/hecate-om) reads at boot.
+   container at `/etc/mcl/secrets/service-cert.pem`, which
+   `mcl_om_identity` (macula-services/mcl-om) reads at boot.
 
 `cert_pem` is the leaf; `org_ca_pem` is the intermediate org CA that
 issued it; `ca_chain_pem` is the realm CA (the trust anchor) — a service
@@ -155,7 +155,7 @@ response never includes the private key** — the service generates its
 own keypair and keeps the private half; the realm only ever sees and
 signs the public half.
 
-This is explicitly labeled **v1** in `hecate_om_identity`'s own doc
+This is explicitly labeled **v1** in `mcl_om_identity`'s own doc
 comment: "long-lived realm-signed cert provisioned out-of-band by a
 realm-admin script." A stated **v2** exists only on paper so far:
 "short-lived UCAN auto-rotated from a realm HTTP endpoint" — the module
@@ -172,14 +172,14 @@ refresh token plus an admin policy file; not built yet.
 
 ## 2. `identity_spec/0` is a declared manifest today, not (yet) enforcement
 
-Every `hecate_om_service` implementation exports an `identity_spec/0`
+Every `mcl_om_service` implementation exports an `identity_spec/0`
 callback (see
 [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md)) —
 the scaffold's own template comment calls it "THE AUTHORITY THIS SERVICE
 ASKS THE REALM FOR." It reads like a real authorization request. **It
-currently is not one**, verified by reading `hecate_om:boot/2`
-(hecate-services/hecate-om) end to end: it calls a service's
-`capabilities/0` and `start/1`, registers with `hecate_om_capabilities`
+currently is not one**, verified by reading `mcl_om:boot/2`
+(macula-services/mcl-om) end to end: it calls a service's
+`capabilities/0` and `start/1`, registers with `mcl_om_capabilities`
 — and never calls `identity_spec/0` anywhere in the runtime boot path.
 
 It's still real and required — a compile-time-enforced `-callback`, and
@@ -222,5 +222,5 @@ would go stale the moment the plan moves.
 - [FAQ: macula-mcp](FAQ_MACULA_MCP.md) — the `mesh_join_realm` tool that wraps §0's flow for an agent
 - [FAQ: How do I join the Mesh?](FAQ_JOIN_THE_MESH.md) — the realm-agnostic station layer this page's realm layer sits above
 - [FAQ: How do I authorize a procedure or topic with UCAN?](FAQ_AUTHORIZE_WITH_UCAN.md) — the one authorization primitive that IS enforced by the SDK today
-- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — `identity_spec/0` and the `hecate_om_service` behaviour
-- [FAQ: How do I deploy my own hecate service?](FAQ_DEPLOY_HECATE_SERVICES.md) — where the resulting cert actually gets mounted into a running container
+- [FAQ: Developing Edge Services in BEAM Languages](FAQ_DEVELOP_EDGE_SERVICES_BEAM.md) — `identity_spec/0` and the `mcl_om_service` behaviour
+- [FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md) — where the resulting cert actually gets mounted into a running container

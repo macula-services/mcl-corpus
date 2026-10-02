@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Demon 27: Hardcoded User/Submitter IDs
 
 **Date exorcised:** 2026-02-23
-**Where it appeared:** hecate-app-appstored command modules
+**Where it appeared:** a removed app command modules
 **Cost:** Every event in the store records the wrong actor — audit trail is useless
 
 ### The Lie
@@ -91,7 +91,7 @@ Cmd = remove_plugin_v1:new(#{
 ## 🔥 Demon 28: No Tests on Event-Sourced Domains
 
 **Date exorcised:** 2026-02-23
-**Where it appeared:** hecate-app-appstored — 0 tests across 6 CMD desks, 5 projections, 4 query handlers, 4 policies
+**Where it appeared:** a removed app — 0 tests across 6 CMD desks, 5 projections, 4 query handlers, 4 policies
 **Cost:** Bugs found only by dialyzer or at runtime — no safety net for refactoring
 
 ### The Lie
@@ -100,7 +100,7 @@ Cmd = remove_plugin_v1:new(#{
 
 ### What Happened
 
-The appstore daemon shipped with zero tests. Dialyzer caught the `row_to_map` tuple/list bug (Demon #19), but only because it was a type mismatch. Business logic bugs — wrong aggregate guards, incorrect projection SQL, broken policy chains — are invisible to dialyzer.
+The app shipped with zero tests. Dialyzer caught the `row_to_map` tuple/list bug (Demon #19), but only because it was a type mismatch. Business logic bugs — wrong aggregate guards, incorrect projection SQL, broken policy chains — are invisible to dialyzer.
 
 ### What Dialyzer Cannot Catch
 
@@ -196,73 +196,10 @@ projection_with_record_test() ->
 
 ---
 
-## 🔥 Missing `/ui/[...]` Cowboy Route in Plugin Daemon
-
-**Demon #29** — 2026-02-24
-
-> ⚠ **HISTORICAL (2026-09-05): the plugin-daemon/hecate-web
-> architecture this demon describes has been removed.**
-> `hecate-daemon`, `hecate-web`, and the whole in-VM plugin-host model
-> no longer exist (see
-> [`HECATE_TIER_MODEL.md`](../../philosophy/HECATE_TIER_MODEL.md)) —
-> there is no more "plugin daemon" to add this route to. Kept as a
-> record of a real, instructive bug: a missing static-file route can
-> make a component silently invisible to its consumer with zero
-> errors logged anywhere. That general lesson (verify every endpoint a
-> consumer actually depends on, not just the ones your own health
-> check exercises) is worth carrying into whatever architecture comes
-> next; the specific cowboy route below is not.
-
-### What Happened
-
-The snake-duel daemon had a working `/manifest` endpoint and a healthy Unix socket. Its Dockerfile correctly built the SvelteKit frontend and copied `dist/` into `priv/static/`. But the plugin never appeared in hecate-web.
-
-### The Bug
-
-The cowboy route list in the daemon's `_app.erl` had no `/ui/[...]` route. The frontend assets were sitting in `priv/static/component.js` but cowboy never served them. When hecate-web fetched `/ui/component.js` through the Tauri socket proxy, it got a 404. The plugin loading code treats a 404 on the custom element as "plugin doesn't exist" and silently drops it.
-
-### Why It's Insidious
-
-- The daemon was running fine (health OK, manifest OK)
-- The socket existed and responded to API calls
-- The Dockerfile built and copied the frontend correctly
-- The plugin discovery scan found the socket
-- Zero errors in logs — the failure is a silent 404 in the browser
-
-### The Fix
-
-Every plugin daemon MUST include this route in its cowboy dispatch:
-
-```erlang
-{"/ui/[...]", cowboy_static, {dir, static_dir(), [{mimetypes, cow_mimetypes, all}]}}
-```
-
-With the helper:
-
-```erlang
-static_dir() ->
-    PrivDir = code:priv_dir(my_plugin_app),
-    filename:join(PrivDir, "static").
-```
-
-### Plugin Daemon Required Endpoints Checklist
-
-| Endpoint | Purpose | Without it |
-|----------|---------|-----------|
-| `GET /health` | Health check | Plugin marked unhealthy |
-| `GET /manifest` | Plugin metadata | Discovery fails with error |
-| `GET /ui/[...]` | Frontend custom element | **Plugin silently invisible** |
-
-### The Lesson
-
-> **A plugin with a working daemon and manifest but no `/ui/[...]` route is invisible to hecate-web. The failure is completely silent. Always verify all three required endpoints when creating a new plugin daemon.**
-
----
-
 ## 🔥 Demon 30: Forgetting to Bump `.app.src` Versions Before Tagging
 
 **Date exorcised:** 2026-02-24
-**Where it appeared:** hecate-app-appstored — 4 `.app.src` files stuck at `"0.1.0"` while tagging `v0.2.0`
+**Where it appeared:** a removed app — 4 `.app.src` files stuck at `"0.1.0"` while tagging `v0.2.0`
 **Cost:** Had to delete the remote tag, bump versions, re-commit, and re-tag
 
 ### The Lie
@@ -277,7 +214,7 @@ A significant feature was implemented (schema extension, new endpoints, bug fixe
 
 1. **BEAM release version comes from `.app.src`** — `application:get_key(App, vsn)` returns what's in the `.app.src`, not the git tag
 2. **OCI images carry the wrong version** — Logs, health endpoints, and manifest responses report the old version
-3. **Impossible to debug version mismatches** — "I deployed v0.2.0 but the daemon says 0.1.0"
+3. **Impossible to debug version mismatches** — "I deployed v0.2.0 but the running service says 0.1.0"
 4. **Tag deletion is destructive** — If CI already built on the tag, you have a phantom image with wrong metadata
 
 ### The Rule
@@ -306,7 +243,7 @@ grep -r '{vsn,' src/*.app.src apps/*/src/*.app.src
 | Ecosystem | Version File(s) | Same Rule |
 |-----------|----------------|-----------|
 | Erlang/OTP | `src/*.app.src`, `apps/*/src/*.app.src` | Yes |
-| Tauri | `src-tauri/Cargo.toml` AND `src-tauri/tauri.conf.json` | Yes (see hecate-web incident) |
+| Tauri | `src-tauri/Cargo.toml` AND `src-tauri/tauri.conf.json` | Yes |
 | Elixir | `mix.exs` | Yes |
 | Node.js | `package.json` | Yes |
 
@@ -408,7 +345,7 @@ The dead node name is baked into the volume. Pin the node name AND wipe the stal
 ## 🔥🔥 Demon 52: Duplicate `{profiles, ...}` Tuple in rebar.config
 
 **Date:** 2026-05-31
-**Origin:** hecate-parksim — adding an evoq-testkit `test` profile crash-looped every beam node (exec 127).
+**Origin:** a since-removed service — adding an evoq-testkit `test` profile crash-looped every beam node (exec 127).
 
 ### The Mistake
 

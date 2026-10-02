@@ -34,7 +34,6 @@ _Strict naming rules for all components in the Domain/Division/Desk architecture
 | CMD API        | `{command}_api`              | `announce_capability_api`                   |
 | Responder      | `{command}_responder_v1`     | `announce_capability_responder_v1`          |
 | Emitter (mesh) | `emit_{event}_to_mesh`       | `emit_capability_announced_to_mesh`         |
-| Emitter (pg)   | `emit_{event}_to_pg`         | `emit_capability_announced_to_pg`           |
 | Aggregate      | `{noun}_aggregate`           | `capability_aggregate`                      |
 | Projection     | `{event}_to_{read_store}`    | `capability_announced_to_capabilities`      |
 | Policy/PM      | `on_{event}_maybe_{command}` | `on_llm_detected_maybe_announce_capability` |
@@ -127,7 +126,7 @@ When renaming a query module (e.g., `get_venture` -> `get_venture_by_id`):
 3. **Delete old files** from the renamed directory
 4. **Update `rebar.config`**: `src_dirs` entry
 5. **Update callers**:
-   - Route in `hecate_api_routes.erl`
+   - Route in `mcl_api_routes.erl`
    - Any API handler calling `old_module:execute/1`
    - Any internal caller (e.g., `get_active_*_api.erl`)
 6. **Delete stale beam files**: `_build/default/lib/*/ebin/old_module.beam`
@@ -148,7 +147,6 @@ These suffixes reveal implementation, not intent:
 - `*_sup` (PRJ desk supervisor, e.g., `capability_announced_sup`)
 - `*_responder_v1` (HOPE receiver)
 - `emit_*_to_mesh` (Emitter to mesh)
-- `emit_*_to_pg` (Emitter to pg)
 - `*_to_{table}` (Projection)
 - `*_store` (Storage accessor)
 - `*_api` (API handler)

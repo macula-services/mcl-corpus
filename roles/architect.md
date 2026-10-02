@@ -9,7 +9,7 @@ context:
   - philosophy/CARTWHEEL.md
   - philosophy/VERTICAL_SLICING.md
   - philosophy/SCREAMING_ARCHITECTURE.md
-  - philosophy/HECATE_DOMAIN_LIFECYCLE.md
+  - philosophy/DOMAIN_LIFECYCLE.md
   - skills/NAMING_CONVENTIONS.md
   - skills/codegen/erlang/EVOQ_BEHAVIOURS.md
   - examples/BIT_FLAGS_STATUS.md
@@ -132,8 +132,7 @@ Given the approved EventStorm, produce:
 ## Supervision Tree
 
 {app}_sup (one_for_one)
-├── {event}_v1_to_pg (emitter)
-├── {event}_v1_to_pg (emitter)
+├── emit_{event}_v1_to_mesh (emitter)
 └── on_{event}_{action} (PM)
 ```
 

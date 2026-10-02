@@ -482,4 +482,4 @@ This example teaches:
 - Naming conventions for projection modules
 
 *Date: 2026-02-08*
-*Origin: Hecate daemon query services implementation*
+*Origin: a division's query services implementation*

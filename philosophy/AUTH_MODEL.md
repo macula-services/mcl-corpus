@@ -1,26 +1,19 @@
 ---
-title: Hecate Auth Model — Four Channels, One Delegation Chain
+title: Macula Auth Model — Four Channels, One Delegation Chain
 layer: philosophy
 audience: [agent, human]
 stage: draft
 ---
 
-# Hecate Auth Model — Four Channels, One Delegation Chain
+# Macula Auth Model — Four Channels, One Delegation Chain
 
-*This exists so a human, an agent, or a phone can reach a hecate-service
+*This exists so a human, an agent, or a phone can reach an mcl-* service
 and the service can trust who's asking, without four different auth
 systems.*
 
-Written 2026-09-01, alongside declaring `hecate-daemon`, `hecate-web`,
-and `hecate-gitops` obsolete (see the amendment in
-[HECATE_TIER_MODEL.md](HECATE_TIER_MODEL.md) and the banner on
-[INTEGRATION_TRANSPORTS.md](INTEGRATION_TRANSPORTS.md)). As of
-2026-09-05 those three have been deleted outright, not just declared
-obsolete. Those three were Layers 3-4's session host and its plugin
-apps; this doc is the replacement identity/auth story for the four
-channels that took their place. **Status: draft.** The identity primitives it builds on
-(`hecate_om_identity`, `macula-realm`, `macula-cli`'s local keypair,
-`hecate_om`'s `ucan_token`/`verify => true` RPC option) are real and
+**Status: draft.** The identity primitives it builds on
+(`mcl_om_identity`, `macula-realm`, `macula-cli`'s local keypair,
+`mcl_om`'s `ucan_token`/`verify => true` RPC option) are real and
 already shipping. The parts specific to this doc — a human-membership-
 rooted delegation chain, the pairing flow generalized beyond
 `macula-console`, a separate agent identity for `macula-mcp` — are a
@@ -31,12 +24,12 @@ proposal, not yet built. See "What's open" at the end.
 ## The one root primitive
 
 Realm membership (`macula-realm`) is the root of trust for humans, the
-same way a service's realm-signed cert (`hecate_om_identity`) is the
+same way a service's realm-signed cert (`mcl_om_identity`) is the
 root of trust for services. **UCAN is the one delegation currency for
 everything downstream of either root**: a chain of scope-narrowing
 tokens, each signed by the previous holder, verified back to a trust
-anchor. `hecate_om` already verifies exactly this shape for
-service-to-service calls — `hecate_om:call_capability/4,5`'s
+anchor. `mcl_om` already verifies exactly this shape for
+service-to-service calls — `mcl_om:call_capability/4,5`'s
 `verify => true` walks a realm → org → server delegation chain and
 drops any provider whose chain doesn't resolve.
 
@@ -48,7 +41,7 @@ verification system:
 realm CA (macula-realm)
   │
   ├─▶ org CA ──▶ service leaf cert           (existing: service-to-service)
-  │              "I am hecate-tube, org Acme"
+  │              "I am mcl-tube, org Acme"
   │
   └─▶ realm_membership_admitted_v1 record    (this doc: human-to-service)
          │
@@ -72,14 +65,14 @@ the narrowest scope in the chain, not just the caller's immediate token.
 |---|---|---|---|
 | (a) Terminal | `macula-cli` | Local puzzle-hardened Ed25519 keypair (`~/.config/macula-cli/identity.seed`), generated once, reused forever | UCAN minted from the human's realm-membership record, cached locally, refreshed before expiry |
 | (b) Coding agent | `macula-mcp`, which spawns `macula-cli` per tool call | A **separate** keypair from (a) (`macula-cli --identity ~/.config/macula-cli/agent-identity.seed`) | A narrower UCAN, delegated by the human specifically to "agent acting on my behalf" — independently revocable |
-| (c) Operator website | The edge service serves its own UI directly (Cowboy/Phoenix — same pattern as `hecate-whiteboard`/`hecate-tube` today) | Either none (open mode) or a session-lifetime UCAN obtained via pairing | See "Two modes" below |
-| (d) Mobile app / public site | `macula-portal` (enrollment) + the app's own local keypair | Device generates its own long-lived keypair on first launch (same self-healing generate-if-missing pattern `hecate_om_identity` and `macula-cli` already use) | A UCAN delegated from the human's membership at pairing time; every privileged action then rides a short-lived, action-scoped credential minted per-use — not the device's own long-lived key |
+| (c) Operator website | The edge service serves its own UI directly (Cowboy/Phoenix — same pattern as `mcl-whiteboard`/`mcl-tube` today) | Either none (open mode) or a session-lifetime UCAN obtained via pairing | See "Two modes" below |
+| (d) Mobile app / public site | `macula-portal` (enrollment) + the app's own local keypair | Device generates its own long-lived keypair on first launch (same self-healing generate-if-missing pattern `mcl_om_identity` and `macula-cli` already use) | A UCAN delegated from the human's membership at pairing time; every privileged action then rides a short-lived, action-scoped credential minted per-use — not the device's own long-lived key |
 
 ### (a) Terminal — `macula-cli`
 
 The identity layer already exists: first run mints a puzzle-hardened
 Ed25519 keypair, persisted and reused (`internal/identitystore`,
-mirroring `hecate_om_identity:keypair/0`'s own
+mirroring `mcl_om_identity:keypair/0`'s own
 generate-if-missing-and-persist pattern). What's proposed here: when a
 command hits a gated capability, `macula-cli` holds a UCAN delegated
 from the human's realm-membership record — minted once via a
@@ -109,7 +102,7 @@ human's.
 
 Two legitimate modes — this is a fork, not a gap to close:
 
-**Open.** `hecate-whiteboard` today: no `verify => true` anywhere,
+**Open.** `mcl-whiteboard` today: no `verify => true` anywhere,
 visiting browsers get an ephemeral per-tab identity for presence only
 (`track_presence`'s ETS roster). This is a fine, complete answer for a
 public demo board or any service whose whole point is "anyone can use
@@ -144,7 +137,7 @@ apps instead of the dead desktop console.
 **`cam2me` / `passport`**: the device mints its own long-lived keypair
 on first launch, then pairs via `macula-portal` to receive a UCAN
 delegated from the human's membership. The scoping principle isn't
-hypothetical here — it's already shipping: `hecate-turn-credentials`
+hypothetical here — it's already shipping: `mcl-turn-credentials`
 exists specifically so `cam2me`'s own long-lived key is never asked to
 do more than identify the device. Every privileged operation (TURN
 relay access) rides a short-lived credential minted per-use, and the
@@ -163,11 +156,11 @@ action allowed," and the two are never the same token.
   integration, not the primitive: see
   `macula-mcp/plans/PLAN_AGENT_IDENTITY_UCAN.md` for the scoped work to
   make `macula-mcp` actually use one.
-- **`hecate_om_capabilities:call_capability/5,7`'s `verify => true` verifies
+- **`mcl_om_capabilities:call_capability/5,7`'s `verify => true` verifies
   the *provider's* org-rooted service-cert chain** (`keep_chain_verified`
   → `macula_record:verify_advertisement_cert_chain/3`), not a caller's
   UCAN. It forwards a `ucan_token` opaquely to the provider it dials —
-  whether any gated hecate-service actually verifies an incoming
+  whether any gated mcl-* service actually verifies an incoming
   `ucan_token` resolves back to a human's realm membership is genuinely
   unconfirmed, not just undecided. Real, unscoped investigation, not a
   known code change.

@@ -110,7 +110,7 @@ apps/design_division/src/
 │
 └── on_division_discovered_initiate_division/           # PM sibling slice
     ├── on_division_discovered_initiate_division_sup.erl
-    └── on_division_discovered_initiate_division.erl   # pg:join + dispatch
+    └── on_division_discovered_initiate_division.erl   # evoq_event_handler + dispatch
 ```
 
 ---
@@ -177,7 +177,7 @@ design_division/src/
 │
 └── on_division_discovered_initiate_division/           # PM sibling slice
     ├── on_division_discovered_initiate_division_sup.erl
-    └── on_division_discovered_initiate_division.erl   # gen_server: pg:join + dispatch
+    └── on_division_discovered_initiate_division.erl   # evoq_event_handler + dispatch
 ```
 
 > Earlier guidance (2026-02-08) placed the listener INSIDE the desk. That was reversed 2026-03-12, reinforced 2026-05-24. See [antipatterns/structure.md Demon 18](../skills/antipatterns/structure.md#-demon-18-process-managers-inside-desks) and [PROCESS_MANAGERS.md Location Rule](PROCESS_MANAGERS.md#location-rule).
@@ -303,4 +303,4 @@ This example can be used for fine-tuning to teach:
 - Process manager naming conventions
 
 *Date: 2026-02-08*
-*Origin: Hecate Walking Skeleton implementation*
+*Origin: Macula Walking Skeleton implementation*

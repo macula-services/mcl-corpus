@@ -23,9 +23,9 @@ DOMAIN (bounded context)                    OUTSIDE
 -----------------------------------------  ----------------------------------------
 Command  ->  Aggregate  ->  Event
                                |
-                               +-> Emitter  -----> Fact  -----> pg / mesh
+                               +-> Emitter  -----> Fact  -----> mesh
                                |
-                               +-> Emitter  -----> Fact  -----> pg / mesh
+                               +-> Emitter  -----> Fact  -----> mesh
                                                                     |
                                                           Listener <+
                                                               |
@@ -97,10 +97,10 @@ Actors are the PROCESSES that move artifacts across boundaries. Each is an evoq 
 
 | Actor | What It Does | Input | Output | Transport | Behaviour |
 |-------|-------------|-------|--------|-----------|-----------|
-| **Emitter** | Publishes facts from domain events | Domain event | Fact | pg / mesh | `evoq_emitter` |
-| **Listener** | Receives facts, dispatches commands | Fact | Command | pg / mesh | `evoq_listener` |
+| **Emitter** | Publishes facts from domain events | Domain event | Fact | mesh | `evoq_emitter` |
+| **Listener** | Receives facts, dispatches commands | Fact | Command | mesh | `evoq_listener` |
 | **Requester** | Sends hopes, receives feedback | Hope | Feedback | mesh | `evoq_requester` |
-| **Responder** | Receives hopes, dispatches commands, returns feedback | Hope | Feedback | mesh / hecate:// | `evoq_responder` |
+| **Responder** | Receives hopes, dispatches commands, returns feedback | Hope | Feedback | mesh / HTTP | `evoq_responder` |
 
 ### Emitter
 
@@ -116,7 +116,7 @@ source_event() -> venture_initiated_v1.
 fact_module() -> venture_initiated_fact_v1.
 
 %% Where to publish
-transport() -> pg.  %% or mesh
+transport() -> mesh.
 ```
 
 **Placement:** Emitters live in the **source desk** -- the same desk that processes the command producing the event. They are supervised by the desk supervisor.
@@ -128,7 +128,7 @@ apps/guide_venture_lifecycle/src/initiate_venture/
     initiate_venture_v1.erl             # command
     venture_initiated_v1.erl            # event
     venture_initiated_fact_v1.erl       # fact (translates event for integration)
-    emit_venture_initiated_v1_to_pg.erl   # emitter (pg)
+    emit_venture_initiated_v1_to_mesh.erl   # emitter (mesh)
     emit_venture_initiated_v1_to_mesh.erl # emitter (mesh)
     maybe_initiate_venture.erl          # handler
     initiate_venture_desk_sup.erl       # supervisor (starts emitters)
@@ -136,16 +136,16 @@ apps/guide_venture_lifecycle/src/initiate_venture/
 
 ### Listener
 
-Receives facts from pg groups or mesh topics. Translates the fact into a command and dispatches it to the local aggregate.
+Receives facts from mesh topics. Translates the fact into a command and dispatches it to the local aggregate.
 
 ```erlang
 -behaviour(evoq_listener).
 
 %% Which fact type to listen for
-source_fact() -> <<"hecate.domain.initiated">>.
+source_fact() -> <<"macula.domain.initiated">>.
 
 %% Where to listen
-transport() -> pg.  %% or mesh
+transport() -> mesh.
 
 %% Handle received fact
 handle_fact(FactType, Payload, Metadata) ->
@@ -161,16 +161,16 @@ handle_fact(FactType, Payload, Metadata) ->
 
 ```
 apps/design_division/src/
-    on_venture_initiated_from_pg_initiate_division/
-        on_venture_initiated_from_pg_initiate_division.erl      # listener
-        on_venture_initiated_from_pg_initiate_division_sup.erl  # supervisor
+    on_venture_initiated_from_mesh_initiate_division/
+        on_venture_initiated_from_mesh_initiate_division.erl      # listener
+        on_venture_initiated_from_mesh_initiate_division_sup.erl  # supervisor
 ```
 
 **Why own slice?** When you browse `src/`, the `on_*` directories scream which external facts this domain reacts to. Without dedicated directories, integration points are buried inside handlers -- invisible when browsing the codebase. This is the same reasoning as process managers.
 
 ### Requester
 
-Sends a hope over mesh and waits for feedback. Used for cross-daemon RPC.
+Sends a hope over mesh and waits for feedback. Used for cross-service RPC.
 
 ```erlang
 -behaviour(evoq_requester).
@@ -181,7 +181,7 @@ hope_module() -> discover_venture_hope_v1.
 %% Send and wait
 request(Hope, Opts) ->
     Payload = discover_venture_hope_v1:to_payload(Hope),
-    case hecate_mesh:call(<<"hecate.domain.discover">>, Payload, Opts) of
+    case mcl_mesh:call(<<"macula.domain.discover">>, Payload, Opts) of
         {ok, FeedbackPayload} ->
             discover_venture_feedback_v1:to_result(FeedbackPayload);   %% the evoq_feedback module
         {error, Reason} ->
@@ -195,13 +195,13 @@ request(Hope, Opts) ->
 
 ### Responder
 
-Receives hopes (via mesh or hecate:// API), dispatches commands to the local aggregate, and returns feedback containing the post-event aggregate state.
+Receives hopes (via mesh or HTTP), dispatches commands to the local aggregate, and returns feedback containing the post-event aggregate state.
 
 ```erlang
 -behaviour(evoq_responder).
 
 %% Which hope type this responder handles
-hope_type() -> <<"hecate.domain.discover">>.
+hope_type() -> <<"macula.domain.discover">>.
 
 %% Handle incoming hope
 handle_hope(HopeType, Payload, Metadata) ->
@@ -281,9 +281,7 @@ Session-level consistency requires `evoq_command_router:dispatch_with_state/2` -
 
 | Actor | Module Pattern | Example |
 |-------|---------------|---------|
-| Emitter (pg) | `emit_{event}_to_pg` | `emit_venture_initiated_v1_to_pg` |
 | Emitter (mesh) | `emit_{event}_to_mesh` | `emit_venture_initiated_v1_to_mesh` |
-| Listener (pg) | `on_{fact}_from_pg_{command}` | `on_venture_initiated_from_pg_initiate_division` |
 | Listener (mesh) | `on_{fact}_from_mesh_{command}` | `on_app_available_from_mesh_install_plugin` |
 | Requester | `request_{hope_type}` | `request_discover_venture` |
 | Responder | `{command}_responder_v1` | `initiate_venture_responder_v1` |
@@ -308,7 +306,7 @@ apps/guide_venture_lifecycle/src/initiate_venture/
     initiate_venture_v1.erl                 # Command (evoq_command)
     venture_initiated_v1.erl                # Event (evoq_event)
     venture_initiated_fact_v1.erl           # Fact (evoq_fact)
-    emit_venture_initiated_v1_to_pg.erl     # Emitter (evoq_emitter)
+    emit_venture_initiated_v1_to_mesh.erl     # Emitter (evoq_emitter)
     emit_venture_initiated_v1_to_mesh.erl   # Emitter (evoq_emitter)
     maybe_initiate_venture.erl              # Handler
     initiate_venture_api.erl                # API entry point
@@ -320,13 +318,13 @@ apps/guide_venture_lifecycle/src/initiate_venture/
 
 ```
 apps/design_division/src/
-    on_venture_initiated_from_pg_initiate_division/
-        on_venture_initiated_from_pg_initiate_division.erl      # Listener
-        on_venture_initiated_from_pg_initiate_division_sup.erl  # Supervisor
+    on_venture_initiated_from_mesh_initiate_division/
+        on_venture_initiated_from_mesh_initiate_division.erl      # Listener
+        on_venture_initiated_from_mesh_initiate_division_sup.erl  # Supervisor
     initiate_division/
         initiate_division_v1.erl
         division_initiated_v1.erl
-        emit_division_initiated_v1_to_pg.erl
+        emit_division_initiated_v1_to_mesh.erl
         maybe_initiate_division.erl
         initiate_division_desk_sup.erl
 ```
@@ -358,7 +356,7 @@ apps/guide_venture_lifecycle/src/initiate_venture/
 Listeners and process managers share the "own slice" placement pattern for the same reason: filesystem-level discoverability. The difference:
 
 - **Process manager**: reacts to internal domain events, orchestrates multi-step workflows
-- **Listener**: reacts to external facts (from another domain via pg/mesh), dispatches a local command
+- **Listener**: reacts to external facts (from another service via the mesh), dispatches a local command
 
 ### Policy vs Listener
 
@@ -367,7 +365,7 @@ Both dispatch commands. The difference is the source:
 | Actor | Source | Naming |
 |-------|--------|--------|
 | Policy | Internal domain event (own event store) | `on_{event}_maybe_{command}` |
-| Listener | External fact (pg/mesh from another domain) | `on_{fact}_from_{transport}_{command}` |
+| Listener | External fact (mesh, from another service) | `on_{fact}_from_{transport}_{command}` |
 
 ---
 
@@ -380,7 +378,7 @@ New: `emit_{event}_to_{transport}.erl`
 
 ```bash
 # Example migration
-git mv venture_initiated_v1_to_pg.erl emit_venture_initiated_v1_to_pg.erl
+git mv venture_initiated_v1_to_mesh.erl emit_venture_initiated_v1_to_mesh.erl
 # Update -module() declaration inside the file
 # Update references in desk supervisor
 ```

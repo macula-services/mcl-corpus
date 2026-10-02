@@ -112,6 +112,11 @@ Correct:
 
 The frontend MAY use the integer `status` for **boolean guards** (e.g., "show archive button only if not already archived") when the specific flag value is well-known and stable. But labels for display always come from the backend.
 
+## See also
+
+- [`skills/EVOQ_BIT_FLAGS.md`](../skills/EVOQ_BIT_FLAGS.md) — the hard rule and the full API this pattern uses.
+- [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](AGGREGATE_LIFECYCLE_SLICES.md) — what the bits mean: one flag per lifecycle slice.
+
 ---
 
 *Status labels are projections. Projections belong in projections.*

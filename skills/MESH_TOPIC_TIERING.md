@@ -5,15 +5,15 @@ audience: [agent, human]
 stage: stable
 ---
 
-# Mesh Topic Tiering — Hecate Practical Guide
+# Mesh Topic Tiering — Macula Practical Guide
 
 Companion to the authoritative spec at `macula-io/macula/docs/guides/TOPIC_NAMING_GUIDE.md`.
 
-This guide is for developers writing publishers, subscribers, and RPC procedures inside Hecate-org repos (`hecate-app-trader`, `hecate-app-martha`, future services). It assumes you have read the spec and focuses on **how to pick the right tier** in real Hecate situations.
+This guide is for developers writing publishers, subscribers, and RPC procedures inside Macula-org repos (the `mcl-*` services, and future ones). It assumes you have read the spec and focuses on **how to pick the right tier** in real Macula situations.
 
 ## TL;DR
 
-Every mesh topic in a Hecate-org repo MUST be built by calling `hecate_topics` (or the equivalent wrapper for your app's repo). Choose one of three builders:
+Every mesh topic in a Macula-org repo MUST be built by calling `mcl_topics` (or the equivalent wrapper for your app's repo). Choose one of three builders:
 
 - `realm_fact / realm_hope` — concept owned by the realm authority
 - `org_fact / org_hope` — concept shared across multiple beam-campus apps
@@ -34,7 +34,7 @@ Walk through these in order. The first "yes" wins.
 3. **Is this a concept beam-campus owns that crosses multiple beam-campus apps?** (commercial licensing, org-wide billing, shared settings, cross-app catalog)
    → **org tier**
 
-4. **Will any future beam-campus app outside hecate need to subscribe to this exact topic shape?**
+4. **Will any future beam-campus app outside the org need to subscribe to this exact topic shape?**
    → **org tier** (otherwise you'll regret it the day you ship the second app)
 
 5. **Is this internal to one app — game state, RPC procedures it advertises, app-specific events?**
@@ -59,7 +59,7 @@ These are the actual classifications applied during the topic-tiering audit.
 
 | Topic | Why org |
 |---|---|
-| `licenses/issued_batch` | beam-campus commercial licensing. Spans hecate today, will span hecate-trader and hecate-martha tomorrow. |
+| `licenses/issued_batch` | beam-campus commercial licensing. Spans the org today, will span more org services tomorrow. |
 | `licenses/rewrapped_batch` | Same pipeline. |
 | `licenses/revoked` | Same pipeline. |
 
@@ -69,22 +69,21 @@ These are the actual classifications applied during the topic-tiering audit.
 |---|---|
 | `mpong/game_advertised`, `mpong/state_broadcast`, `mpong/paddle_moved` | Multiplayer-pong demo. No other beam-campus app will ever care. |
 | `mpong/join_game` (hope) | Same. |
-| `site/node_announced` | Hecate clustering primitive. App-internal. |
-| `llm/chat_to_model`, `llm/check_health`, `llm/list_models` (all hopes) | Capabilities advertised by hecate's `serve_llm`. App-specific RPC surface. |
-| `{domain}/replay_events` (hope) | Hecate-internal catch-up RPC. |
+| `site/node_announced` | Macula clustering primitive. App-internal. |
+| `llm/chat_to_model`, `llm/check_health`, `llm/list_models` (all hopes) | Capabilities advertised by the org's LLM service. App-specific RPC surface. |
+| `{domain}/replay_events` (hope) | Macula-internal catch-up RPC. |
 
-## How `hecate_topics` is structured
+## How `mcl_topics` is structured
 
-`apps/shared/src/hecate_topics.erl` is the wrapper (this specific
-module lived in `hecate-daemon`, since removed — kept here as a
+`apps/shared/src/mcl_topics.erl` is the wrapper (kept here as a
 worked illustration of the pattern for whichever repo builds the
 equivalent wrapper today). It pre-fills the realm and the `(org, app)` constants so call-sites stay short.
 
 ```erlang
--module(hecate_topics).
+-module(mcl_topics).
 
 -define(ORG, <<"beam-campus">>).
--define(APP, <<"hecate">>).
+-define(APP, <<"beam-campus">>).
 
 -export([
     realm_fact/3, realm_hope/3,
@@ -101,27 +100,27 @@ realm_hope(Domain, Name, V) -> macula_topic:realm_hope(realm(), Domain, Name, V)
 org_hope(Domain, Name, V)   -> macula_topic:org_hope(realm(), ?ORG, Domain, Name, V).
 app_hope(Domain, Name, V)   -> macula_topic:app_hope(realm(), ?ORG, ?APP, Domain, Name, V).
 
-realm() -> application:get_env(hecate, realm, <<"io.macula">>).
+realm() -> application:get_env(mcl_om, realm, <<"io.macula">>).
 ```
 
-Future Hecate apps (`hecate-app-trader`, `hecate-app-martha`) ship their own `*_topics` module with their own `?APP` constant. The org constant stays `beam-campus`.
+Future Macula services ship their own `*_topics` module with their own `?APP` constant. The org constant stays `beam-campus`.
 
 ## Call-site discipline
 
 Match the tier of the topic to the builder name. The wrapper makes this trivial:
 
 ```erlang
-%% Realm-owned: a daemon resigns its realm membership
-Topic = hecate_topics:realm_fact(<<"membership">>, <<"resigned">>, 1),
+%% Realm-owned: a service resigns its realm membership
+Topic = mcl_topics:realm_fact(<<"membership">>, <<"resigned">>, 1),
 
 %% Org-owned: a beam-campus license batch is issued
-Topic = hecate_topics:org_fact(<<"licenses">>, <<"issued_batch">>, 1),
+Topic = mcl_topics:org_fact(<<"licenses">>, <<"issued_batch">>, 1),
 
-%% App-owned: hecate's pong game broadcasts state
-Topic = hecate_topics:app_fact(<<"mpong">>, <<"state_broadcast">>, 1),
+%% App-owned: the org's pong game broadcasts state
+Topic = mcl_topics:app_fact(<<"mpong">>, <<"state_broadcast">>, 1),
 
-%% App-owned RPC: hecate's serve_llm advertises chat
-Topic = hecate_topics:app_hope(<<"llm">>, <<"chat_to_model">>, 1),
+%% App-owned RPC: the org's LLM service advertises chat
+Topic = mcl_topics:app_hope(<<"llm">>, <<"chat_to_model">>, 1),
 ```
 
 Reviewers grep for tier mismatches by builder name alone. If a license-related publisher calls `app_fact`, it stands out. No need to mentally parse the resulting string.
@@ -144,13 +143,16 @@ Always call the builder. CI greps for these patterns and fails the build.
 
 ```erlang
 %% NO — membership_revoked is realm-owned. Don't publish it under app namespace.
-Topic = hecate_topics:app_fact(<<"membership">>, <<"revoked">>, 1),
+Topic = mcl_topics:app_fact(<<"membership">>, <<"revoked">>, 1),
 
 %% YES
-Topic = hecate_topics:realm_fact(<<"membership">>, <<"revoked">>, 1),
+Topic = mcl_topics:realm_fact(<<"membership">>, <<"revoked">>, 1),
 ```
 
-This is the original smell that motivated the tiering work: the daemon listened on `io.macula/beam-campus/hecate/membership/revoked_v1` while the realm published on `io.macula.membership.revoked`. Two different topic shapes, two different worlds, never met.
+This is the smell that motivated the tiering work: an app-tier topic
+`io.macula/beam-campus/mcl/membership/revoked_v1` while the realm
+publishes `io.macula.membership.revoked`. Two different topic shapes,
+two different worlds, never meet.
 
 ### 3. Cross-app subscriber on app-tier topic
 
@@ -162,7 +164,7 @@ Don't reach across app namespaces. That makes the cross-app coupling invisible.
 
 ### 4. Subscribing before you have authority
 
-Subscribing to a realm-tier topic with an `anonymous` MRI is meaningless. The pre-join `hecate-daemon` (since removed) used to do exactly this for `membership/revoked`, and the listener never had a real DID to match against. The fix, for any future code in the same shape: a process-manager that gates subscription on `realm_joined_v1`.
+Subscribing to a realm-tier topic with an `anonymous` MRI is meaningless: the listener has no real DID to match against. The fix: a process-manager that gates subscription on `realm_joined_v1`.
 
 ### 5. Promoting an app-tier topic to org or realm tier without coordination
 
@@ -179,13 +181,13 @@ Don't do step 1 and forget step 2. Don't combine them in one PR — split for re
 - Every topic name carries `_v{N}`. The version is part of the topic, not just the schema.
 - Backward-compatible payload additions don't bump the version. A new field that's optional is safe.
 - Removing a field, renaming a field, changing a type → bump the version.
-- Realm-tier version bumps require coordinated upgrades across all daemons. Plan accordingly.
+- Realm-tier version bumps require coordinated upgrades across all services. Plan accordingly.
 - Org-tier bumps require coordination across the org's apps.
 - App-tier bumps are local and don't need cross-team coordination.
 
 ## When in doubt
 
-Ask in `#hecate-architecture`. Better to spend 5 minutes confirming the tier than to discover six months later that the integration has been silently dead because the publisher and subscriber chose different tiers for the same concept.
+Ask in `#macula-architecture`. Better to spend 5 minutes confirming the tier than to discover six months later that the integration has been silently dead because the publisher and subscriber chose different tiers for the same concept.
 
 ## Related
 

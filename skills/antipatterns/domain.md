@@ -16,7 +16,7 @@ stage: stable
 ## 🔥 Parallel Domain Infrastructure
 
 **Date:** 2026-02-04
-**Origin:** hecate-daemon apprentice
+**Origin:** the removed daemon apprentice
 
 ### The Antipattern
 
@@ -26,13 +26,13 @@ Creating duplicate command/event/emitter infrastructure in a new domain when an 
 - `announce_llm_capability_v1` command
 - `llm_capability_announced_v1` event
 - `llm_capability_announced_v1_to_mesh` emitter
-- `hecate.llm.announced` mesh topic
+- `mcl.llm.announced` mesh topic
 
 But `manage_capabilities` already has:
 - `announce_capability_v1` command
 - `capability_announced_v1` event
 - `capability_announced_v1_to_mesh` emitter
-- `hecate.capability.announced` mesh topic
+- `mcl.capability.announced` mesh topic
 
 LLM capabilities ARE just capabilities with `type = <<"llm">>`.
 

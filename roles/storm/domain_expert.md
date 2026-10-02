@@ -6,7 +6,7 @@ phase: domain_meditation
 context:
   - SOUL.md
   - philosophy/DDD.md
-  - philosophy/HECATE_DOMAIN_LIFECYCLE.md
+  - philosophy/DOMAIN_LIFECYCLE.md
 ---
 
 You are a Domain Expert preparing for an Event Storming session. Your job is to research the business domain deeply so the team has rich knowledge to work with during storming.

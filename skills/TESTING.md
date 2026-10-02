@@ -7,7 +7,7 @@ stage: stable
 
 # Testing Patterns
 
-Guidelines for testing Hecate Erlang applications.
+Guidelines for testing Macula Erlang applications.
 
 ---
 
@@ -32,7 +32,7 @@ Write tests that:
 rebar3 eunit --app=setup_venture,query_ventures
 
 # Run specific test modules
-rebar3 eunit --module=venture_initiated_v1_to_pg_tests
+rebar3 eunit --module=emit_venture_initiated_v1_to_mesh_tests
 
 # Verbose output
 rebar3 eunit --app=query_ventures -v
@@ -48,100 +48,34 @@ Tests live alongside the code they test:
 apps/setup_venture/
 ├── src/
 │   └── initiate_venture/
-│       └── venture_initiated_v1_to_pg.erl
+│       └── venture_initiated_v1_to_mesh.erl
 └── test/
-    └── venture_initiated_v1_to_pg_tests.erl   # {module}_tests.erl
+    └── emit_venture_initiated_v1_to_mesh_tests.erl   # {module}_tests.erl
 ```
 
 **Naming:** `{module}_tests.erl` - EUnit auto-discovers tests for a module.
 
 ---
 
-## pg Integration Tests
+## Emitter Tests
 
-Testing process groups requires proper setup/teardown.
-
-### Emitter Test Pattern
-
-```erlang
--module(my_event_to_pg_tests).
--include_lib("eunit/include/eunit.hrl").
-
--define(GROUP, my_event).
--define(SCOPE, pg).
-
-emit_test() ->
-    ensure_pg(),
-    ok = pg:join(?SCOPE, ?GROUP, self()),
-
-    Event = #{id => <<"test">>},
-    ok = my_event_to_pg:emit(Event),
-
-    receive
-        {my_event, ReceivedEvent} ->
-            ?assertEqual(Event, ReceivedEvent)
-    after 1000 ->
-        ?assert(false)
-    end,
-
-    ok = pg:leave(?SCOPE, ?GROUP, self()).
-
-ensure_pg() ->
-    case pg:start(?SCOPE) of
-        {ok, _} -> ok;
-        {error, {already_started, _}} -> ok
-    end.
-```
-
-### Listener Test Pattern (Fixtures)
+The publish path itself is verified by the live check (a real mesh round
+trip), not by a unit test. The unit test pins what a unit test can:
+which event the emitter subscribes to, and the wire shape of the fact it
+builds (the same shape `{app}_facts_tests` pins — see
+[MESH_TOPIC_TIERING](MESH_TOPIC_TIERING.md)).
 
 ```erlang
--module(my_projection_tests).
+-module(emit_my_event_v1_to_mesh_tests).
 -include_lib("eunit/include/eunit.hrl").
 
--define(GROUP, my_event).
--define(SCOPE, pg).
+interested_in_test() ->
+    ?assertEqual([<<"my_event_v1">>], emit_my_event_v1_to_mesh:interested_in()).
 
-%% Setup/teardown for tests needing full stack
-setup() ->
-    ensure_pg(),
-    StorePid = start_or_get(my_store, start_link, []),
-    SupPid = start_or_get(my_desk_sup, start_link, []),
-    timer:sleep(100),  % Let listener join pg
-    {StorePid, SupPid}.
-
-cleanup({_StorePid, _SupPid}) ->
-    ok.  % Don't kill registered processes
-
-%% Fixture test
-integration_test_() ->
-    {setup,
-     fun setup/0,
-     fun cleanup/1,
-     fun(_) ->
-         Event = #{id => <<"test-", (integer_to_binary(erlang:system_time(microsecond)))/binary>>},
-
-         %% Send via pg
-         Message = {my_event, Event},
-         lists:foreach(fun(Pid) -> Pid ! Message end, pg:get_members(?SCOPE, ?GROUP)),
-
-         timer:sleep(200),  % Let projection run
-
-         %% Verify in database
-         {ok, Rows} = my_store:query("SELECT id FROM my_table WHERE id = ?1", [maps:get(id, Event)]),
-
-         [?_assertEqual(1, length(Rows))]
-     end}.
-
-%% Helper
-start_or_get(Module, Fun, Args) ->
-    case apply(Module, Fun, Args) of
-        {ok, Pid} -> Pid;
-        {error, {already_started, Pid}} -> Pid
-    end.
+replay_policy_test() ->
+    %% Lifecycle facts must not re-publish on a store replay.
+    ?assertEqual(skip, emit_my_event_v1_to_mesh:replay_policy()).
 ```
-
----
 
 ## SQLite Integration Tests
 

@@ -7,7 +7,7 @@ stage: stable
 
 # The Domain Lifecycle — Process-Centric Architecture
 
-_How Hecate models software development as a set of first-class processes._
+_How Macula models software development as a set of first-class processes._
 
 **Development-process tracking (Domain Lifecycle, Division ALC) is not
 event sourced.** Software development is chaotic and non-linear — a plan
@@ -27,7 +27,7 @@ process to track, it's just alive.
 
 Traditional software tools model development as **data management**: you create projects, update records, delete tasks. The verbs are CRUD, the nouns are passive containers.
 
-Hecate models development as a **set of processes**: each phase of building software is its own first-class citizen with its own current state and its own artifact. The verbs are business actions, the nouns are active processes.
+Macula models development as a **set of processes**: each phase of building software is its own first-class citizen with its own current state and its own artifact. The verbs are business actions, the nouns are active processes.
 
 **The test:** imagine a human sitting at a desk. What lands on their desk? What do they do with it? What do they pass to the next desk?
 
@@ -76,7 +76,7 @@ Each division produces N apps following the department pattern:
 
 ## Three Lifecycle Types
 
-Hecate manages three fundamentally different lifecycle types.
+Macula manages three fundamentally different lifecycle types.
 
 ### 1. Domain Lifecycle
 
@@ -127,7 +127,7 @@ There is no lifecycle protocol — the node is simply alive and responding to co
 
 A gate crossing is announced, not orchestrated. Whichever harness makes
 the gate-approving commit is responsible for publishing a mesh fact
-(e.g. `hecate.gate_passed`, with the domain/division id and which gate in
+(e.g. `macula.gate_passed`, with the domain/division id and which gate in
 the payload, never the topic). Interested harnesses `mesh_watch` for it
 and self-select to pick up the next stage. If two harnesses both act on
 the same document, resolution is git's own: whichever pushes or merges

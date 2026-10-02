@@ -77,7 +77,6 @@ Every CMD desk contains:
 | `*_v1.erl` | Record | Event struct (what happened) |
 | `maybe_*.erl` | Handler | Validates command, dispatches via evoq |
 | `*_responder_v1.erl` | gen_server | HOPE → Command translator (mesh inbound) |
-| `*_to_pg.erl` | gen_server | Subscribes via evoq, broadcasts to pg (internal) |
 | `*_to_mesh.erl` | gen_server | Subscribes via evoq, publishes to mesh (external) |
 
 **Optional:**
@@ -186,9 +185,6 @@ init([]) ->
 init([]) ->
     Children = [
         %% Emitters first — they subscribe to ReckonDB via evoq
-        #{id => capability_announced_v1_to_pg,
-          start => {capability_announced_v1_to_pg, start_link, []},
-          type => worker},
         #{id => capability_announced_v1_to_mesh,
           start => {capability_announced_v1_to_mesh, start_link, []},
           type => worker},
@@ -212,7 +208,6 @@ init([]) ->
 | Event | `{noun}_{past_verb}_v1.erl` | `capability_announced_v1.erl` |
 | Handler | `maybe_{verb}_{noun}.erl` | `maybe_announce_capability.erl` |
 | Responder | `{verb}_{noun}_responder_v1.erl` | `announce_capability_responder_v1.erl` |
-| Emitter (pg) | `emit_{event}_to_pg.erl` | `emit_capability_announced_v1_to_pg.erl` |
 | Emitter (mesh) | `emit_{event}_to_mesh.erl` | `emit_capability_announced_v1_to_mesh.erl` |
 | Policy | `on_{event}_maybe_{verb}_{noun}.erl` | `on_license_revoked_v1_maybe_remove_plugin.erl` |
 | Listener | `on_{fact}_from_{transport}_{command}.erl` | `on_app_available_from_mesh_install_plugin.erl` |

@@ -83,7 +83,7 @@ From `apps/discover_divisions/src/discover_division/emit_division_discovered_v1_
 %%% @doc Emitter: Publish division_discovered_v1 events to mesh
 %%%
 %%% When a division is discovered within a domain, this emitter publishes
-%%% the fact to mesh topic `hecate.domain.division_discovered`.
+%%% the fact to mesh topic `macula.domain.division_discovered`.
 %%%
 %%% The design_division service subscribes to this topic and initiates
 %%% the division's lifecycle.
@@ -96,7 +96,7 @@ From `apps/discover_divisions/src/discover_division/emit_division_discovered_v1_
 -export([start_link/0, emit/1]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
 
--define(TOPIC, <<"hecate.domain.division_discovered">>).
+-define(TOPIC, <<"macula.domain.division_discovered">>).
 
 -record(state, {}).
 
@@ -137,7 +137,7 @@ do_emit(EventData) ->
     logger:debug("[emitter] Publishing division ~s for domain ~s", [DivisionId, VentureId]),
 
     %% Publish FACT to mesh
-    case hecate_mesh_client:publish(?TOPIC, EventData) of
+    case mcl_mesh_client:publish(?TOPIC, EventData) of
         ok ->
             logger:info("[emitter] Published to ~s: division=~s", [?TOPIC, DivisionId]);
         {error, not_connected} ->
@@ -149,7 +149,7 @@ do_emit(EventData) ->
 
 **Key points:**
 - Emitter converts domain events to mesh facts
-- Uses topic naming: `hecate.{domain}.{event_name}`
+- Uses topic naming: `mcl.{domain}.{event_name}`
 - Handles connection failures gracefully
 - Does NOT modify the event data (just publishes)
 
@@ -162,7 +162,7 @@ From `apps/design_division/src/initiate_division/subscribe_to_division_discovere
 ```erlang
 %%% @doc Listener: Subscribe to division_discovered facts from mesh
 %%%
-%%% Subscribes to mesh topic `hecate.domain.division_discovered`.
+%%% Subscribes to mesh topic `macula.domain.division_discovered`.
 %%% When a domain discovers a division, this listener receives the fact
 %%% and forwards it to the policy for processing.
 %%%
@@ -177,7 +177,7 @@ From `apps/design_division/src/initiate_division/subscribe_to_division_discovere
 -export([start_link/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
 
--define(TOPIC, <<"hecate.domain.division_discovered">>).
+-define(TOPIC, <<"macula.domain.division_discovered">>).
 
 -record(state, {
     subscription :: reference() | undefined
@@ -221,7 +221,7 @@ terminate(_Reason, #state{subscription = SubRef}) ->
 %%====================================================================
 
 subscribe_to_topic(Topic) ->
-    case hecate_mesh_client:subscribe(Topic, self()) of
+    case mcl_mesh_client:subscribe(Topic, self()) of
         {ok, SubRef} ->
             logger:info("[listener] Subscribed to ~s", [Topic]),
             SubRef;
@@ -236,7 +236,7 @@ subscribe_to_topic(Topic) ->
     end.
 
 unsubscribe(undefined) -> ok;
-unsubscribe(SubRef) -> hecate_mesh_client:unsubscribe(SubRef).
+unsubscribe(SubRef) -> mcl_mesh_client:unsubscribe(SubRef).
 ```
 
 **Key points:**
@@ -323,7 +323,7 @@ Agent A (discover_divisions)                 Agent B (design_division)
 6. emit_division_discovered_v1_to_mesh:emit/1 (EMITTER)
    ↓
 ═══════════════════════════════════════════════════════════════
-                      MESH (topic: hecate.domain.division_discovered)
+                      MESH (topic: macula.domain.division_discovered)
 ═══════════════════════════════════════════════════════════════
                                                      ↓
 7. subscribe_to_division_discovered (LISTENER)
@@ -371,7 +371,7 @@ design_division/src/
 
 | Component | Pattern | Example |
 |-----------|---------|---------|
-| **Topic** | `{namespace}.{domain}.{fact_name}` | `hecate.domain.division_discovered` |
+| **Topic** | `{namespace}.{domain}.{fact_name}` | `macula.domain.division_discovered` |
 | **Emitter** | `emit_{event}_to_mesh` | `emit_division_discovered_v1_to_mesh` |
 | **Listener** | `subscribe_to_{fact}` | `subscribe_to_division_discovered` |
 | **Policy** | `on_{fact}_{action}_{target}` | `on_division_discovered_maybe_initiate_division` |
@@ -413,4 +413,4 @@ This example teaches:
 - Policy/process manager patterns for cross-domain integration
 
 *Date: 2026-02-08*
-*Origin: Hecate daemon mesh integration architecture*
+*Origin: an mcl-* division's mesh integration architecture*

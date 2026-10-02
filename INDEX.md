@@ -1,13 +1,13 @@
 ---
-title: Hecate Corpus — Index
+title: Macula Corpus — Index
 layer: index
 audience: [agent, human, codegen]
 stage: stable
 ---
 
-# Hecate Corpus
+# Macula Corpus
 
-*Shaping material for Hecate agent runtimes — philosophy, skills, guides, guardrails.*
+*Shaping material for Macula agent runtimes — philosophy, skills, guides, guardrails.*
 
 This index is the entry point. Three reading paths are defined below; each loads a different subset of the corpus for a different consumer.
 
@@ -29,7 +29,7 @@ app, a Phoenix LiveView site, or a Blazor site to it.
 | **Skills** | `skills/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
-| **Templates** | `templates/`, `hecate-app-template/` | Parameterized codegen |
+| **Templates** | `templates/` | Parameterized codegen |
 | **Glossary** | `GLOSSARY.md` | Canonical vocabulary, 5D hierarchy |
 | **Codex** | `CODEX.md` | Narrative booklet distilled from the corpus (draft) |
 
@@ -40,8 +40,8 @@ app, a Phoenix LiveView site, or a Blazor site to it.
 A linear reading path. Stop when you have enough to ship.
 
 ### Foundations (~30 min)
-1. [`SOUL.md`](SOUL.md) — what Hecate IS
-2. [`PERSONALITY.md`](PERSONALITY.md) — how Hecate communicates
+1. [`SOUL.md`](SOUL.md) — what Macula IS
+2. [`PERSONALITY.md`](PERSONALITY.md) — how Macula communicates
 3. [`GLOSSARY.md`](GLOSSARY.md) — the 5D hierarchy, the canonical terms
 4. [`philosophy/DDD.md`](philosophy/DDD.md) — the Dossier Principle (process over data)
 5. [`philosophy/VERTICAL_SLICING.md`](philosophy/VERTICAL_SLICING.md) — features live together
@@ -57,24 +57,26 @@ A linear reading path. Stop when you have enough to ship.
 13. [`philosophy/PROCESS_MANAGERS.md`](philosophy/PROCESS_MANAGERS.md) — cross-Division integration
 
 ### Process (~30 min)
-14. [`philosophy/HECATE_DOMAIN_LIFECYCLE.md`](philosophy/HECATE_DOMAIN_LIFECYCLE.md) — Domain → Division → Process model
+14. [`philosophy/DOMAIN_LIFECYCLE.md`](philosophy/DOMAIN_LIFECYCLE.md) — Domain → Division → Process model
 15. [`philosophy/alc/README.md`](philosophy/alc/README.md) — Planning + Crafting (the 2-process ALC)
-16. [`philosophy/HECATE_WALKING_SKELETON.md`](philosophy/HECATE_WALKING_SKELETON.md) — minimum vertical implementation
+16. [`philosophy/WALKING_SKELETON.md`](philosophy/WALKING_SKELETON.md) — minimum vertical implementation
 
 ### Discipline (~45 min)
 17. [`skills/NAMING_CONVENTIONS.md`](skills/NAMING_CONVENTIONS.md) — the strict naming rules
 18. [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) — demon index (skim first)
 19. [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md) — Demon 41's cure
-20. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Hecate's position vs aggregateless ES / DCB
+20. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Macula's position vs aggregateless ES / DCB
 21. [`philosophy/INTEGRATION_TRANSPORTS.md`](philosophy/INTEGRATION_TRANSPORTS.md) — HOPE / FACT / FEEDBACK
 
 ### Production (read when relevant)
-21. [`philosophy/HECATE_TIER_MODEL.md`](philosophy/HECATE_TIER_MODEL.md) — L0-L4 runtime layers
+21. [`philosophy/TIER_MODEL.md`](philosophy/TIER_MODEL.md) — L0-L2 runtime layers
 22. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
+23. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
+24. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
 
 ---
 
-## Reading Path 2 — Agent runtime (Martha, Apprentices, code review)
+## Reading Path 2 — Agent runtime (the crew, Apprentices, code review)
 
 Skills are loaded contextually. The retrieval system should hold these always-on as system context, then layer on topic-specific docs.
 
@@ -89,7 +91,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 
 | User intent | Load |
 |-------------|------|
-| "Design a new Division" | `philosophy/CARTWHEEL.md`, `philosophy/HECATE_DOMAIN_LIFECYCLE.md`, `philosophy/DDD.md` |
+| "Design a new Division" | `philosophy/CARTWHEEL.md`, `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/DDD.md` |
 | "Add a Desk" | `philosophy/CARTWHEEL.md`, `skills/NAMING_CONVENTIONS.md`, `examples/VERTICAL_API_HANDLERS.md` |
 | "Write a Process Manager" | `philosophy/PROCESS_MANAGERS.md`, `examples/PROJECTIONS.md` (similar pattern) |
 | "Set up integration" | `philosophy/INTEGRATION_TRANSPORTS.md`, `skills/HOPE_FACT_SIDE_EFFECTS.md`, `examples/MESH_INTEGRATION.md` |

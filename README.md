@@ -1,17 +1,15 @@
 ---
-title: Hecate Corpus
+title: Macula Corpus
 layer: index
 audience: [agent, human]
 stage: stable
 ---
 
-# Hecate Corpus
+# Macula Corpus
 
-*Shaping material for Hecate agent runtimes — philosophy, skills, guides, guardrails.*
+*Shaping material for Macula agent runtimes — philosophy, skills, guides, guardrails.*
 
-This repository is the corpus that shapes how Hecate agents think and work. It contains no runtime code. It contains the doctrine that runtime agents (Martha, Apprentices, Codegen) load to align their behavior with Hecate's principles.
-
-> **Renamed 2026-05-26.** Old URL still works via 301 redirect. The old name was misleading — no agent runtime lives here, only the corpus that shapes agents.
+This repository is the corpus that shapes how Macula agents think and work. It contains no runtime code. It contains the doctrine that runtime agents (the crew roles, Apprentices, Codegen) load to align their behavior with Macula's principles.
 
 ---
 
@@ -20,12 +18,12 @@ This repository is the corpus that shapes how Hecate agents think and work. It c
 | You are | Read |
 |---------|------|
 | Human, first contact | [`INDEX.md`](INDEX.md) → follow Reading Path 1 (Apprentice) |
-| Agent runtime (Martha) | [`INDEX.md`](INDEX.md) → Reading Path 2 (Agent runtime) |
+| Agent runtime (the crew) | [`INDEX.md`](INDEX.md) → Reading Path 2 (Agent runtime) |
 | Tier-3 codegen LLM | [`INDEX.md`](INDEX.md) → Reading Path 3 (Codegen) |
 | Looking for a term | [`GLOSSARY.md`](GLOSSARY.md) |
 | Reviewing code | [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) |
 | "How do I actually run/build X?" (practical, not architectural) | [`guides/FAQ.md`](guides/FAQ.md) |
-| Want a narrative book version | [`CODEX.md`](CODEX.md) → The Hecate Codex (draft) |
+| Want a narrative book version | [`CODEX.md`](CODEX.md) → The Macula Codex (draft) |
 
 ---
 
@@ -39,7 +37,7 @@ This repository is the corpus that shapes how Hecate agents think and work. It c
 | **Skills** | `skills/`, `skills/antipatterns/`, `skills/codegen/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
-| **Templates** | `templates/`, `hecate-app-template/` | Parameterized codegen |
+| **Templates** | `templates/` | Parameterized codegen |
 
 Full layout and reading paths in [`INDEX.md`](INDEX.md).
 
@@ -47,7 +45,7 @@ Full layout and reading paths in [`INDEX.md`](INDEX.md).
 
 ## The 5D Hierarchy
 
-The structural backbone Hecate uses everywhere:
+The structural backbone Macula uses everywhere:
 
 ```
 Domain (problem space)
@@ -58,13 +56,13 @@ Domain (problem space)
        Dossier flows through Desks, accumulating Slips
 ```
 
-See [`GLOSSARY.md`](GLOSSARY.md) for full definitions. Note the explicit override notice on `Domain` — Hecate Domain ≠ DDD bounded-context-domain.
+See [`GLOSSARY.md`](GLOSSARY.md) for full definitions. Note the explicit override notice on `Domain` — Macula Domain ≠ DDD bounded-context-domain.
 
 ---
 
 ## Contributing
 
-Changes to this corpus shape how every Hecate agent thinks. They are not casual edits.
+Changes to this corpus shape how every Macula agent thinks. They are not casual edits.
 
 - **Philosophy** changes affect mental models across all agents
 - **Skills** changes affect generated code

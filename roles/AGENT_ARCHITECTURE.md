@@ -1,11 +1,11 @@
 ---
-title: Martha Agent Architecture
+title: Agent Role Architecture
 layer: role
 audience: [agent]
 stage: stable
 ---
 
-# Martha Agent Architecture
+# Agent Role Architecture
 
 *How AI agents collaborate to guide the domain lifecycle.*
 
@@ -19,7 +19,7 @@ stage: stable
 2. **Human-in-the-loop at defined gates** — the human can always intervene, but 5 mandatory gates require explicit approval
 3. **Multi-provider, advisory not enforced, always** — a role names a capability tier as *guidance* for whichever harness picks it up; no service in this architecture calls a model on an agent's behalf, so there's no context where the tier is anything but advisory (see "Model Routing")
 4. **Self-hosted, when a harness's own choice** — Ollama/local models are a fine, cheap option for a harness to reach for on trivial tasks; not a routing decision this architecture makes for it
-5. **Retrieve before reasoning** — Domain Expert researches via `hecate-rag`/web before opining; DevOps retrieves the matching corpus template/antipattern list before generating. Coding especially is close to mechanical once the corpus is in `hecate-rag` — the interesting failure mode shifts to "wrong template retrieved," which is exactly what QA checks for
+5. **Retrieve before reasoning** — Domain Expert researches via `mcl-rag`/web before opining; DevOps retrieves the matching corpus template/antipattern list before generating. Coding especially is close to mechanical once the corpus is in `mcl-rag` — the interesting failure mode shifts to "wrong template retrieved," which is exactly what QA checks for
 
 ---
 
@@ -50,7 +50,7 @@ A tier is a *request*, not a guarantee — see "Model Routing" for who actually 
 | 6 | **Mentor** | Continuous, cross-cutting — quality observation | T3 (live) / T1 (gate coaching, post-mortem) | — | `mentor.md` |
 
 Two things are deliberately not roles: pipeline routing/kanban tracking
-is `hecate-martha`'s own process-manager logic — a DAG lookup against
+is process-manager logic — a DAG lookup against
 task state, not reasoning work — and system monitoring is ordinary
 health-endpoint/metrics infrastructure, not an agent. An incident
 re-engages the roster reactively: DevOps first (it owns deployment), QA
@@ -64,25 +64,25 @@ lifecycle phases."
 ## Model Routing
 
 There is exactly one execution context: **an agent (a harness, channel
-(b) of `HECATE_AUTH_MODEL.md`) does the reasoning, always, on its own
+(b) of `AUTH_MODEL.md`) does the reasoning, always, on its own
 already-configured model.** No service in this architecture calls a
 model on an agent's behalf — full design in
 `macula-mcp/plans/PLAN_MARTHA_MULTI_AGENT_MCP.md`.
 
 "Interactive" and "background" are a scheduling distinction — is a human
 watching this particular session right now — not an architectural one.
-A background task (e.g. "Generate Division," per `HECATE_TASK_MODEL.md`)
+A background task (e.g. "Generate Division," per `TASK_MODEL.md`)
 still runs inside some harness's own agent session; it's just not the
-one session a human happens to be watching turn-by-turn. `hecate-martha`
-tracks task state and publishes when a task unlocks (see
-`PLAN_MARTHA_MULTI_AGENT_MCP.md`'s "Multi-agent coordination"); it never
-picks up the work itself, and it never calls a model.
+one session a human happens to be watching turn-by-turn. Task-state
+tracking and unlock publication are process-manager mechanics (see
+`PLAN_MARTHA_MULTI_AGENT_MCP.md`'s "Multi-agent coordination"); nothing
+picks up the work itself, and nothing calls a model.
 
 The T0–T1 tier vocabulary is advisory in every case, without exception —
 a role names a tier as guidance for whichever harness picks it up.
-`macula-mcp`/`hecate-martha` cannot see or control what model a harness
+`macula-mcp` cannot see or control what model a harness
 has configured, so there is no context where the tier is anything but
-advisory. See `HECATE_AUTH_MODEL.md` and the plan doc above for the full
+advisory. See `AUTH_MODEL.md` and the plan doc above for the full
 reasoning, including the honest tradeoff (no enforced quality floor for
 interactive roles).
 
@@ -140,7 +140,7 @@ Five mandatory checkpoints where the human must approve before the pipeline adva
 | **Release Gate** | DevOps has version-bumped and CI is green | Publish / deploy | Final go/no-go for shipping |
 
 Between gates, agents work autonomously. Gate escalation is
-`hecate-martha`'s own process-manager logic, not an agent's judgment
+process-manager logic, not an agent's judgment
 call.
 
 ---

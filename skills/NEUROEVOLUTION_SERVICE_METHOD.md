@@ -2,7 +2,7 @@
 
 **This exists so that a stranger's problem can be turned into a running mesh
 service that breeds controllers for it, or REFUSED with a reason, without
-rediscovering from scratch what hecate-dronex already paid for.**
+rediscovering from scratch what a since-removed service already paid for.**
 
 Draft, 2026-08-09. Classification: **BUILD**. It asserts nothing about the world.
 It is a procedure and a set of invariants, and it gets tests and a commit, not a
@@ -20,11 +20,11 @@ beside the engineering.
 |---|---|---|---|
 | substrate | `macula` SDK | 10.17.0 | realm-scoped pub/sub, unary RPC, streaming RPC, signed DHT records, content blobs, OTP dist over the mesh |
 | substrate | `macula-station` | `:main` image (no version tag published yet), 7-station fleet | routing, SWIM, Kademlia, bloom-filter fan-out, single advertiser per `(realm, procedure)` |
-| substrate | `macula-portal` (the repo formerly named `macula-realm`) | 0.4.0 | realm authority, certs, membership endorsement |
-| scaffold | `hecate_om` | 0.23.0 | one behaviour, one `boot/1`, identity, capabilities, `/health`, reckon-db store wiring, `rebar3 new hecate_service` |
+| substrate | `macula-portal` | 0.4.0 | realm authority, certs, membership endorsement |
+| scaffold | `mcl_om` | 0.23.0 | one behaviour, one `boot/1`, identity, capabilities, `/health`, reckon-db store wiring, `rebar3 new mcl_service` |
 | engine | `faber_tweann` | 2.4.0 | `network_evaluator` (the useful part), `sep_cma_es`, `mu_lambda_es`, CfC, plasticity, Rust NIFs, `network_onnx` |
 | store | reckon-db + evoq + reckon-evoq | 5.11 / 1.23 / 2.7 | per-service local event store, streams, snapshots |
-| worked example | `hecate-dronex` | paused fleet-wide (it starved the resident minds sharing its boxes); code intact | the whole method, as run |
+| worked example | `a since-removed service` | paused fleet-wide (it starved the resident minds sharing its boxes); code intact | the whole method, as run |
 | exhibit | `beam-campus-net` | live | read models, `/research/workbench/dronex` |
 
 **Two corrections to what people believe about this stack, both load-bearing.**
@@ -378,7 +378,7 @@ and nothing can check it.
 replayable claim under a pinned runtime.** Four steps, ranked by cost, and none
 of them is research:
 
-1. **Sign the identity.** `hecate_om` already holds a realm-signed service cert
+1. **Sign the identity.** `mcl_om` already holds a realm-signed service cert
    and does not use it for this. Signing island facts with it converts
    "defeats accident" into "defeats impersonation by anyone outside the realm".
    Cheap, and it is the one that unblocks everything else.
@@ -411,7 +411,7 @@ not to build.
 |---|---|---|
 | **Adversarial scenario generation** | breed the cases that break a customer's existing controller; hand back a coverage map of where it fails | Passes 1, 2, 5, 7. **Q3 is not free and Q4 is the binding constraint**, and both are on the customer's side of the fence. See below. Still the strongest fit in the list |
 | **Dispatch and rebalancing under stochastic demand** | bike-share van routing, yard and container moves, crew reassignment after disruption, ambulance posting | Passes 1 to 5. Fails 7 for a single operator, passes it for a sector body. The corpus's own top pick, and it is Raf's own field |
-| **Local energy flexibility against a price or frequency signal** | battery, heat pump and EV dispatch against Belgian imbalance price; frequency containment | Passes 1 to 4 cleanly, and the capture is **already running** in `hecate-grid` and `hecate-archive`. ⚠ Fails 2 in spirit: droop control and MPC are mature and very strong here, so the honest arm is "beat the operator's own published forecast", which the exploration doc calls three rungs too high |
+| **Local energy flexibility against a price or frequency signal** | battery, heat pump and EV dispatch against Belgian imbalance price; frequency containment | Passes 1 to 4 cleanly, and the capture is **already running** in the org's grid and archive work. ⚠ Fails 2 in spirit: droop control and MPC are mature and very strong here, so the honest arm is "beat the operator's own published forecast", which the exploration doc calls three rungs too high |
 | **Water and pump network scheduling** | discrete pumps, tank levels as endogenous state, tariffs exogenous, hard level constraints | Passes 1 to 6 well. Quietly the best classical control fit, and utilities are public or cooperative, which suits the European anchor |
 | **Contested airspace and perimeter** | counter-UAS, which is dronex's own second act | Passes all seven, including 7, because parties naturally hold different adversaries. ⚠ Dual-use, and the licence and export questions arrive before the engineering ones |
 | **Process control with a thresholded quality constraint** | greenhouse climate, fermentation, kilns and drying | Passes 2 and 3. ⚠ Fails on simulation fidelity, which is the whole problem. The sim-to-real gap is the product, not a detail |
@@ -518,5 +518,5 @@ result: the instrument is already deployed.
    > as dronex documentation with the nouns put back.
 
    Until that second pass exists, the title sentence, "without rediscovering what
-   hecate-dronex already paid for", is **untested**. It is the document's central
+   a since-removed service already paid for", is **untested**. It is the document's central
    claim about itself and it currently has n=1.

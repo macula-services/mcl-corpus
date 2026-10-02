@@ -7,7 +7,7 @@ stage: stable
 
 # SLICE_AUDIT.md — Auditing CMD & QRY Apps
 
-_A repeatable workflow for reviewing vertical slices in any Hecate CMD or QRY app._
+_A repeatable workflow for reviewing vertical slices in any Macula CMD or QRY app._
 
 **Date:** 2026-02-12
 **Origin:** guide_venture_lifecycle / guide_division_alc / guide_node_lifecycle audit session
@@ -156,7 +156,7 @@ Every desk is a complete capability with three aspects:
 
 | Aspect | What It Is | Example |
 |--------|-----------|---------|
-| **Inboxes** | Internal (pg) and external (mesh) topics this desk listens for | `discovery_completed_v1` from domain lifecycle |
+| **Inboxes** | External (mesh) topics this desk listens for | `discovery_completed_v1` from domain lifecycle |
 | **Policies** | Decision rules: when event/fact arrives → dispatch command? | "When discovery completes, declare expertise with discovered domains" |
 | **Emitters** | Facts this desk publishes to the mesh after success | `expertise_declared_v1` to mesh topic |
 
@@ -172,7 +172,7 @@ apps/manage_capabilities/src/
 │
 └── on_discovery_completed_declare_expertise/           # PM sibling slice
     ├── on_discovery_completed_declare_expertise_sup.erl
-    └── on_discovery_completed_declare_expertise.erl    # pg:join + dispatch
+    └── on_discovery_completed_declare_expertise.erl    # evoq_event_handler + dispatch
 ```
 
 **If you see `on_*` logic nested inside a desk directory** → it should be lifted out into its own sibling slice. `on_*` directories at the top level of `src/` are the discoverability anchor for cross-domain integration.
@@ -306,4 +306,4 @@ The event becomes `identity_amended_v1`, `capability_amended_v1`.
 
 ---
 
-_This workflow was developed during the first full audit of hecate-daemon's CMD and QRY apps. It catches naming violations, missing lifecycle management, projection gaps, and architectural drift._
+_This workflow was developed during the first full audit of a division's CMD and QRY apps. It catches naming violations, missing lifecycle management, projection gaps, and architectural drift._

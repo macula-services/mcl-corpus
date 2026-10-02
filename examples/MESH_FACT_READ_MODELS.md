@@ -12,8 +12,8 @@ stage: stable
 > **Relationship to [MESH_INTEGRATION.md](MESH_INTEGRATION.md):** that example's FACTS-vs-EVENTS
 > distinction still holds — a mesh fact is external truth, never a domain event. But its
 > Correct Way flow (`FACT → LISTENER → COMMAND → AGGREGATE → DOMAIN EVENT → projected`)
-> assumes the receiving side is a full Hecate Division with an event-sourced aggregate to
-> dispatch a command to. A `hecate-om`-based edge service (`hecate-services/hecate-X`) is
+> assumes the receiving side is a full Macula Division with an event-sourced aggregate to
+> dispatch a command to. A `mcl-om`-based edge service (`macula-services/mcl-<name>`) is
 > not that: no desks, no aggregate, no event store — just a mesh-fact listener maintaining a
 > direct read model. That shorter shape still needs a Policy step, for a different reason:
 > not command validation, but the admit/supersede/expire decision this example is about.
@@ -61,7 +61,7 @@ liveness scheme.
 
 ## Wrong Way: Listener straight to Projection, crawl for completeness
 
-This is real, shipped code — `hecate-services/hecate-stations`, as of 2026-08-29, not a
+This is real, shipped code — `macula-services/mcl-stations`, as of 2026-08-29, not a
 hypothetical:
 
 ```erlang
@@ -112,7 +112,7 @@ This antipattern:
 
 ## Correct Way: Policy owns admit / supersede / expire
 
-### Receiving Facts (Listener) — unchanged in shape, `hecate_om_pubsub` does this already
+### Receiving Facts (Listener) — unchanged in shape, `mcl_om_pubsub` does this already
 
 ```erlang
 %% my_x_service.erl
@@ -212,7 +212,7 @@ The crawl-based half of the Wrong Way example doesn't just risk staleness — th
 serves it is explicit that it isn't mesh-wide complete in the first place. Coverage from
 one relay is fine when the whole fleet fits in one relay's local replica set (true at ten
 entities), and silently wrong once it doesn't (true at thousands). The reactive half —
-`subscribe_records`/`hecate_om_pubsub` subscriptions — doesn't have that ceiling: every
+`subscribe_records`/`mcl_om_pubsub` subscriptions — doesn't have that ceiling: every
 live entity's own republish-before-TTL cycle delivers it to every listener still
 subscribed, mesh-wide, via the same multi-hop pubsub relay every other fact already uses.
 A listener that stays connected converges to complete coverage within one TTL cycle of the
@@ -255,8 +255,8 @@ initial convergence*, never as the mechanism completeness depends on.
 ## Training Note
 
 This example teaches:
-- Why an edge service with no aggregate (a `hecate-om`-based `hecate-services/hecate-X`
-  daemon) still needs a Policy step between Listener and Projection, for a different
+- Why an edge service with no aggregate (a `mcl-om`-based `macula-services/mcl-<name>`
+  service) still needs a Policy step between Listener and Projection, for a different
   reason than command validation: the admit/supersede/expire decision.
 - Why a DHT-crawl-based discovery mechanism silently stops being complete at scale, and
   why a reactive mesh-fact subscription doesn't have that ceiling.
@@ -267,5 +267,5 @@ This example teaches:
   function, no mesh call inside it) → Projection (dumb write + read-time expiry filter).
 
 *Date: 2026-08-29*
-*Origin: `hecate-services/hecate-stations` staleness/scale investigation — a real,
+*Origin: `macula-services/mcl-stations` staleness/scale investigation — a real,
 verified gap in shipped code, not a hypothetical.*

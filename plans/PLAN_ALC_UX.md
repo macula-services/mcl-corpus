@@ -1,11 +1,11 @@
 ---
-title: "Plan: Hecate ALC User Experience"
+title: "Plan: The ALC — Division Application Lifecycle User Experience"
 layer: plan
 audience: [human]
 stage: draft
 ---
 
-# Plan: Hecate ALC User Experience
+# Plan: The ALC — Division Application Lifecycle User Experience
 
 ## Status: DRAFT - Awaiting Approval
 
@@ -58,12 +58,12 @@ Three distinct modes with progressive context:
 When TUI starts, detect domain from:
 
 1. **Git remote URL** (preferred) - matches against known domains
-2. **`.hecate/domain.json`** in CWD or parent directories (fallback)
+2. **`.mcl/domain.json`** in CWD or parent directories (fallback)
 3. **No match** - start in Chat mode
 
 ```
 $ cd ~/work/auth-system
-$ hecate-tui
+$ macula-tui
 
 # Detects domain from git remote → auto-enters Domain mode
 # "Resuming domain: auth-system"
@@ -77,7 +77,7 @@ $ hecate-tui
 
 ```
 ┌────────────────────────────────────────────────────────────────┐
-│ Hecate: How can I help you today?                              │
+│ Macula: How can I help you today?                              │
 │                                                                │
 │ You: What's the weather like?                                  │
 │                                                                │
@@ -92,7 +92,7 @@ $ hecate-tui
 ┌────────────────────────────────────────────────────────────────┐
 │ 🔥 auth-system                                                 │
 ├────────────────────────────────────────────────────────────────┤
-│ Hecate: This domain has 2 divisions. Which one?               │
+│ Macula: This domain has 2 divisions. Which one?               │
 │                                                                │
 ├────────────────────────────────────────────────────────────────┤
 │ 🤖 claude-3.5-sonnet │ ● healthy │ [i] Insert                  │
@@ -105,7 +105,7 @@ $ hecate-tui
 ┌────────────────────────────────────────────────────────────────┐
 │ 🔥 auth-system › 🎡 user-registration › 📍 DnA │ 🤖 claude     │
 ├────────────────────────────────────────────────────────────────┤
-│ Hecate: What authentication method should we use?              │
+│ Macula: What authentication method should we use?              │
 │                                                                │
 ├────────────────────────────────────────────────────────────────┤
 │ ● healthy │ [i] Insert                                         │
@@ -195,18 +195,18 @@ Note: Model indicator moves to header in Division mode (phase-specific models).
 | Step | Activity | Output |
 |------|----------|--------|
 | 1a | Create VISION document (200-500 words) | `VISION.md` |
-| 1b | Hecate conversation to refine vision | Agreement on vision |
+| 1b | Macula conversation to refine vision | Agreement on vision |
 | 1c | Event Storming workshop | `EVENT_STORMING.md`, Events/Facts |
 | 1d | Context Map creation | `CONTEXT_MAP.md`, `context_map.yaml` |
 
 **Event Storming UX (Hybrid ASCII):**
 
 ```
-Hecate: Let's discover events. What happens when a user arrives?
+Macula: Let's discover events. What happens when a user arrives?
 
 You: They sign up with email or OAuth
 
-Hecate: I've captured:
+Macula: I've captured:
 
   ┌──────────────────┐    ┌──────────────────┐
   │ 🟧 UserSignedUp  │    │ 🟧 OAuthLinked   │
@@ -265,10 +265,10 @@ After INCEPTION completes:
 
 - **Skip phases**: Small features can go straight to TnI
 - **Parallel divisions**: Work on multiple divisions simultaneously
-- **Soft suggestions**: Hecate suggests phase transitions, no hard gates
+- **Soft suggestions**: Macula suggests phase transitions, no hard gates
 
 ```
-Hecate: You've been exploring requirements for a while.
+Macula: You've been exploring requirements for a while.
         Consider `/phase anp` when ready to start designing.
 ```
 
@@ -280,8 +280,8 @@ Hecate: You've been exploring requirements for a while.
 
 | Category | Examples | Invoked By |
 |----------|----------|------------|
-| **LLM Tools** | Read, Edit, Write, Grep, WebSearch | Hecate directly |
-| **User Tools** | nvim, yazi, fzf, lazygit | Hecate launches, user interacts |
+| **LLM Tools** | Read, Edit, Write, Grep, WebSearch | Macula directly |
+| **User Tools** | nvim, yazi, fzf, lazygit | Macula launches, user interacts |
 | **Hybrid Tools** | Terminal (Bash), Browser | Either |
 
 ### 5.2 Phase-Specific Tool Access
@@ -315,7 +315,7 @@ Hecate: You've been exploring requirements for a while.
 ### 5.4 User Tool Configuration
 
 ```toml
-# ~/.config/hecate-tui/config.toml
+# ~/.config/macula-tui/config.toml
 
 [tools]
 editor = "nvim"
@@ -335,7 +335,7 @@ find = "f"
 ### 5.5 Tool Launch UX
 
 ```
-Hecate: I've created the initial desk structure:
+Macula: I've created the initial desk structure:
 
   apps/manage_users/src/register_user/
   ├── register_user_v1.erl
@@ -377,7 +377,7 @@ You: e
 ```
 [User returns from nvim]
 
-Hecate: Welcome back. I noticed you made changes:
+Macula: Welcome back. I noticed you made changes:
 
   Modified (unstaged):
     apps/manage_users/src/register_user/maybe_register_user.erl
@@ -392,7 +392,7 @@ Hecate: Welcome back. I noticed you made changes:
 ```
 [User ran `git pull` in another terminal]
 
-Hecate: I noticed the repository was updated externally:
+Macula: I noticed the repository was updated externally:
 
   3 new commits from origin/main:
     - feat: add password reset flow (alice)
@@ -426,7 +426,7 @@ github.com/your-org/
 │   ├── repos.yaml
 │   ├── inception/
 │   │   └── EVENT_STORMING.md
-│   └── .hecate/
+│   └── .mcl/
 │       └── domain.json
 │
 ├── auth-daemon/                    # CMD + QRY (Erlang umbrella)
@@ -483,7 +483,7 @@ bounded_contexts:
 - [x] Mode state machine (Chat → Domain → Division) - `internal/alc/context.go`, `internal/alc/state.go`
 - [x] Header bar component (appears/disappears based on mode) - `internal/app/app.go:renderContextHeader()`
 - [x] Navigation commands (`/domain`, `/domains`, `/division`, `/divisions`, `/back`, `/chat`) - `internal/commands/domain.go`
-- [x] Context detection on startup (git remote, `.hecate/domain.json`) - `internal/alc/detect.go`
+- [x] Context detection on startup (git remote, `.mcl/domain.json`) - `internal/alc/detect.go`
 
 ### Phase 2: Domain Management
 - [ ] Domain CRUD via daemon API

@@ -7,7 +7,7 @@ stage: stable
 
 # Testing Erlang Templates (TnI Guidelines)
 
-Parameterized test templates for Hecate domain lifecycle apps.
+Parameterized test templates for Macula domain lifecycle apps.
 Proven through `setup_venture` + `query_ventures` pilot (100 tests, 4 layers).
 
 ---
@@ -19,7 +19,7 @@ Proven through `setup_venture` + `query_ventures` pilot (100 tests, 4 layers).
 | **L1 Dossier** | Aggregate state reconstruction | `apply_event/2` chains | EUnit | None |
 | **L2 Domain** | Commands, handlers, execute/2 state machine | Business rules | EUnit | None |
 | **L3 Integration** | CMD to PRJ flow | Projection + Query | EUnit + SQLite | SQLite (temp) |
-| **L4a pg Emission** | pg broadcast delivery | Observable effects | EUnit + pg | pg scope |
+| **L4a pg Emission** | mesh publish delivery | Observable effects | EUnit + pg | pg scope |
 | **L4b Projection Rows** | Projection row verification | Column values, labels | EUnit + SQLite | SQLite (temp) |
 | **L4c Dispatch** | ReckonDB event persistence | `dispatch/1` to store | EUnit + ReckonDB | ReckonDB (temp store) |
 
@@ -260,45 +260,27 @@ teardown(#{}) ->
 
 ## Layer 4: Side Effect Tests
 
-### 4a. pg Emission Tests
+### 4a. Mesh Emission Tests
 
-**File:** `apps/{CmdApp}/test/{CmdApp}_side_effects_tests.erl`
+**File:** `apps/{CmdApp}/test/{CmdApp}_emission_tests.erl`
+
+The publish path itself is verified by the live check (a real mesh round
+trip), not by a unit test. The unit test pins what a unit test can:
+which event the emitter subscribes to, its replay policy, and the wire
+shape of the fact it builds (the same shape `{app}_facts_tests` pins).
 
 ```erlang
-pg_emission_test_() ->
-    {setup,
-     fun start_pg/0,
-     fun stop_pg/1,
-     [fun emit_{event}_reaches_members/0, ...]}.
+interested_in_test() ->
+    ?assertEqual([<<"{event_type}">>], {EmitterModule}:interested_in()).
 
-start_pg() ->
-    case pg:start(pg) of
-        {ok, Pid} -> {started, Pid};
-        {error, {already_started, Pid}} -> {existing, Pid}
-    end.
+replay_policy_test() ->
+    %% Lifecycle facts must not re-publish on a store replay.
+    ?assertEqual(skip, {EmitterModule}:replay_policy()).
 
-stop_pg({started, Pid}) -> gen_server:stop(Pid);
-stop_pg({existing, _}) -> ok.
-
-emit_{event}_reaches_members() ->
-    Self = self(),
-    Pid = spawn_link(fun() ->
-        pg:join(pg, {group_atom}, self()),
-        receive Msg -> Self ! {got, Msg} end
-    end),
-    timer:sleep(10),
-    Event = #{<<"event_type">> => <<"{event_type}">>, ...},
-    ok = {EmitterModule}:emit(Event),
-    receive
-        {got, {{group_atom}, E}} -> ?assertEqual(Event, E)
-    after 1000 -> ?assert(false)
-    end.
-
-emit_with_no_members() ->
-    ?assertEqual(ok, {EmitterModule}:emit(#{...})).
-
-emit_reaches_multiple_members() ->
-    %% Spawn N processes, join group, emit, verify all received
+fact_shape_test() ->
+    Event = #{data => #{<<"id">> => <<"test-1">>}},
+    Fact = {EmitterModule}:to_fact(Event),
+    ?assertEqual({fact_keys}, lists:sort(maps:keys(Fact))).
 ```
 
 ### 4b. Projection Row Verification Tests
