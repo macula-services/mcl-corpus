@@ -101,3 +101,19 @@ and `this reverses`, but treat that list as a floor, not a ceiling — a
 README `Status` section is worth a manual skim for this shape even when
 the automated check is clean, since a `Status`/`Changelog` heading is
 exactly where a rewritten history feels most natural to leave in place.
+
+---
+
+## 🔥🔥🔥 Demon 74: The Fleet Table Said Loopback; the Box Binds 0.0.0.0
+
+**Date exorcised:** 2026-10-04
+**Where it appeared:** macula-fleet `PORTS.md` described mcl-tube's owner web UI as "LOOPBACK only" while the deployed compose sets `MCL_TUBE_HTTP_IP=0.0.0.0` (LAN). An agent read the table, repeated the stale claim as the house pattern, and leaned a design decision on it.
+**Cost:** a wrong "house pattern" statement used to justify a new service's bind posture, plus a correction round across the fleet table and the tube README.
+
+### The Lie
+
+"PORTS.md is deployment truth." It is a table that drifts. The compose in `edge/scripts/` — and the box — are the truth.
+
+### The Cure
+
+Before citing a bind, port, or limit from a table, check the deployed compose, and when in doubt the box. Correct the table at its source; state current fact, not the history of the mistake.

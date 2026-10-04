@@ -170,37 +170,25 @@ Multiple versions and targets coexist in the same desk directory.
 
 ---
 
-## Mesh Procedure Prefix
+## Mesh Procedure Naming
 
-Every mesh capability advertises under `{service}.{verb}` — the same
-shape as a route, over the mesh instead of HTTP. `{service}` is the
-service's own Erlang app/module name, **underscored, never hyphenated**:
-`mcl_mail.reply_to_letter`, not `mcl-mail.reply_to_letter`, and
-not the GitHub repo's own hyphenated spelling.
-
-**Why underscore, not the repo's hyphenated name:** an Erlang atom can't
-contain a hyphen without quoting, and most deployed services already use
-their app name as the prefix (`mcl_mail`, `mcl_citizens`,
-`mcl_stations`) — matching that majority means one name to keep in
-your head, not two. `mcl-rag` is the one outlier that doesn't yet
-follow this.
-
-**Wire reality check (2026-10).** As deployed today (mcl-om 0.36), an
-`mcl_om` capability registers on the wire as `Org/Name` — mcl_echo is
-`mcl-echo/echo`, mcl-rag's seventeen are `mcl-rag/<name>` — and the
-version travels as the capability map's `version` field, not as a `_v1`
-suffix in the name. The `{service}.{verb}` dot form is the standard for
-new names where the org gives the prefix; do not expect an underscored
-dot name to resolve on the current fleet.
+Every mesh capability advertises on the wire as `Org/Name`: the org
+gives the prefix, and `Name` is the capability's own. `Name` is
+**verb-first snake_case**: `answer_query`, `get_source_by_id`,
+`get_limits`, `set_limits`. A service's headline capability is a bare
+noun (`mcl-echo/echo`). Dots belong only to framework-reserved
+primitives (`_dht.find_record`) and the framework's synthetic
+`<service>.describe_capabilities`; a service capability never names
+itself `resource.verb`.
 
 **A service's `capabilities/0` entry and its actual advertised procedure
 name must be the same name.** `mcl_embedder`'s own `capabilities/0`
-currently advertises `embed` (dropping "-er") while the real, callable
-procedure it registers separately is `mcl-embed/embed` — a different
-namespace entirely. Two different names for the same one thing is
-exactly the failure mode this rule exists to prevent: a caller
-discovering `embed` via the DHT gets `unknown_next_peer` calling it by
-that name, because the working procedure was never that name at all.
+advertises `embed` (dropping "-er") while the real, callable procedure
+it registers separately is `mcl-embed/embed` — a different namespace
+entirely. Two different names for the same one thing is exactly the
+failure mode this rule exists to prevent: a caller discovering `embed`
+via the DHT gets `unknown_next_peer` calling it by that name, because
+the working procedure was never that name at all.
 
 **A service with no procedures needs no prefix.** A pubsub-only
 participant (e.g. `mcl_whiteboard`, which publishes to topics but
