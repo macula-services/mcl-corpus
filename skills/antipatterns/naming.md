@@ -238,3 +238,19 @@ See also: [SLICE_AUDIT.md](../SLICE_AUDIT.md) for the full audit workflow.
 ---
 
 *Add more demons as we exorcise them.* 🔥🗝️🔥
+
+---
+
+## 🔥🔥🔥 Demon 73: Resource-Dotted Procedure Names Invented in a Plan
+
+**Date exorcised:** 2026-10-04
+**Where it appeared:** the guardian control surface (PLAN_GUARDIAN_CONTROL_SURFACE.md) shipped `limits.get`, `limits.set` and `limits.set_operator` — a `{resource}.{verb}` shape invented without consulting `skills/NAMING_CONVENTIONS.md`. It became the only dotted service capability on the mesh.
+**Cost:** a wire contract caught wrong only after admission and a live deploy; a release (mcl_om 0.37.0) minutes old needed a renaming pass; design rework mid-rollout.
+
+### The Lie
+
+"REST-style `resource.action` is a fine mesh convention." The mesh has no resource namespace inside procedure names — the org is the prefix, and the name is verb-first snake_case (`get_limits`, `set_limits`). Dots are framework-reserved.
+
+### The Cure
+
+Name service capabilities verb-first snake_case, and consult `NAMING_CONVENTIONS.md` before naming anything on the wire. The operator-tier variant (`set_operator_limits`) died with the design: humans use deploy config and the service's admin UI, not a mesh procedure — so a tier distinction never needs to leak into a procedure name.

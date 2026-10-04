@@ -78,6 +78,8 @@ stage: reversed
 | 62 | A Test That Passes For a Different Layer's Reason | A TTL-config-passthrough test slept past `expires_at` and asserted the doc was gone — passed even with the passthrough completely stubbed out, because barrel_docdb's own reads treat expired docs as gone unconditionally, sweep config or not. Caught by stubbing the fix and demanding RED first | 2026-09-05 |
 | 63 | Existence Mistaken for Freshness in a Build Cache | `build-nifs.sh` skipped recompiling a NIF whenever the `.so` already existed — no comparison against source mtime, so every "clean eunit" that day silently tested a stale binary, once for a real security fix. A force-rebuild env var was also dead code because the existence check ran before it was ever consulted | 2026-09-05 |
 | 64 | A Split Name Doesn't Mean a Split Namespace | A rename to fix a PyPI collision kept the old import name, citing beautifulsoup4/bs4 as precedent — but bs4 is a name nothing else uses, while the kept name WAS the colliding package's own real import namespace. A human's one question caught it; nobody checked before that | 2026-09-05 |
+| 73 | Resource-Dotted Procedure Names | `limits.get` invented in a plan instead of the house's verb-first `get_limits` | 2026-10-04 |
+| 74 | Fleet Table Drifted from the Box | PORTS.md said LOOPBACK while the compose binds 0.0.0.0 | 2026-10-04 |
 | **65** | **Mesh Pubsub Facts Arrive `{text, Bin}`-Keyed** | **The frame decoder does NOT atomize pubsub payload keys — Demon 60's atomization was RPC args. A hand-rolled `maps:get` skips every fact while the mesh delivers everything; the observer recorded nothing with zero errors** | **2026-09-25** |
 | **66** | **An Unadmitted Service Subscribes Successfully and Receives Nothing** | **Client-side subscribe succeeds (sub_ref held) while the realm refuses routing until the provider grant is issued — held refs, zero facts, zero errors, green health** | **2026-09-25** |
 | **67** | **An Invalid Stream Id Raises in the Store Client** | **Dispatch to a bad stream id crashes the aggregate into a restart loop and hangs the registry's synchronous start call — the error never returns; the desk must validate BEFORE dispatch, not only inside the aggregate** | **2026-09-25** |
@@ -111,7 +113,7 @@ Unguided runtime debugging (checking processes, logs, curl) without a failing te
 
 ### [antipatterns/naming.md](naming.md) — Names That Don't Scream
 
-Demons #1, #13, #16, #17. Naming violations where module, event, or command names fail to communicate business intent.
+Demons #1, #13, #16, #17, **#73**. Naming violations where module, event, or command names fail to communicate business intent — plus mesh procedure names invented with resource dots (`limits.get`) instead of the house's verb-first snake_case (`get_limits`).
 
 ### [antipatterns/structure.md](structure.md) — Code Organization Violations
 
@@ -165,7 +167,7 @@ the wrong layer. Per-node serving-station choice, `no_provider` reserved for
 
 ### [antipatterns/documentation.md](documentation.md) — History Narration in Operational Docs
 
-Demon #58. PLANs, guides, and role files that narrate their own revision history — "corrected on this date, here's what changed and why" — instead of stating current fact. The CHANGELOG is the only place for history.
+Demon #58, **#74**. PLANs, guides, and role files that narrate their own revision history — "corrected on this date, here's what changed and why" — instead of stating current fact. The CHANGELOG is the only place for history. Plus operational tables that drift from the deploy: PORTS.md said LOOPBACK while the box binds 0.0.0.0.
 
 ---
 
