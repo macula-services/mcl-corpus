@@ -153,9 +153,7 @@ action allowed," and the two are never the same token.
 - **`macula-cli ucan mint`/`ucan inspect`/`call -ucan` already exist**
   (verified against source, not assumed) — a human can mint a delegated
   UCAN and attach it to a call today, by hand. What's missing is
-  integration, not the primitive: see
-  `macula-mcp/plans/PLAN_AGENT_IDENTITY_UCAN.md` for the scoped work to
-  make `macula-mcp` actually use one.
+  integration, not the primitive.
 - **`mcl_om_capabilities:call_capability/5,7`'s `verify => true` verifies
   the *provider's* org-rooted service-cert chain** (`keep_chain_verified`
   → `macula_record:verify_advertisement_cert_chain/3`), not a caller's
