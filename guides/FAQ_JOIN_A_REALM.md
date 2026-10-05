@@ -194,8 +194,9 @@ write one assuming a realm somewhere is reading and gating on it yet.
 
 ## 3. The bigger picture is an active, dated design — not shipped
 
-`macula-io/macula-architecture/plans/PLAN_CITIZEN_IDENTITY_AUTHN_AUTHZ.md`
-(Status: Draft v1.0, created **2026-09-01**) opens by naming the actual
+The citizen identity plan, now
+[macula-io/macula-architecture#9](https://github.com/macula-io/macula-architecture/issues/9)
+(drafted **2026-09-01**), opens by naming the actual
 state of things plainly: "Three pieces of this were already designed,
 separately, and never reconciled" — a Hanko-based identity layer cake
 that scoped authorization out as future work, a provisional-realm trust
