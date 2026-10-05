@@ -25,16 +25,16 @@ The ALC applies to **divisions specifically**. Domains have their own lifecycle 
 
 | # | Process | Artifact | Purpose |
 |---|---------|----------|---------|
-| 1 | **Planning** | `plans/PLAN_{DIVISION}.md`, in the division's own repo | Event storming, aggregate design, desk inventory, dependencies |
+| 1 | **Planning** | A GitHub issue labelled `plan`, in the division's own repo | Event storming, aggregate design, desk inventory, dependencies |
 | 2 | **Crafting** | The division's own codebase + `CHANGELOG.md` | Code generation, testing, release delivery |
 
-Planning produces a document. Crafting produces the thing the document describes -- there's no separate crafting document; the code and its `CHANGELOG.md` entries are the artifact.
+Planning produces a plan issue. Crafting produces the thing the issue describes -- there's no separate crafting document; the code and its `CHANGELOG.md` entries are the artifact.
 
 ---
 
 ## Planning
 
-**Where it lives:** `plans/PLAN_{DIVISION}.md`, following this workspace's established `plans/PLAN_*.md` convention -- read at session start, edited as work proceeds, never narrated with its own revision history (see `skills/antipatterns/documentation.md` Demon #58: state the current design, let git log carry how it got there).
+**Where it lives:** a GitHub issue labelled `plan`, in the division's own repo -- read at session start, its body kept current as work proceeds, never narrated with its own revision history (see `skills/antipatterns/documentation.md` Demon #58: state the current design, let the issue history carry how it got there).
 
 **What it must contain before the Design Gate:**
 - Aggregate boundaries -- what the division's aggregate(s) are, and why
@@ -42,7 +42,7 @@ Planning produces a document. Crafting produces the thing the document describes
 - A desk inventory -- what capabilities the division needs
 - Desk dependencies -- what has to exist before what
 
-**The Design Gate is a commit, not a command.** A human reviews the plan document and either edits it directly or merges the PR that finalizes it -- that commit *is* the approval; git log is the audit trail. No separate approval record is needed.
+**The Design Gate is a label, not a command.** Raf reviews the plan issue and applies the label `gate:design` -- that label *is* the approval; the issue timeline records who and when, and is the audit trail. A comment with his reasoning is optional. No separate approval record is needed.
 
 ---
 
@@ -51,7 +51,7 @@ Planning produces a document. Crafting produces the thing the document describes
 **Where it lives:** the division's own codebase. There's no separate crafting document -- the code, its tests, and `CHANGELOG.md` entries are the artifact, and git log is the record of how it got built.
 
 **What a complete Crafting pass produces:**
-- Generated modules and their tests, matching the plan document's desk inventory
+- Generated modules and their tests, matching the plan issue's desk inventory
 - A green test suite run
 - A `CHANGELOG.md` entry
 - A tagged, released version
@@ -98,9 +98,9 @@ The ALC is one of three lifecycle types in the Macula ecosystem:
 
 When working on a division:
 
-1. **Know which process is active.** Planning produces the design; Crafting builds it. Don't generate code before the plan document has cleared the Design Gate.
-2. **The plan document is the source of truth**, not a chat transcript or a memory of the conversation. If a decision isn't written down in `plans/PLAN_{DIVISION}.md`, it hasn't been decided yet.
-3. **A gate is a commit.** Don't wait for a service to tell you a gate passed -- watch for the `mesh_publish` fact, or just read the document.
+1. **Know which process is active.** Planning produces the design; Crafting builds it. Don't generate code before the plan issue has cleared the Design Gate.
+2. **The plan issue is the source of truth**, not a chat transcript or a memory of the conversation. If a decision isn't written down in the plan issue, it hasn't been decided yet.
+3. **A gate is a recorded approval** (the `gate:design` label on the plan issue for Design, a commit or merged PR for Review and Release). Don't wait for a service to tell you a gate passed -- watch for the `mesh_publish` fact, or just read the issue.
 4. **Conclude fast.** Small iterations. A thin plan that clears the Design Gate quickly beats an exhaustive one that never ships.
 
 ---

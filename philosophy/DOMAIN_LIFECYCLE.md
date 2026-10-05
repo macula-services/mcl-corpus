@@ -82,16 +82,16 @@ Macula manages three fundamentally different lifecycle types.
 
 **Scope:** Per domain. **Duration:** Short inception, long-lived discovery.
 
-A domain's birth and division discovery are tracked as a git-tracked
-document — `plans/PLAN_{DOMAIN}_VISION.md`, following this workspace's
-established `plans/PLAN_*.md` convention — not as CMD/PRJ/QRY apps:
+A domain's birth and division discovery are tracked as a GitHub issue
+labelled `plan` (the domain's vision issue) — not as CMD/PRJ/QRY apps:
 
 - **Vision** — Domain Expert drafts, refines, and finalizes a domain
-  brief in the plan document. The Vision Gate is the commit (or merged
-  PR) that marks it approved.
+  brief in the plan issue. The Vision Gate passes when Raf applies the
+  label `gate:vision` to that issue; the issue timeline records who and
+  when.
 - **Division Discovery** — Domain Expert identifies bounded contexts and
-  records them, with boundary rationale, in the same document. The
-  Boundary Gate is the commit that marks the division list approved.
+  records them, with boundary rationale, in the same issue. The
+  Boundary Gate passes when Raf applies `gate:boundary` to it.
 
 Once divisions are discovered, each follows its own ALC independently
 (see `alc/README.md`).
@@ -101,11 +101,12 @@ Once divisions are discovered, each follows its own ALC independently
 **Scope:** Per division. **Duration:** Long-lived, sequential.
 
 Full model in `alc/README.md`. In short: **Planning** produces a plan
-document (`plans/PLAN_{DIVISION}.md` in the division's own repo) covering
+issue (labelled `plan`, in the division's own repo) covering
 aggregate design, event list, and desk inventory; **Crafting** produces
 the division's own codebase plus its `CHANGELOG.md`. Neither is an
-aggregate — each gate (Design, Review, Release) is a git commit or merged
-PR, and git log is the audit trail.
+aggregate — the Design Gate passes when Raf applies `gate:design` to the
+plan issue, Review and Release are a git commit or merged PR, and the
+issue timeline and git log are the audit trail.
 
 ### 3. Node Continuous (`guide_node_lifecycle`)
 
@@ -126,7 +127,7 @@ There is no lifecycle protocol — the node is simply alive and responding to co
 ## Coordination
 
 A gate crossing is announced, not orchestrated. Whichever harness makes
-the gate-approving commit is responsible for publishing a mesh fact
+the gate label or the gate-approving commit is responsible for publishing a mesh fact
 (e.g. `macula.gate_passed`, with the domain/division id and which gate in
 the payload, never the topic). Interested harnesses `mesh_watch` for it
 and self-select to pick up the next stage. If two harnesses both act on
@@ -147,17 +148,17 @@ and no multi-agent crew design to build: it's a git-and-mesh convention.
 1. **Frame a decision** — Ask a clear, bounded question with no ambiguity
 2. **Present options** — Show tradeoffs as a table, not opinions. Include pros AND cons.
 3. **User decides** — They own the choice. Never decide for them.
-4. **Record the decision** — Write it into the plan document. It becomes a constraint on all future decisions.
+4. **Record the decision** — Write it into the plan issue. It becomes a constraint on all future decisions.
 5. **Build forward** — Each decision narrows the next decision's option space.
-6. **Produce an artifact** — The conversation output is a commit to the plan document, not prose left only in the chat transcript.
+6. **Produce an artifact** — The conversation output is an update to the plan issue, not prose left only in the chat transcript.
 
 ### Phase-Specific Conversations
 
 | Phase | Guided Conversation Produces |
 |-------|------------------------------|
-| Vision | Domain name + brief, written into `plans/PLAN_{DOMAIN}_VISION.md` |
-| Division Discovery | Division list with names, descriptions, boundary rationale, in the same document |
-| Planning | Aggregates, events, desk inventory, dependencies, in `plans/PLAN_{DIVISION}.md` |
+| Vision | Domain name + brief, written into the domain's vision issue (label `plan`) |
+| Division Discovery | Division list with names, descriptions, boundary rationale, in the same issue |
+| Planning | Aggregates, events, desk inventory, dependencies, in the division's plan issue |
 | Crafting | Module generation, test strategy, release manifest — reflected in the codebase and `CHANGELOG.md` |
 
 ### The Decision Cascade
@@ -178,7 +179,7 @@ planning(auth): aggregates = [user, session, credential]
 crafting(auth): modules generated, tests passed, release delivered
 ```
 
-Each phase's output is the next phase's input, written into the plan document — not held only in an agent's context window. The conversation at each phase only needs to cover that phase's decisions — everything else is already settled and already written down.
+Each phase's output is the next phase's input, written into the plan issue — not held only in an agent's context window. The conversation at each phase only needs to cover that phase's decisions — everything else is already settled and already written down.
 
 ---
 

@@ -220,11 +220,12 @@ sourced -- see `philosophy/alc/README.md`.
 
 | Phase | Artifact |
 |-------|----------|
-| Planning | `plans/PLAN_{DIVISION}.md`, in the division's own repo |
+| Planning | A GitHub issue labelled `plan`, in the division's own repo |
 | Crafting | The division's own codebase + `CHANGELOG.md` |
 
-A gate crossing (Design, Review, Release) is a git commit or merged PR,
-announced over mesh (`macula.gate_passed`), not dispatched via a process
+A gate crossing is a gate label Raf applies to the plan issue (`gate:design`;
+`gate:vision` and `gate:boundary` for a domain) or a git commit or merged PR
+(Review, Release), announced over mesh (`macula.gate_passed`), not dispatched via a process
 manager.
 
 ### Walking Skeleton
