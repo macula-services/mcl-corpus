@@ -261,6 +261,34 @@ curl https://{env}.example.com/api/{dossier}/test-001
 
 ---
 
+## Done When: an mcl-* Service on the Fleet
+
+> **Code doesn't walk, a deployment does.**
+
+The checklist above is the general shape. For a Macula service it comes down
+to the steps below, in order, each with the evidence that closes it.
+Everything before step 6 is code; the skeleton walks only at step 10. First
+walked by mcl-jobs (2026-10-08).
+
+| # | Step | Done when |
+|---|------|-----------|
+| 1 | **Scaffold** from mcl-om's `mcl_service` template (`store=1` for an event-sourced service; Apache-2.0 and GitHub runners for a public repo) | The generated tests, lint and dialyzer pass untouched |
+| 2 | **C4 model**: `architecture/README.md`, SVGs in `assets/`, linked from the README | Each SVG rendered with rsvg-convert and looked at |
+| 3 | **CMD division(s)**: `initiate_{dossier}` and one terminal desk (`archive_{dossier}`), status as `evoq_bit_flags`, rules in the aggregate | Every rule has a test: initiate twice, act on what was never initiated, end twice |
+| 4 | **Mesh procedures**: one responder per desk, listed in `capabilities/0`, acting as the CALL's `caller` (never an identity from the payload), replying `{}` or `{"reason": "<text>"}` | Reasons documented as the wire contract; responder tests show the caller binding; every capability carries `confidential => required` when it moves personal data (a call goes in the clear otherwise); authorization design passed a Fable gate |
+| 5 | **`scripts/smoke.sh`**: calls the deployed procedures with fresh identities, including a repeat that only a stored event can refuse | Runs against the mesh; fails cleanly (`no_provider`) before the deploy |
+| 6 | **Release**: version-only commit, `v<semver>` tag | CI publishes the image signed and attested by digest |
+| 7 | **Fleet entry** in macula-fleet: the lightest box, data on `/bulk*`, pinned `<semver>@sha256:<digest>`, an image-signers line and a release-targets line | The box reconciles; container healthy; store files on the data drive |
+| 8 | **Realm admission**: the boot claim shows as pending on the Providers desk, and a human admits it | `<org>/info` answers on the mesh with the released version and the box |
+| 9 | **Smoke against the deployment** | `scripts/smoke.sh` exits 0, and reports the calls sealed where step 4 requires it |
+| 10 | **Close the plan issue** with the purpose met or not, and the evidence (shas, digest, smoke output) | The issue is closed |
+
+One push ask covers steps 6 and 7 (the code range, the tag and the fleet
+commit, in that order); step 8 is the human act it names. Query sides,
+projections and features come after step 10, never before.
+
+---
+
 ## When the Skeleton Walks
 
 **You know the skeleton works when:**
