@@ -141,7 +141,7 @@ Demons #19, #20, #21, #35, #38, **#60**, **#61**, **#65**. esqlite3 return types
 
 ### [antipatterns/release.md](release.md) — Release, Testing & Packaging
 
-Demons #27, #28, #29, #30, #36, #52, #63, **#64**. Hardcoded IDs, missing tests, plugin discovery routes, version bumping, hex packaging, the containerized-reckon_db dynamic-node-name 502, the duplicate `{profiles}` rebar.config tuple that ships an ERTS-less release, a NIF build cache that checks existence instead of freshness, and a rename that kept a name someone else's package already imports.
+Demons #27, #28, #29, #30, #36, #52, #63, **#64**. Hardcoded IDs, missing tests, plugin discovery routes, version bumping, hex packaging, the containerized-reckon_db dynamic-node-name 502, the duplicate `{profiles}` rebar.config tuple that ships an ERTS-less release, a NIF build cache that checks existence instead of freshness, and a rename that kept a name someone else's package already imports. The rules these break (layers, change order, released versions only, `~>` floaters in 0.x, consumers before definitions, one version per release) are stated once in [philosophy/DEPENDENCIES.md](../../philosophy/DEPENDENCIES.md).
 
 ### [antipatterns/verification.md](verification.md) — What We Wrote Down vs What We Built
 

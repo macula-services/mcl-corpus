@@ -9,7 +9,7 @@ stage: stable
 
 *Demons about releases, versioning, hex packaging, testing, and plugin discovery.*
 
-[Back to Index](INDEX.md)
+[Back to Index](INDEX.md) · The dependency and release rules these demons break: [philosophy/DEPENDENCIES.md](../../philosophy/DEPENDENCIES.md)
 
 ---
 

@@ -72,6 +72,7 @@ A linear reading path. Stop when you have enough to ship.
 22. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
 23. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
 24. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
+25. [`philosophy/DEPENDENCIES.md`](philosophy/DEPENDENCIES.md): layers, change order, released versions only, `~>` pinning, one version per release
 
 ---
 
@@ -97,6 +98,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Test something" | `skills/TESTING.md` |
+| "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
 | "Can we solve X by evolving controllers?" | `skills/NEUROEVOLUTION_SERVICE_METHOD.md` — read the intake gate FIRST, before designing anything |
 
 ---
