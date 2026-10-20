@@ -48,11 +48,18 @@ old SDK, whatever its constraint allows.
 
 Every tagged or deployed binary builds against versions released to a
 registry (hex, crates, npm, PyPI, NuGet, Go modules). No git branch, commit or
-path dependency, in any language. A local override for development
+path dependency, in any language, with the one exception below. A local override for development
 (`_checkouts`, a path dep) stays out of the commit, and a build that still
 links one is not evidence about the released code.
 
 If a fix is needed downstream, release it upstream first.
+
+A registry is for libraries in its own language. Two other kinds of input
+have no release there: a contract written in another language (a `.proto`
+set), and a build-time tool such as a code-generation plugin. When one feeds
+only a single image's build, it may be pinned by the full commit of a release
+tag, never by a branch or tag name (reckon-gateway#4). Libraries stay
+registry-only.
 
 ## 4. Pinning: `~> MAJOR.MINOR`
 
