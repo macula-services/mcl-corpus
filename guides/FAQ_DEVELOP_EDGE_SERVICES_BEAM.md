@@ -53,7 +53,7 @@ shape every real consumer in this workspace uses:
 ```erlang
 %% rebar.config
 {deps, [
-    {macula, "~> 15.6"}
+    {macula, "~> 18.0"}
 ]}.
 ```
 
@@ -61,7 +61,7 @@ shape every real consumer in this workspace uses:
 # mix.exs
 defp deps do
   [
-    {:macula, "~> 15.6"}
+    {:macula, "~> 18.0"}
   ]
 end
 ```
