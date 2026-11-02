@@ -79,11 +79,13 @@ PubSub (from `macula`'s own `docs/guides/shared/CONNECTING_GUIDE.md`):
 Seeds = [<<"quic://relay-1.example.com:4433">>, <<"quic://relay-2.example.com:4433">>],
 {ok, Pool} = macula:connect(Seeds, #{}),
 ok         = macula:publish(Pool, Realm, Topic, Payload),
-{ok, _Sub} = macula:subscribe(Pool, Realm, Topic, self()),
+{ok, _Sub} = macula:subscribe(Pool, Realm, Topic, self(), #{sources => members}),
 ok = macula:close(Pool).
 ```
 
 Inbound events arrive as messages: `{macula_event, SubRef, Topic, Payload, Meta}`.
+The subscription names who may deliver to it (`sources`: `members`, `{org, Org}`,
+`{nodes, [NodeId]}` or `open`); since macula 18 one that names none is refused.
 
 RPC provider (from `macula`'s `docs/guides/rpc/RPC_GUIDE.md`):
 
@@ -209,7 +211,7 @@ spec = %{
   id: TrackPresence.PeerDepartedMeshSubscriber,
   start: {:macula_subscriber, :start_link,
     [TrackPresence.PeerDepartedMeshSubscriber, pool, realm,
-     TrackPresence.PeerDepartedMeshSubscriber.topic(), [], %{}]},
+     TrackPresence.PeerDepartedMeshSubscriber.topic(), [], %{sources: :members}]},
   restart: :permanent
 }
 DynamicSupervisor.start_child(TrackPresence.MeshSubscriberSupervisor, spec)
