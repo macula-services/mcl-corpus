@@ -63,16 +63,17 @@ the narrowest scope in the chain, not just the caller's immediate token.
 
 | Channel | Entry point | Identity | Delegation |
 |---|---|---|---|
-| (a) Terminal | `macula-cli` | Local puzzle-hardened Ed25519 keypair (`~/.config/macula-cli/identity.seed`), generated once, reused forever | UCAN minted from the human's realm-membership record, cached locally, refreshed before expiry |
-| (b) Coding agent | `macula-mcp`, which spawns `macula-cli` per tool call | A **separate** keypair from (a) (`macula-cli --identity ~/.config/macula-cli/agent-identity.seed`) | A narrower UCAN, delegated by the human specifically to "agent acting on my behalf" — independently revocable |
+| (a) Terminal | `macula-cli` | Local puzzle-hardened node keypair (ML-DSA-87, or the `pq_hybrid` composite; `~/.config/macula-cli/identity.key`), generated once, reused forever | UCAN minted from the human's realm-membership record, cached locally, refreshed before expiry |
+| (b) Coding agent | `macula-mcp`, speaking QUIC/DHT/RPC in-process via `@macula-io/ts` | A **separate** keypair from (a): pinned with `MACULA_MCP_IDENTITY`, or a named agent's stable key via `MACULA_MCP_AGENT` (`~/.config/macula-mcp/keys/agent-<name>.key`) | A narrower UCAN, delegated by the human specifically to "agent acting on my behalf" — independently revocable |
 | (c) Operator website | The edge service serves its own UI directly (Cowboy/Phoenix — same pattern as `mcl-whiteboard`/`mcl-tube` today) | Either none (open mode) or a session-lifetime UCAN obtained via pairing | See "Two modes" below |
 | (d) Mobile app / public site | `macula-portal` (enrollment) + the app's own local keypair | Device generates its own long-lived keypair on first launch (same self-healing generate-if-missing pattern `mcl_om_identity` and `macula-cli` already use) | A UCAN delegated from the human's membership at pairing time; every privileged action then rides a short-lived, action-scoped credential minted per-use — not the device's own long-lived key |
 
 ### (a) Terminal — `macula-cli`
 
 The identity layer already exists: first run mints a puzzle-hardened
-Ed25519 keypair, persisted and reused (`internal/identitystore`,
-mirroring `mcl_om_identity:keypair/0`'s own
+node keypair (ML-DSA-87, or the `pq_hybrid` composite), persisted and
+reused (`internal/identitystore`, mirroring
+`mcl_om_identity:keypair/0`'s own
 generate-if-missing-and-persist pattern). What's proposed here: when a
 command hits a gated capability, `macula-cli` holds a UCAN delegated
 from the human's realm-membership record — minted once via a
@@ -82,21 +83,29 @@ from the human's realm-membership record — minted once via a
 — most of the mesh stays reachable with just the bare peering keypair,
 exactly as today.
 
-### (b) Coding agent — `macula-mcp` via `macula-cli`
+### (b) Coding agent — `macula-mcp` via `@macula-io/ts`
 
-`macula-mcp`'s own README is explicit: it "does not speak QUIC, DHT, or
-Macula RPC itself... shells out to `macula-cli`... for every mesh
-operation" and carries no mesh logic of its own. Today that means an
-agent session spawned with no `--identity` override acts under the
-human's own root identity — full authority, no separate audit trail, no
-way to revoke "the agent" without rotating the human's own key too.
+`macula-mcp` speaks QUIC, DHT and Macula RPC itself, in-process through
+[`@macula-io/ts`](https://github.com/macula-io/macula-ts), an FFI binding
+over macula-go. It has no `macula-cli` dependency: it does not install one,
+spawn one, or version-check one. The CLI shell-out this section used to
+describe was cut over in 0.18.0 and shipped in 0.19.0 (0.18.0 was never
+tagged); `macula-cli` remains the terminal client and the tool a person uses
+to bind an agent's node into a realm, not the agent server's transport.
 
-**Proposal:** always spawn `macula-cli` for agent-originated calls with
-a distinct `--identity` pointing at its own keypair, delegated a
-narrower UCAN from the human. A misbehaving or compromised agent session
-is then revocable on its own, and every mesh-visible action an agent
-took is attributable to the agent's own identity, not folded into the
-human's.
+An agent session therefore acts under the identity the server loads, not
+the human's terminal key by default. `MACULA_MCP_IDENTITY` pins a key file;
+`MACULA_MCP_AGENT` gives a named agent a stable key at
+`~/.config/macula-mcp/keys/agent-<name>.key`; with neither set, the server
+mints one key per logical session under `~/.config/macula-mcp/keys/`. A key
+is generated on first use, not borrowed from the human's root key.
+
+**Proposal:** launch every agent with its own pinned identity
+(`MACULA_MCP_IDENTITY`, or `MACULA_MCP_AGENT` for a named crew member),
+delegated a narrower UCAN from the human. A misbehaving or compromised agent
+session is then revocable on its own — unbind that node or withdraw the
+delegation — and every mesh-visible action an agent took is attributable to
+the agent's own identity, not folded into the human's.
 
 ### (c) Operator website — the edge service serves its own UI
 
