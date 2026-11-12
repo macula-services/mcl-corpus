@@ -105,6 +105,23 @@ def text(x, y, s, size=13, fill=INK, weight="normal", anchor="start", font=FONT,
             f'font-weight="{weight}" fill="{fill}" text-anchor="{anchor}"{extra}>{esc(s)}</text>')
 
 
+def mono_w(s: str, size: float) -> float:
+    """Width of s in the mono font, close enough to size a sticky around it."""
+    return len(s) * size * 0.62
+
+
+def sans_w(s: str, size: float) -> float:
+    return len(s) * size * 0.52
+
+
+def group(kind: str, name: str, inner: list[str], **data) -> str:
+    """One tagged group per thing on the wall, so a reader of the SVG (or a
+    renderer that stages the wall) can pick a kind of note by class and a
+    note by data-name. Positions ride along as data-* for the same reason."""
+    attrs = "".join(f' data-{k}="{v}"' for k, v in data.items())
+    return f'<g class="k-{kind}" data-name="{esc(name)}"{attrs}>' + "".join(inner) + "</g>"
+
+
 def sticky(x, y, w, h, fill, rotate=0.0):
     tr = f' transform="rotate({rotate} {x + w / 2} {y + h / 2})"' if rotate else ""
     return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="3" fill="{fill}" '
@@ -137,37 +154,42 @@ def build() -> str:
     parts = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{total_h}" '
              f'viewBox="0 0 {W} {total_h}" font-family="{FONT}">',
              markers(),
-             f'<rect width="{W}" height="{total_h}" fill="{PAPER}"/>']
+             f'<rect class="paper" width="{W}" height="{total_h}" fill="{PAPER}"/>']
 
     # Title.
-    parts.append(text(40, 44, "The book club on the wall", 26, weight="700"))
-    parts.append(text(40, 72, "Lanes for roles and services. One blue sticky per desk, its event "
-                          "on the right edge as an output, a policy on the left edge as an input. "
-                          "Every name is a folder in macula-services/mcl-bookclub.", 14, MUTED))
+    parts.append(group("title", "title", [
+        text(40, 44, "The book club on the wall", 26, weight="700"),
+        text(40, 72, "Lanes for roles and services. One blue sticky per desk, its event "
+                     "on the right edge as an output, a policy on the left edge as an input. "
+                     "Every name is a folder in macula-services/mcl-bookclub.", 14, MUTED)]))
 
     # Lanes.
     for i, (key, label, h) in enumerate(LANES):
         y0, _ = lanes[key]
-        parts.append(f'<rect x="40" y="{y0}" width="{W - 80}" height="{h}" '
-                     f'fill="{LANE_A if i % 2 == 0 else LANE_B}"/>')
-        parts.append(f'<line x1="40" y1="{y0}" x2="{W - 40}" y2="{y0}" stroke="{LANE_LINE}"/>')
-        parts.append(text(56, y0 + 28, label, 15, INK, "600"))
-    parts.append(f'<line x1="40" y1="{y_end}" x2="{W - 40}" y2="{y_end}" stroke="{LANE_LINE}"/>')
+        parts.append(group("lane", key, [
+            f'<rect x="40" y="{y0}" width="{W - 80}" height="{h}" '
+            f'fill="{LANE_A if i % 2 == 0 else LANE_B}"/>',
+            f'<line x1="40" y1="{y0}" x2="{W - 40}" y2="{y0}" stroke="{LANE_LINE}"/>',
+            text(56, y0 + 28, label, 15, INK, "600")], x=40, y=y0, w=W - 80, h=h))
+    parts.append(group("lane", "bottom", [
+        f'<line x1="40" y1="{y_end}" x2="{W - 40}" y2="{y_end}" stroke="{LANE_LINE}"/>']))
 
     # Legend and the time note, under the lanes.
     legend = [(BLUE, "command, one desk"), (ORANGE, "event it produces"),
               (LILAC, "policy that triggers it"), (GREEN, "read model and its queries"),
               (PINK_WIDE, "fact published on the mesh"), (PINK_HOT, "hot spot, an open question")]
+    items = []
     for i, (fill, label) in enumerate(legend):
         x, y = 56 + i * 235, y_end + 22
-        parts.append(sticky(x, y, 18, 14, fill))
-        parts.append(text(x + 26, y + 12, label, 12, MUTED))
-    parts.append(text(W - 44, y_end + 58, "time runs left to right, a club's life from initiate to archive",
+        items += [sticky(x, y, 18, 14, fill), text(x + 26, y + 12, label, 12, MUTED)]
+    items.append(text(W - 44, y_end + 58, "time runs left to right, a club's life from initiate to archive",
                       12, MUTED, anchor="end"))
+    parts.append(group("legend", "legend", items))
 
     # Desk nodes and their ports. Neighbours in one lane alternate rows so a
-    # desk's event port never runs into the next desk.
-    port_at: dict[str, tuple[float, float, float]] = {}  # event -> (x_right, y_mid, y_bottom)
+    # desk's event port never runs into the next desk. Every sticky is sized
+    # around its text, never the other way round.
+    port_at: dict[str, tuple[float, float, float, float]] = {}  # event -> (x_right, y_mid, y_bottom, w)
     policy_at: dict[str, tuple[float, float]] = {}       # desk -> (x_left, y_mid)
     row_count: dict[str, int] = {}
     for i, d in enumerate(DESKS):
@@ -176,28 +198,36 @@ def build() -> str:
         row_count[d["lane"]] = row + 1
         x = COL_X0 + i * COL_W
         y = y0 + 16 + (row % 2) * ROW_STEP
-        parts.append(sticky(x, y, NODE_W, NODE_H, BLUE))
-        parts.append(text(x + NODE_W / 2, y + 26, d["name"], 12.5, INK, "700", "middle", MONO))
+        nw = max(NODE_W, mono_w(d["name"], 12.5) + 20)
+        parts.append(group("desk", d["name"], [
+            sticky(x, y, nw, NODE_H, BLUE),
+            text(x + nw / 2, y + 26, d["name"], 12.5, INK, "700", "middle", MONO)],
+            x=x, y=y, w=nw, h=NODE_H, fill=BLUE, lane=d["lane"]))
         # event port on the right edge, lower half
-        px, py = x + NODE_W - PORT_OVERLAP, y + NODE_H - PORT_H - 4
-        parts.append(sticky(px, py, PORT_W, PORT_H, ORANGE))
-        parts.append(text(px + PORT_W / 2, py + PORT_H / 2 + 4, d["event"], 10.5, INK,
-                          "normal", "middle", MONO))
-        port_at[d["event"]] = (px + PORT_W, py + PORT_H / 2, py + PORT_H)
+        pw = max(PORT_W, mono_w(d["event"], 10.5) + 16)
+        px, py = x + nw - PORT_OVERLAP, y + NODE_H - PORT_H - 4
+        parts.append(group("event", d["event"], [
+            sticky(px, py, pw, PORT_H, ORANGE),
+            text(px + pw / 2, py + PORT_H / 2 + 4, d["event"], 10.5, INK, "normal", "middle", MONO)],
+            x=px, y=py, w=pw, h=PORT_H, fill=ORANGE, desk=d["name"]))
+        port_at[d["event"]] = (px + pw, py + PORT_H / 2, py + PORT_H, pw)
         # policy port on the left edge, lower half
         if d.get("policy"):
-            qx, qy = x - PORT_W + PORT_OVERLAP, py
-            parts.append(sticky(qx, qy, PORT_W, PORT_H, LILAC))
-            for k, line in enumerate(d["policy"].split("\n")):
-                parts.append(text(qx + PORT_W / 2 - 8, qy + 15 + k * 13, line, 10.5, INK,
-                                  "normal", "middle"))
+            lines = d["policy"].split("\n")
+            qw = max(PORT_W, max(sans_w(l, 10.5) for l in lines) + 16)
+            qx, qy = x - qw + PORT_OVERLAP, py
+            items = [sticky(qx, qy, qw, PORT_H, LILAC)]
+            for k, line in enumerate(lines):
+                items.append(text(qx + qw / 2 - 8, qy + 15 + k * 13, line, 10.5, INK, "normal", "middle"))
+            parts.append(group("policy", d["name"], items, x=qx, y=qy, w=qw, h=PORT_H, fill=LILAC))
             policy_at[d["name"]] = (qx, qy + PORT_H / 2)
         if d.get("hotspot"):
-            hx, hy = px + PORT_W + 16, py - 12
-            parts.append(sticky(hx, hy, 104, 56, PINK_HOT, rotate=-8))
+            hx, hy = px + pw + 16, py - 12
+            items = [sticky(hx, hy, 104, 56, PINK_HOT, rotate=-8)]
             for k, line in enumerate(HOTSPOT_TEXT):
-                parts.append(text(hx + 52, hy + 20 + k * 14, line, 10.5, "#FFFFFF", "normal",
+                items.append(text(hx + 52, hy + 20 + k * 14, line, 10.5, "#FFFFFF", "normal",
                                   "middle", extra=f' transform="rotate(-8 {hx + 52} {hy + 28})"'))
+            parts.append(group("hotspot", d["event"], items, x=hx, y=hy, w=104, h=56, fill=PINK_HOT))
 
     # Read models: four green stickies, evenly spaced across the read lane.
     ry0, rh = lanes["read"]
@@ -206,20 +236,21 @@ def build() -> str:
     for k, (key, table, queries) in enumerate(READ_MODELS):
         gx = span_x0 + k * (span_x1 - span_x0) / (len(READ_MODELS) - 1)
         gy = ry0 + (rh - GREEN_H) / 2 + 8
-        parts.append(sticky(gx, gy, GREEN_W, GREEN_H, GREEN))
-        parts.append(text(gx + GREEN_W / 2, gy + 24, f"{table} table", 13, INK, "700", "middle"))
+        items = [sticky(gx, gy, GREEN_W, GREEN_H, GREEN),
+                 text(gx + GREEN_W / 2, gy + 24, f"{table} table", 13, INK, "700", "middle")]
         for j, q in enumerate(queries):
-            parts.append(text(gx + GREEN_W / 2, gy + 46 + j * 17, q, 11.5, INK, "normal",
-                              "middle", MONO))
+            items.append(text(gx + GREEN_W / 2, gy + 46 + j * 17, q, 11.5, INK, "normal", "middle", MONO))
+        parts.append(group("readmodel", table, items, x=gx, y=gy, w=GREEN_W, h=GREEN_H, fill=GREEN,
+                           queries=" ".join(queries)))
         green_at[key] = (gx + GREEN_W / 2, gy)
 
     # Projections: event port -> green sticky, thin and dashed.
     for d in DESKS:
         if d.get("feeds"):
-            x1, _ymid, ybot = port_at[d["event"]]
+            x1, _ymid, ybot, pw = port_at[d["event"]]
             x2, y2 = green_at[d["feeds"]]
-            parts.append(curve_down(x1 - PORT_W / 2, ybot, x2, y2 - 2, ARROW, dash="4 4",
-                                    width=1.2, bend=90, opacity=0.8))
+            parts.append(group("arrow-projection", f'{d["event"]}->{d["feeds"]}', [
+                curve_down(x1 - pw / 2, ybot, x2, y2 - 2, ARROW, dash="4 4", width=1.2, bend=90, opacity=0.8)]))
 
     # Emitters: the three facts, evenly spaced in the mesh lane.
     my0, mh = lanes["mesh"]
@@ -228,23 +259,24 @@ def build() -> str:
     for k, d in enumerate(emitting):
         px = span_x0 + k * (span_x1 - span_x0) / (len(emitting) - 1)
         py = my0 + (mh - PINK_H) / 2 + 6
-        parts.append(sticky(px, py, PINK_W, PINK_H, PINK_WIDE))
-        parts.append(text(px + PINK_W / 2, py + 22, f"{d['event']} fact", 11.5, INK, "700",
-                          "middle", MONO))
-        parts.append(text(px + PINK_W / 2, py + 41, f"emit_{d['event']}_to_mesh/", 10.5,
-                          MUTED, "normal", "middle", MONO))
-        x1, _ymid, ybot = port_at[d["event"]]
-        parts.append(curve_down(x1 - 20, ybot, px + PINK_W / 2, py - 2, EMIT_ARROW,
-                                width=1.8, bend=120))
+        parts.append(group("fact", d["event"], [
+            sticky(px, py, PINK_W, PINK_H, PINK_WIDE),
+            text(px + PINK_W / 2, py + 22, f"{d['event']} fact", 11.5, INK, "700", "middle", MONO),
+            text(px + PINK_W / 2, py + 41, f"emit_{d['event']}_to_mesh/", 10.5, MUTED, "normal", "middle", MONO)],
+            x=px, y=py, w=PINK_W, h=PINK_H, fill=PINK_WIDE, folder=f"emit_{d['event']}_to_mesh"))
+        x1, _ymid, ybot, _pw = port_at[d["event"]]
+        parts.append(group("arrow-emit", d["event"], [
+            curve_down(x1 - 20, ybot, px + PINK_W / 2, py - 2, EMIT_ARROW, width=1.8, bend=120)]))
 
     # Process managers: event port -> policy port, drawn last so it sits on top.
     for event, desk, folder in POLICIES:
-        x1, y1, _ = port_at[event]
+        x1, y1, _, _ = port_at[event]
         x2, y2 = policy_at[desk]
         midx = (x1 + x2) / 2
-        parts.append(f'<path d="M {x1} {y1} C {midx} {y1}, {midx} {y2}, {x2 - 2} {y2}" '
-                     f'fill="none" stroke="{PM_ARROW}" stroke-width="2.2" marker-end="url(#{marker_id(PM_ARROW)})"/>')
-        parts.append(text(x2 - 10, y2 - 28, folder, 10.5, PM_ARROW, "normal", "end", MONO))
+        parts.append(group("arrow-policy", folder.rstrip("/"), [
+            f'<path d="M {x1} {y1} C {midx} {y1}, {midx} {y2}, {x2 - 2} {y2}" '
+            f'fill="none" stroke="{PM_ARROW}" stroke-width="2.2" marker-end="url(#{marker_id(PM_ARROW)})"/>',
+            text(x2 - 10, y2 - 28, folder, 10.5, PM_ARROW, "normal", "end", MONO)]))
 
     parts.append("</svg>")
     return "\n".join(parts)
