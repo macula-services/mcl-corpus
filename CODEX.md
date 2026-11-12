@@ -83,7 +83,7 @@ Each chapter follows the same shape:
 - **Chapter 19.** The Domain Lifecycle (`philosophy/DOMAIN_LIFECYCLE.md`)
 - **Chapter 20.** The 2-Process ALC: Planning + Crafting (`philosophy/alc/README.md`)
 - **Chapter 21.** The Walking Skeleton (`philosophy/WALKING_SKELETON.md`)
-- **Chapter 22.** EventStorming, Macula-Style (`roles/storm/*.md`, `agents/storm_*/`)
+- **Chapter 22.** EventStorming, Macula-Style (`philosophy/EVENT_STORMING.md`, `roles/architect.md` Stage 1, `agents/storm_*/`)
 
 ### Part V — Practice
 
@@ -428,7 +428,7 @@ The 5D Hierarchy is the alternative. Containers, not layers. Process, not object
 
 # Part IV — Process
 
-> **Outline only.** Four chapters: the Domain Lifecycle (19), the 2-process ALC (20), the Walking Skeleton (21), and EventStorming Macula-style (22). Distilled from `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/alc/README.md`, `philosophy/WALKING_SKELETON.md`, and `roles/storm/*.md`.
+> **Outline only.** Four chapters: the Domain Lifecycle (19), the 2-process ALC (20), the Walking Skeleton (21), and EventStorming Macula-style (22). Distilled from `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/alc/README.md`, `philosophy/WALKING_SKELETON.md`, and `philosophy/EVENT_STORMING.md`.
 
 # Part V — Practice
 

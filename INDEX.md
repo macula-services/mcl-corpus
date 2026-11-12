@@ -57,22 +57,23 @@ A linear reading path. Stop when you have enough to ship.
 
 ### Process (~30 min)
 14. [`philosophy/DOMAIN_LIFECYCLE.md`](philosophy/DOMAIN_LIFECYCLE.md) — Domain → Division → Process model
-15. [`philosophy/alc/README.md`](philosophy/alc/README.md) — Planning + Crafting (the 2-process ALC)
-16. [`philosophy/WALKING_SKELETON.md`](philosophy/WALKING_SKELETON.md) — minimum vertical implementation
+15. [`philosophy/EVENT_STORMING.md`](philosophy/EVENT_STORMING.md) — from the wall to the tree: what each sticky note becomes
+16. [`philosophy/alc/README.md`](philosophy/alc/README.md) — Planning + Crafting (the 2-process ALC)
+17. [`philosophy/WALKING_SKELETON.md`](philosophy/WALKING_SKELETON.md) — minimum vertical implementation
 
 ### Discipline (~45 min)
-17. [`skills/NAMING_CONVENTIONS.md`](skills/NAMING_CONVENTIONS.md) — the strict naming rules
-18. [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) — demon index (skim first)
-19. [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md) — Demon 41's cure
-20. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Macula's position vs aggregateless ES / DCB
-21. [`philosophy/INTEGRATION_TRANSPORTS.md`](philosophy/INTEGRATION_TRANSPORTS.md) — HOPE / FACT / FEEDBACK
+18. [`skills/NAMING_CONVENTIONS.md`](skills/NAMING_CONVENTIONS.md) — the strict naming rules
+19. [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) — demon index (skim first)
+20. [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md) — Demon 41's cure
+21. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Macula's position vs aggregateless ES / DCB
+22. [`philosophy/INTEGRATION_TRANSPORTS.md`](philosophy/INTEGRATION_TRANSPORTS.md) — HOPE / FACT / FEEDBACK
 
 ### Production (read when relevant)
-21. [`philosophy/TIER_MODEL.md`](philosophy/TIER_MODEL.md) — L0-L2 runtime layers
-22. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
-23. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
-24. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
-25. [`philosophy/DEPENDENCIES.md`](philosophy/DEPENDENCIES.md): layers, change order, released versions only, `~>` pinning, one version per release
+23. [`philosophy/TIER_MODEL.md`](philosophy/TIER_MODEL.md) — L0-L2 runtime layers
+24. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
+25. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
+26. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
+27. [`philosophy/DEPENDENCIES.md`](philosophy/DEPENDENCIES.md): layers, change order, released versions only, `~>` pinning, one version per release
 
 ---
 
@@ -91,7 +92,8 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 
 | User intent | Load |
 |-------------|------|
-| "Design a new Division" | `philosophy/CARTWHEEL.md`, `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/DDD.md` |
+| "Design a new Division" | `philosophy/EVENT_STORMING.md`, `philosophy/CARTWHEEL.md`, `philosophy/DOMAIN_LIFECYCLE.md`, `philosophy/DDD.md` |
+| "Run a storm, or turn a wall into desks" | `philosophy/EVENT_STORMING.md`, `roles/architect.md` (Stage 1), `agents/storm_big_picture/`, `agents/storm_design_level/` |
 | "Add a Desk" | `philosophy/CARTWHEEL.md`, `skills/NAMING_CONVENTIONS.md`, `examples/VERTICAL_API_HANDLERS.md` |
 | "Write a Process Manager" | `philosophy/PROCESS_MANAGERS.md`, `examples/PROJECTIONS.md` (similar pattern) |
 | "Set up integration" | `philosophy/INTEGRATION_TRANSPORTS.md`, `skills/HOPE_FACT_SIDE_EFFECTS.md`, `examples/MESH_INTEGRATION.md` |

@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1000" viewBox="0 0 1920 1000" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif">
+<defs><marker id="head-8a96a3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,4 L0,8 z" fill="#8A96A3"/></marker><marker id="head-6d4c9f" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,4 L0,8 z" fill="#6D4C9F"/></marker><marker id="head-b0276f" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L8,4 L0,8 z" fill="#B0276F"/></marker></defs>
+<rect width="1920" height="1000" fill="#FFFFFF"/>
+<text x="40" y="44" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="26" font-weight="700" fill="#1B1F24" text-anchor="start">The book club on the wall</text>
+<text x="40" y="72" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="14" font-weight="normal" fill="#4B5563" text-anchor="start">Lanes for roles and services. One blue sticky per desk, its event on the right edge as an output, a policy on the left edge as an input. Every name is a folder in macula-services/mcl-bookclub.</text>
+<rect x="40" y="100" width="1840" height="260" fill="#F6F7F9"/>
+<line x1="40" y1="100" x2="1880" y2="100" stroke="#C9CED6"/>
+<text x="56" y="128" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="15" font-weight="600" fill="#1B1F24" text-anchor="start">Organiser</text>
+<rect x="40" y="360" width="1840" height="260" fill="#EDF0F4"/>
+<line x1="40" y1="360" x2="1880" y2="360" stroke="#C9CED6"/>
+<text x="56" y="388" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="15" font-weight="600" fill="#1B1F24" text-anchor="start">Member</text>
+<rect x="40" y="620" width="1840" height="170" fill="#F6F7F9"/>
+<line x1="40" y1="620" x2="1880" y2="620" stroke="#C9CED6"/>
+<text x="56" y="648" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="15" font-weight="600" fill="#1B1F24" text-anchor="start">What people ask (PRJ → QRY)</text>
+<rect x="40" y="790" width="1840" height="130" fill="#EDF0F4"/>
+<line x1="40" y1="790" x2="1880" y2="790" stroke="#C9CED6"/>
+<text x="56" y="818" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="15" font-weight="600" fill="#1B1F24" text-anchor="start">Other services, over the mesh</text>
+<line x1="40" y1="920" x2="1880" y2="920" stroke="#C9CED6"/>
+<rect x="56" y="942" width="18" height="14" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="82" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">command, one desk</text>
+<rect x="291" y="942" width="18" height="14" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="317" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">event it produces</text>
+<rect x="526" y="942" width="18" height="14" rx="3" fill="#C9A6EC" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="552" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">policy that triggers it</text>
+<rect x="761" y="942" width="18" height="14" rx="3" fill="#A9E5A3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="787" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">read model and its queries</text>
+<rect x="996" y="942" width="18" height="14" rx="3" fill="#F7BFD6" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1022" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">fact published on the mesh</text>
+<rect x="1231" y="942" width="18" height="14" rx="3" fill="#FF4FA3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1257" y="954" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="start">hot spot, an open question</text>
+<text x="1876" y="978" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="12" font-weight="normal" fill="#4B5563" text-anchor="end">time runs left to right, a club's life from initiate to archive</text>
+<rect x="210" y="116" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="280.0" y="142" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">initiate_bookclub</text>
+<rect x="332" y="154" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="391.0" y="176.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">bookclub_initiated_v1</text>
+<rect x="386" y="376" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="456.0" y="402" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">register_member</text>
+<rect x="508" y="414" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="567.0" y="436.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">member_registered_v1</text>
+<rect x="562" y="234" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="632.0" y="260" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">procure_book</text>
+<rect x="684" y="272" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="743.0" y="294.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">book_procured_v1</text>
+<rect x="738" y="494" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="808.0" y="520" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">start_reading</text>
+<rect x="860" y="532" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="919.0" y="554.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">reading_started_v1</text>
+<rect x="914" y="376" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="984.0" y="402" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">finish_reading</text>
+<rect x="1036" y="414" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1095.0" y="436.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">reading_finished_v1</text>
+<rect x="1090" y="116" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1160.0" y="142" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">plan_party</text>
+<rect x="1212" y="154" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1271.0" y="176.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">party_planned_v1</text>
+<rect x="990" y="154" width="118" height="36" rx="3" fill="#C9A6EC" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1041.0" y="169" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">on member registered,</text>
+<text x="1041.0" y="182" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">maybe plan party</text>
+<rect x="1346" y="142" width="104" height="56" rx="3" fill="#FF4FA3" stroke="#1B1F24" stroke-opacity="0.18" transform="rotate(-8 1398.0 170.0)"/>
+<text x="1398" y="162" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="10.5" font-weight="normal" fill="#FFFFFF" text-anchor="middle" transform="rotate(-8 1398 170)">party planned:</text>
+<text x="1398" y="176" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="10.5" font-weight="normal" fill="#FFFFFF" text-anchor="middle" transform="rotate(-8 1398 170)">leaves the club?</text>
+<text x="1398" y="190" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="10.5" font-weight="normal" fill="#FFFFFF" text-anchor="middle" transform="rotate(-8 1398 170)">not decided</text>
+<rect x="1266" y="494" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1336.0" y="520" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">unregister_member</text>
+<rect x="1388" y="532" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1447.0" y="554.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">member_unregistered_v1</text>
+<rect x="1442" y="234" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1512.0" y="260" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">retire_book</text>
+<rect x="1564" y="272" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1623.0" y="294.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">book_retired_v1</text>
+<rect x="1618" y="116" width="140" height="78" rx="3" fill="#8EC5FF" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1688.0" y="142" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="12.5" font-weight="700" fill="#1B1F24" text-anchor="middle">archive_bookclub</text>
+<rect x="1740" y="154" width="118" height="36" rx="3" fill="#FFB347" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1799.0" y="176.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">bookclub_archived_v1</text>
+<rect x="250.0" y="665.0" width="250" height="96" rx="3" fill="#A9E5A3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="375.0" y="689.0" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="13" font-weight="700" fill="#1B1F24" text-anchor="middle">clubs table</text>
+<text x="375.0" y="711.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">get_bookclub_by_id</text>
+<rect x="696.6666666666667" y="665.0" width="250" height="96" rx="3" fill="#A9E5A3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="821.6666666666667" y="689.0" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="13" font-weight="700" fill="#1B1F24" text-anchor="middle">members table</text>
+<text x="821.6666666666667" y="711.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">get_member_by_id</text>
+<rect x="1143.3333333333335" y="665.0" width="250" height="96" rx="3" fill="#A9E5A3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1268.3333333333335" y="689.0" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="13" font-weight="700" fill="#1B1F24" text-anchor="middle">books table</text>
+<text x="1268.3333333333335" y="711.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">get_book_by_id</text>
+<rect x="1590.0" y="665.0" width="250" height="96" rx="3" fill="#A9E5A3" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1715.0" y="689.0" font-family="Inter, 'Noto Sans', 'Liberation Sans', sans-serif" font-size="13" font-weight="700" fill="#1B1F24" text-anchor="middle">readings table</text>
+<text x="1715.0" y="711.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">get_reading_by_id</text>
+<text x="1715.0" y="728.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="normal" fill="#1B1F24" text-anchor="middle">get_readings_by_member</text>
+<path d="M 391.0 190 C 391.0 280, 375.0 573.0, 375.0 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 567.0 450 C 567.0 540, 821.6666666666667 573.0, 821.6666666666667 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 743.0 308 C 743.0 398, 1268.3333333333335 573.0, 1268.3333333333335 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 919.0 568 C 919.0 658, 1715.0 573.0, 1715.0 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 1095.0 450 C 1095.0 540, 1715.0 573.0, 1715.0 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 1447.0 568 C 1447.0 658, 821.6666666666667 573.0, 821.6666666666667 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 1623.0 308 C 1623.0 398, 1268.3333333333335 573.0, 1268.3333333333335 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<path d="M 1799.0 190 C 1799.0 280, 375.0 573.0, 375.0 663.0" fill="none" stroke="#8A96A3" stroke-width="1.2" stroke-opacity="0.8" stroke-dasharray="4 4" marker-end="url(#head-8a96a3)"/>
+<rect x="370.0" y="834.0" width="250" height="54" rx="3" fill="#F7BFD6" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="495.0" y="856.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="700" fill="#1B1F24" text-anchor="middle">member_registered_v1 fact</text>
+<text x="495.0" y="875.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#4B5563" text-anchor="middle">emit_member_registered_v1_to_mesh/</text>
+<path d="M 606 450 C 606 570, 495.0 712.0, 495.0 832.0" fill="none" stroke="#B0276F" stroke-width="1.8" stroke-opacity="1.0" marker-end="url(#head-b0276f)"/>
+<rect x="920.0" y="834.0" width="250" height="54" rx="3" fill="#F7BFD6" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1045.0" y="856.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="700" fill="#1B1F24" text-anchor="middle">book_procured_v1 fact</text>
+<text x="1045.0" y="875.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#4B5563" text-anchor="middle">emit_book_procured_v1_to_mesh/</text>
+<path d="M 782 308 C 782 428, 1045.0 712.0, 1045.0 832.0" fill="none" stroke="#B0276F" stroke-width="1.8" stroke-opacity="1.0" marker-end="url(#head-b0276f)"/>
+<rect x="1470.0" y="834.0" width="250" height="54" rx="3" fill="#F7BFD6" stroke="#1B1F24" stroke-opacity="0.18"/>
+<text x="1595.0" y="856.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="11.5" font-weight="700" fill="#1B1F24" text-anchor="middle">book_retired_v1 fact</text>
+<text x="1595.0" y="875.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#4B5563" text-anchor="middle">emit_book_retired_v1_to_mesh/</text>
+<path d="M 1662 308 C 1662 428, 1595.0 712.0, 1595.0 832.0" fill="none" stroke="#B0276F" stroke-width="1.8" stroke-opacity="1.0" marker-end="url(#head-b0276f)"/>
+<path d="M 626 432.0 C 808.0 432.0, 808.0 172.0, 988 172.0" fill="none" stroke="#6D4C9F" stroke-width="2.2" marker-end="url(#head-6d4c9f)"/>
+<text x="980" y="144.0" font-family="'JetBrains Mono', 'DejaVu Sans Mono', monospace" font-size="10.5" font-weight="normal" fill="#6D4C9F" text-anchor="end">on_member_registered_v1_maybe_plan_party/</text>
+</svg>
