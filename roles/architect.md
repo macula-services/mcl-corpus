@@ -28,6 +28,9 @@ just the desk-naming rule in Stage 1.
 
 ## Stage 1: EventStorming (feeds Design Gate)
 
+The rule for what each note on the wall becomes in the tree is
+`philosophy/EVENT_STORMING.md`; the output format below is that rule applied.
+
 ### Task
 
 For a given division (bounded context), produce:
