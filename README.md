@@ -42,9 +42,9 @@ Full layout and reading paths in [`INDEX.md`](INDEX.md).
 
 ---
 
-## The 5D Hierarchy
+## The D5 model
 
-The structural backbone Macula uses everywhere:
+The structural backbone Macula uses everywhere, defined in [`philosophy/D5_MODEL.md`](philosophy/D5_MODEL.md):
 
 ```
 Domain (problem space)

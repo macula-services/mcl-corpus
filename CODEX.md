@@ -33,7 +33,7 @@ Five parts. Designed to be read in order; designed to survive being read out of 
 | Part | Title | Pages | Topic |
 |------|-------|-------|-------|
 | I | Soul | 8 | Identity, voice, the four crossroad questions |
-| II | Mental Models | 30 | The 5D Hierarchy, Dossier Principle, Screaming, Vertical Slicing |
+| II | Mental Models | 30 | The D5 model, Dossier Principle, Screaming, Vertical Slicing |
 | III | Architecture | 50 | CMD/PRJ/QRY, Process Managers, Integration, Tier model, Plugins |
 | IV | Process | 25 | The 2-process ALC, Walking Skeleton, Storming |
 | V | Practice | 40 | Naming, the 20 demons, Command Pipelines, Code Quality |
@@ -60,7 +60,7 @@ Each chapter follows the same shape:
 
 ### Part II — Mental Models
 
-- **Chapter 4.** [The 5D Hierarchy](#chapter-4-the-5d-hierarchy)  ← *cornerstone*
+- **Chapter 4.** [The D5 model](#chapter-4-the-d5-model)  ← *cornerstone*
 - **Chapter 5.** The Dossier Principle (`philosophy/DDD.md`)
 - **Chapter 6.** Vertical Slicing (`philosophy/VERTICAL_SLICING.md`)
 - **Chapter 7.** Screaming Architecture (`philosophy/SCREAMING_ARCHITECTURE.md`)
@@ -228,7 +228,7 @@ If three of four pass and one fails persistently, you may have found a legitimat
 
 ---
 
-## Chapter 4. The 5D Hierarchy
+## Chapter 4. The D5 model
 
 *The cornerstone chapter. If you read only one chapter, read this one.*
 
@@ -252,12 +252,12 @@ Hierarchies in software fail in two opposite ways:
 1. **Too flat.** Everything lives in `src/`. New readers cannot find anything. The "ubiquitous language" of DDD becomes "the ubiquitous folder of Things."
 2. **Too rigid.** Layers proliferate (services, repositories, controllers, models, utils, helpers). The cost of touching one feature is reading seven directories.
 
-The 5D Hierarchy solves both by being:
+The D5 model solves both by being:
 - **Strictly nested** — every artifact has exactly one home at each level.
 - **Strictly limited in number** — four container levels, no more.
 - **Memorable** — five Ds, said aloud in a single breath.
 
-A new collaborator who internalizes the 5D Hierarchy can navigate any Macula codebase, predict where any feature will live, and propose a new feature's location without asking.
+A new collaborator who internalizes the D5 model can navigate any Macula codebase, predict where any feature will live, and propose a new feature's location without asking.
 
 ### The Pattern
 
@@ -327,7 +327,7 @@ The Dossier flows. It enters at one Desk (`initiate_*`), passes through other De
 
 > The choice to make the Dossier the fifth D rather than a sixth-level container is deliberate. The four containers are *places* in the codebase; the Dossier is the *thing that moves through them*. The mnemonic captures this asymmetry: "five Ds, four nested, one flowing."
 
-#### Where the 5D shows in a file path
+#### Where the D5 model shows in a file path
 
 ```
 /                                                  ← Domain (the repo/org)
@@ -353,13 +353,13 @@ The Dossier in this example is the stream `pricing-policy-{lot-id}`. It is not a
 
 #### Scale invariance
 
-The 5D Hierarchy works at every scale.
+The D5 model works at every scale.
 
 - A one-person Macula Domain might have 1 Division with 2 Desks per Department: six Desks total.
 - A fifty-person Macula Domain might have 15 Divisions, each with 10 Desks per Department: 450 Desks total.
 - The structure is identical. The hierarchy does not need to "evolve" as the Domain grows.
 
-This is the property that makes the 5D Hierarchy worth memorizing. You learn it once. It applies forever.
+This is the property that makes the D5 model worth memorizing. You learn it once. It applies forever.
 
 #### Two write-side constructs
 
@@ -381,13 +381,13 @@ Both produce Slips. Both feed projections. Both flow through the same store. The
 
 For the discrimination rule + examples, see `philosophy/CONSISTENCY_BOUNDARIES.md` and the reference walkthrough at `examples/DCB_COUNTER.md`.
 
-The 5D mnemonic doesn't change. Domain / Division / Department / Desk are the four nested containers; Dossier is the artifact that flows through them. Decision is a sibling write-side construct, not a sixth D.
+The D5 mnemonic doesn't change. Domain / Division / Department / Desk are the four nested containers; Dossier is the artifact that flows through them. Decision is a sibling write-side construct, not a sixth D.
 
 ### What it replaces
 
 The traditional "layered architecture" model — Presentation, Application, Domain, Infrastructure — fails the four-questions test. Layers do not scream. Layers scatter features. Layers think in objects, not processes. Layers are clever, not strict.
 
-The 5D Hierarchy is the alternative. Containers, not layers. Process, not object. Verb-named at the CMD level. Strictly templatable at the Desk level. The four crossroad questions all answer yes.
+The D5 model is the alternative. Containers, not layers. Process, not object. Verb-named at the CMD level. Strictly templatable at the Desk level. The four crossroad questions all answer yes.
 
 ### Read also
 
@@ -395,7 +395,7 @@ The 5D Hierarchy is the alternative. Containers, not layers. Process, not object
 - `philosophy/CARTWHEEL.md` — Department detail (CMD/PRJ/QRY structure)
 - `philosophy/DOMAIN_LIFECYCLE.md` — Domain → Division relationship and process model
 - `philosophy/CONSISTENCY_BOUNDARIES.md` — the discrimination rule between Dossier and Decision, with revisit criteria
-- `guides/CARTWHEEL_COMPANY_MODEL.md` — the company-metaphor variant of the 5D model
+- `guides/CARTWHEEL_COMPANY_MODEL.md` — the company-metaphor variant of the D5 model
 - `examples/DCB_COUNTER.md` — reference example for the Decision pattern (counter respecting a maximum)
 
 ---

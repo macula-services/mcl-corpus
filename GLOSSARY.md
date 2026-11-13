@@ -11,9 +11,9 @@ stage: stable
 
 ---
 
-## The 5D Hierarchy
+## The D5 model
 
-The structural backbone of Macula. Four nested containers plus one flowing artifact. Each begins with `D`.
+The structural backbone of Macula. Four nested containers plus one flowing artifact. Each begins with `D`. Formerly called the 5D hierarchy; the definition page is [`philosophy/D5_MODEL.md`](philosophy/D5_MODEL.md).
 
 ```
 Domain (1)
@@ -304,4 +304,4 @@ If you can't fit it into this list, you're probably reaching for a horizontal la
 
 ---
 
-*Five Ds. Process over data. Names that scream.*
+*The D5 model. Process over data. Names that scream.*
