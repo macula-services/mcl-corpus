@@ -15,7 +15,7 @@ stage: stable
 
 The method rests on three practices: event storming, vertical slicing and event sourcing. The second and third each have a page here ([`VERTICAL_SLICING.md`](VERTICAL_SLICING.md), [`DDD.md`](DDD.md)). This page is the first one, and it covers exactly the step the other two depend on: how what is agreed on a wall becomes the folders of a Division, by rule rather than by memory.
 
-The storm itself is not ours. It is Alberto Brandolini's practice, from 2013, and the notation below is the one he and the community settled on. What is ours is two things: the table of what each note becomes in the 5D tree, and a compact wall layout for the design level that makes that table almost mechanical to apply.
+The storm itself is not ours. It is Alberto Brandolini's practice, from 2013, and the notation below is the one he and the community settled on. What is ours is two things: the table of what each note becomes in the D5 tree, and a compact wall layout for the design level that makes that table almost mechanical to apply.
 
 ---
 

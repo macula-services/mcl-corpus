@@ -29,7 +29,7 @@ app, a Phoenix LiveView site, or a Blazor site to it.
 | **Skills** | `skills/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
-| **Glossary** | `GLOSSARY.md` | Canonical vocabulary, 5D hierarchy |
+| **Glossary** | `GLOSSARY.md` | Canonical vocabulary, the D5 model |
 | **Codex** | `CODEX.md` | Narrative booklet distilled from the corpus (draft) |
 
 ---
@@ -41,39 +41,40 @@ A linear reading path. Stop when you have enough to ship.
 ### Foundations (~30 min)
 1. [`SOUL.md`](SOUL.md) — what Macula IS
 2. [`PERSONALITY.md`](PERSONALITY.md) — how Macula communicates
-3. [`GLOSSARY.md`](GLOSSARY.md) — the 5D hierarchy, the canonical terms
-4. [`philosophy/DDD.md`](philosophy/DDD.md) — the Dossier Principle (process over data)
-5. [`philosophy/VERTICAL_SLICING.md`](philosophy/VERTICAL_SLICING.md) — features live together
-6. [`philosophy/SCREAMING_ARCHITECTURE.md`](philosophy/SCREAMING_ARCHITECTURE.md) — names that reveal intent
+3. [`philosophy/D5_MODEL.md`](philosophy/D5_MODEL.md) — the D5 model: four nested places, one flowing Dossier
+4. [`GLOSSARY.md`](GLOSSARY.md) — the canonical terms
+5. [`philosophy/DDD.md`](philosophy/DDD.md) — the Dossier Principle (process over data)
+6. [`philosophy/VERTICAL_SLICING.md`](philosophy/VERTICAL_SLICING.md) — features live together
+7. [`philosophy/SCREAMING_ARCHITECTURE.md`](philosophy/SCREAMING_ARCHITECTURE.md) — names that reveal intent
 
 ### Architecture (~45 min)
-7. [`philosophy/CARTWHEEL.md`](philosophy/CARTWHEEL.md) — Division Architecture (CMD/PRJ/QRY)
-8. [`guides/CARTWHEEL_COMPANY_MODEL.md`](guides/CARTWHEEL_COMPANY_MODEL.md) — the company metaphor (desks, slips, filing cabinets)
-9. [`guides/CARTWHEEL_WRITE_SEQUENCE.md`](guides/CARTWHEEL_WRITE_SEQUENCE.md) — CMD path in detail
-10. [`guides/CARTWHEEL_PROJECTION_SEQUENCE.md`](guides/CARTWHEEL_PROJECTION_SEQUENCE.md) — PRJ path
-11. [`guides/CARTWHEEL_QUERY_SEQUENCE.md`](guides/CARTWHEEL_QUERY_SEQUENCE.md) — QRY path
-12. [`philosophy/PARENT_CHILD_AGGREGATES.md`](philosophy/PARENT_CHILD_AGGREGATES.md) — coordination, not hierarchy
-13. [`philosophy/PROCESS_MANAGERS.md`](philosophy/PROCESS_MANAGERS.md) — cross-Division integration
+8. [`philosophy/CARTWHEEL.md`](philosophy/CARTWHEEL.md) — Division Architecture (CMD/PRJ/QRY)
+9. [`guides/CARTWHEEL_COMPANY_MODEL.md`](guides/CARTWHEEL_COMPANY_MODEL.md) — the company metaphor (desks, slips, filing cabinets)
+10. [`guides/CARTWHEEL_WRITE_SEQUENCE.md`](guides/CARTWHEEL_WRITE_SEQUENCE.md) — CMD path in detail
+11. [`guides/CARTWHEEL_PROJECTION_SEQUENCE.md`](guides/CARTWHEEL_PROJECTION_SEQUENCE.md) — PRJ path
+12. [`guides/CARTWHEEL_QUERY_SEQUENCE.md`](guides/CARTWHEEL_QUERY_SEQUENCE.md) — QRY path
+13. [`philosophy/PARENT_CHILD_AGGREGATES.md`](philosophy/PARENT_CHILD_AGGREGATES.md) — coordination, not hierarchy
+14. [`philosophy/PROCESS_MANAGERS.md`](philosophy/PROCESS_MANAGERS.md) — cross-Division integration
 
 ### Process (~30 min)
-14. [`philosophy/DOMAIN_LIFECYCLE.md`](philosophy/DOMAIN_LIFECYCLE.md) — Domain → Division → Process model
-15. [`philosophy/EVENT_STORMING.md`](philosophy/EVENT_STORMING.md) — from the wall to the tree: what each sticky note becomes
-16. [`philosophy/alc/README.md`](philosophy/alc/README.md) — Planning + Crafting (the 2-process ALC)
-17. [`philosophy/WALKING_SKELETON.md`](philosophy/WALKING_SKELETON.md) — minimum vertical implementation
+15. [`philosophy/DOMAIN_LIFECYCLE.md`](philosophy/DOMAIN_LIFECYCLE.md) — Domain → Division → Process model
+16. [`philosophy/EVENT_STORMING.md`](philosophy/EVENT_STORMING.md) — from the wall to the tree: what each sticky note becomes
+17. [`philosophy/alc/README.md`](philosophy/alc/README.md) — Planning + Crafting (the 2-process ALC)
+18. [`philosophy/WALKING_SKELETON.md`](philosophy/WALKING_SKELETON.md) — minimum vertical implementation
 
 ### Discipline (~45 min)
-18. [`skills/NAMING_CONVENTIONS.md`](skills/NAMING_CONVENTIONS.md) — the strict naming rules
-19. [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) — demon index (skim first)
-20. [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md) — Demon 41's cure
-21. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Macula's position vs aggregateless ES / DCB
-22. [`philosophy/INTEGRATION_TRANSPORTS.md`](philosophy/INTEGRATION_TRANSPORTS.md) — HOPE / FACT / FEEDBACK
+19. [`skills/NAMING_CONVENTIONS.md`](skills/NAMING_CONVENTIONS.md) — the strict naming rules
+20. [`skills/antipatterns/INDEX.md`](skills/antipatterns/INDEX.md) — demon index (skim first)
+21. [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md) — Demon 41's cure
+22. [`philosophy/CONSISTENCY_BOUNDARIES.md`](philosophy/CONSISTENCY_BOUNDARIES.md) — Macula's position vs aggregateless ES / DCB
+23. [`philosophy/INTEGRATION_TRANSPORTS.md`](philosophy/INTEGRATION_TRANSPORTS.md) — HOPE / FACT / FEEDBACK
 
 ### Production (read when relevant)
-23. [`philosophy/TIER_MODEL.md`](philosophy/TIER_MODEL.md) — L0-L2 runtime layers
-24. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
-25. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
-26. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
-27. [`philosophy/DEPENDENCIES.md`](philosophy/DEPENDENCIES.md): layers, change order, released versions only, `~>` pinning, one version per release
+24. [`philosophy/TIER_MODEL.md`](philosophy/TIER_MODEL.md) — L0-L2 runtime layers
+25. [`skills/NEUROEVOLUTION_SERVICE_METHOD.md`](skills/NEUROEVOLUTION_SERVICE_METHOD.md) — turning an outside problem into an evolutionary mesh service, or refusing it with a reason
+26. [`philosophy/AGGREGATE_LIFECYCLE_SLICES.md`](philosophy/AGGREGATE_LIFECYCLE_SLICES.md) — every aggregate's birth (`initiate_*`) and death (`archive_*`) slices
+27. [`skills/EVOQ_BIT_FLAGS.md`](skills/EVOQ_BIT_FLAGS.md) — status as bit-flag integers, the full API, labels in projections
+28. [`philosophy/DEPENDENCIES.md`](philosophy/DEPENDENCIES.md): layers, change order, released versions only, `~>` pinning, one version per release
 
 ---
 
@@ -119,7 +120,7 @@ The Tier 3 path is intentionally bare. Philosophy is not needed for mechanical c
 
 ---
 
-## The 5D Hierarchy at a Glance
+## The D5 model at a glance
 
 ```
 Domain (problem space)
@@ -130,7 +131,7 @@ Domain (problem space)
        Dossier flows through Desks, accumulating Slips
 ```
 
-See [`GLOSSARY.md`](GLOSSARY.md) for full definitions.
+See [`philosophy/D5_MODEL.md`](philosophy/D5_MODEL.md) for the definition and [`GLOSSARY.md`](GLOSSARY.md) for the terms.
 
 ---
 
