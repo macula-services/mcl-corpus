@@ -166,6 +166,44 @@ Metaphor for the read-model store. Dossiers live in the Event Store; the Filing 
 
 ---
 
+## Storming Vocabulary
+
+How a storm is opened. The definition page is [`philosophy/MARTHA_EVENT_STORMING.md`](philosophy/MARTHA_EVENT_STORMING.md).
+
+### High Octane
+
+Phase 1 of the opening. Ten to fifteen minutes at most: everyone works alone and in silence, sees nobody else's notes, and writes as many orange notes as possible.
+
+### Merge the Experts
+
+Phase 2. Everyone's notes come onto the group wall, one row per participant, and notes that name the same event are stacked. Done when every row is empty.
+
+### One Wording
+
+Phase 3. The group settles one wording per stack. The surviving note carries its weight; the wordings that lose are kept behind it.
+
+### Complete the Wall
+
+Phase 4. The group adds what is missing, by discussion.
+
+### Row
+
+A participant's strip of notes during Merge the Experts, carrying the participant's name. Not a lane: a lane is a role or a service in the lane form.
+
+### Weight
+
+The number of people who named an event, written in the top left corner of the surviving note. It says how many named it, not how much it matters. An agent's notes count apart: `4 + 1 agent`.
+
+### Definition of Dossier
+
+For one dossier, the names of what is known about it and which event makes each known. It emerges from a Division's wall. An event's payload is a subset of it.
+
+### Bare Command
+
+A command as it is handed to its pipeline, before any enrichment. It is what is kept and retried after a refusal. See [`philosophy/COMMAND_PIPELINES.md`](philosophy/COMMAND_PIPELINES.md).
+
+---
+
 ## Integration Vocabulary
 
 ### HOPE

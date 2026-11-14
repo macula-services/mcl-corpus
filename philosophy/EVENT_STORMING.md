@@ -145,7 +145,7 @@ The one hot spot on the wall is `party_planned_v1`: nothing outside the club has
 
 ## What this page is not
 
-- **Not a facilitation guide.** How to run the room, the check-in, the chaotic exploration and the enforced timeline are in the community cheat sheet and the book; the storm agents in `agents/storm_big_picture/` and `agents/storm_design_level/` play the roles in a session run by an agent runtime. Neither is changed by this page.
+- **Not a facilitation guide.** How we open a storm, in four named phases, is [`MARTHA_EVENT_STORMING.md`](MARTHA_EVENT_STORMING.md). How to run the room beyond that, the check-in, the chaotic exploration and the enforced timeline are in the community cheat sheet and the book; the storm agents in `agents/storm_big_picture/` and `agents/storm_design_level/` play the roles in a session run by an agent runtime. Neither is changed by this page.
 - **Not a naming reference.** Every pattern in the tables above is spelled out in [`skills/NAMING_CONVENTIONS.md`](../skills/NAMING_CONVENTIONS.md), which wins where the two differ.
 - **Not a tool.** The lane form is a way to draw on paper or on a board. The figure above is drawn by `assets/event_storming_bookclub_wall.py` so that it can be redrawn when the club changes, and that is the only code involved.
 
@@ -153,6 +153,7 @@ The one hot spot on the wall is `party_planned_v1`: nothing outside the club has
 
 ## See also
 
+- [`MARTHA_EVENT_STORMING.md`](MARTHA_EVENT_STORMING.md): how a storm is opened, who stands at which wall, and the Definition of Dossier.
 - [`DOMAIN_LIFECYCLE.md`](DOMAIN_LIFECYCLE.md): where the storm sits in a Division's life (Planning).
 - [`alc/README.md`](alc/README.md): the design gate the storm's output passes before code.
 - `roles/architect.md` Stage 1: the output format an agent produces from a storm; this page is the rule that format follows.
