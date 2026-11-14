@@ -252,4 +252,43 @@ If you need to create test data, use the proper flow or seed the event store dir
 
 ---
 
+## 🔥 Implementation on the Storming Wall
+
+**Demon 75. Date:** 2026-11-14
+**Origin:** shaping a storming board for the method
+
+### The Antipattern
+
+At a Division's wall, the group (or the engineer who facilitates) starts to model how a command is prepared and decided:
+
+- its pipeline: which lookups run before the decision, and in which order
+- the types of the fields
+- the status flags, and which slip is allowed when
+
+Every one of these is a fair question, and none of them is for this room. The people at the wall are there because they know the process. They cannot say in what order lookups run, so they fall silent, and what gets drawn is the engineer's design, made before any code. The wall no longer belongs to the business.
+
+### The Rule
+
+> **The wall belongs to the business. Ask of anything about to go on it: could the people standing here answer this?**
+
+They can say what a registration makes known: "the date it was released by customs", "the part's serial number". That is the Definition of Dossier, and it emerges from the wall as names, each with the event that makes it known. They can say what someone needs to see in order to decide, and that is a read model in the actor's lane.
+
+### Where the Rest Goes
+
+| Question | Who answers it | Where it lives |
+|----------|----------------|----------------|
+| What happens, who does it, what does it make known | the people at the wall | the wall ([EVENT_STORMING.md](../../philosophy/EVENT_STORMING.md)) |
+| How a command is enriched and decided | whoever builds the desk | the desk's pipeline ([COMMAND_PIPELINES.md](../../philosophy/COMMAND_PIPELINES.md)) |
+| Field types, status flags, which slip when | the architect, after the storm | technical design (`roles/architect.md`, Stage 2) |
+
+### What Refuses It
+
+The wall file of a Division holds names only: notes, lanes, wiring, and per dossier the names of what is known. It has no place for a pipeline, a type or a flag, and its check fails a file that carries one (macula-services/mcl-whiteboard#14).
+
+### The Lesson
+
+> **A wall the experts cannot read is upfront design with sticky notes on it.**
+
+---
+
 *Add more demons as we exorcise them.* 🔥🗝️🔥

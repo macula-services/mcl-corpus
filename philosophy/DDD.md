@@ -311,22 +311,31 @@ The PRJ department creates *derived* read models (index cards) for queries. But 
 
 ### Event Payloads Are Subsets of the Default Read Model
 
-When a desk adds a slip (event) to the dossier, the slip's payload is a **subset of the default read model**, possibly enriched with data from the command:
+When a desk adds a slip (event) to the dossier, the slip's payload is a **subset of the default read model**. Every field of an event is a field of the dossier; an event never carries anything the dossier does not hold.
 
 ```
-Event Payload = subset(Aggregate State) + new data from Command
+Event Payload ⊆ The Dossier's Content
 ```
+
+A field reaches the payload in one of two ways:
+
+- **Echoed.** The dossier already held it, and the event repeats it so that whoever receives the event needs no lookup.
+- **Made known by this slip.** The command brought it in, the desk decided on it, and through this event it becomes part of the dossier. That includes a value the command's pipeline looked up, when the decision rested on it.
 
 For example, when `grant_license` runs:
-- The aggregate state has `plugin_id`, `oci_image`, `plugin_name` (from initiation)
-- The command brings `grant_reason` (new data)
-- The event `license_granted_v1` carries both: fields echoed from state + new data from command
+- The aggregate state has `plugin_id`, `oci_image`, `plugin_name` (from initiation): echoed
+- The command brings `grant_reason`: made known by this slip
+- The event `license_granted_v1` carries both, and after it `grant_reason` is part of the dossier
+
+A command reaches the desk already prepared. [COMMAND_PIPELINES.md](COMMAND_PIPELINES.md) says how the bare command is enriched on its way in, which of that enrichment is payload and so recorded, and which is provenance and stays in metadata.
 
 This means downstream consumers (PMs, projections) receive everything they need IN the event — because the event was built from the authoritative source (the dossier).
 
 ### Data Enters Through Commands Only
 
 **Any data from outside the bounded context MUST enter the CMD service through an enriched command payload.**
+
+The steps that enrich a command before it reaches the aggregate are its pipeline: [COMMAND_PIPELINES.md](COMMAND_PIPELINES.md).
 
 ```
                     BOUNDARY

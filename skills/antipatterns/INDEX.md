@@ -80,6 +80,7 @@ stage: reversed
 | 64 | A Split Name Doesn't Mean a Split Namespace | A rename to fix a PyPI collision kept the old import name, citing beautifulsoup4/bs4 as precedent — but bs4 is a name nothing else uses, while the kept name WAS the colliding package's own real import namespace. A human's one question caught it; nobody checked before that | 2026-09-05 |
 | 73 | Resource-Dotted Procedure Names | `limits.get` invented in a plan instead of the house's verb-first `get_limits` | 2026-10-04 |
 | 74 | Fleet Table Drifted from the Box | PORTS.md said LOOPBACK while the compose binds 0.0.0.0 | 2026-10-04 |
+| 75 | Implementation on the Storming Wall | A command's pipeline, field types or status flags modelled at the wall: the people who know the process cannot answer, and the wall stops being theirs | 2026-11-14 |
 | **65** | **Mesh Pubsub Facts Arrive `{text, Bin}`-Keyed** | **The frame decoder does NOT atomize pubsub payload keys — Demon 60's atomization was RPC args. A hand-rolled `maps:get` skips every fact while the mesh delivers everything; the observer recorded nothing with zero errors** | **2026-09-25** |
 | **66** | **An Unadmitted Service Subscribes Successfully and Receives Nothing** | **Client-side subscribe succeeds (sub_ref held) while the realm refuses routing until the provider grant is issued — held refs, zero facts, zero errors, green health** | **2026-09-25** |
 | **67** | **An Invalid Stream Id Raises in the Store Client** | **Dispatch to a bad stream id crashes the aggregate into a restart loop and hangs the registry's synchronous start call — the error never returns; the desk must validate BEFORE dispatch, not only inside the aggregate** | **2026-09-25** |
@@ -121,7 +122,7 @@ Demons #3, #6, #8, #14, #18, #25, **#59**. Structural mistakes where code is org
 
 ### [antipatterns/domain.md](domain.md) — Domain Modeling Mistakes
 
-Demons #2, #4, #5, #9. Errors in modeling aggregate lifecycles, parent-child relationships, and domain boundaries.
+Demons #2, #4, #5, #9, **#75**. Errors in modeling aggregate lifecycles, parent-child relationships, and domain boundaries, and **implementation drawn on a storming wall**: a pipeline, types or flags put in front of people who can only answer for the process.
 
 ### [antipatterns/event_sourcing.md](event_sourcing.md) — Aggregates, Events, Envelopes
 
