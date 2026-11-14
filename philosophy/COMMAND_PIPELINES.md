@@ -208,7 +208,31 @@ If your idempotency step uses the post-enrichment command as its key, retries wi
 
 ---
 
+## A Refusal, and the Retry
+
+The command as the responder or the PM hands it to the pipeline, before any step has run, is the **bare command**. It holds what the sender said and nothing the system looked up.
+
+The aggregate decides on the enriched command, so it has everything it needs at that moment. When it refuses, no event is written, and the bare command can be sent again later. It then runs the whole pipeline again and meets the aggregate with a fresh picture of the world: the permit that was missing an hour ago may be there now.
+
+> **Keep and retry the bare command, never the enriched one.**
+
+An enriched command is a picture taken at one moment. Sending it again would decide on stale lookups.
+
+This is not the retry the idempotency step guards. That step answers "the same request arrived twice" and must not write its events twice. This one answers "the request was refused and is tried again", so the idempotency step remembers requests that produced events, not refusals.
+
+---
+
+## Not for the Storming Wall
+
+A pipeline is implementation. Which lookups a command needs, in which order and with which failure mode, is for whoever builds the desk.
+
+The people at a storming wall know what the business needs to see in order to decide, and the wall holds exactly that: a read model in the actor's lane ([EVENT_STORMING.md](EVENT_STORMING.md)). How that information reaches the decision is not drawn there. See [Demon 75](../skills/antipatterns/domain.md#-implementation-on-the-storming-wall).
+
+---
+
 ## Connection to Other Concepts
+
+- **What an event carries.** Payload enrichment the decision rested on becomes part of the event, and so part of the dossier: every field of an event is a field of the dossier. See "The Default Read Model and Data Flow" in [DDD.md](DDD.md).
 
 - **Cardinal sin cure.** This pattern is the structural cure for [Demon 41](../skills/antipatterns/event_sourcing.md#-demon-41-reading-from-read-models-during-event-flow--the-cardinal-sin). Aggregates that need external data get it via pipeline, never by reading during event flow.
 - **PM placement.** PMs live as sibling slices in the target CMD app (see [PROCESS_MANAGERS.md](PROCESS_MANAGERS.md)). The pipeline lives in those slices alongside the gen_server and supervisor.
@@ -243,6 +267,8 @@ See `reckon-db-org/evoq/proposals/PROPOSAL_EVOQ_PIPELINE.md` for the framework-l
 7. **Idempotency keys live on the HOPE**, not on the enriched command.
 8. **PMs use pipelines too** — same shape, different trigger.
 9. **Cross-cluster reads happen at pipeline time, against local projections of mesh-published facts** — never via runtime cross-cluster RPC.
+10. **The bare command is what is kept and retried.** After a refusal it is sent again and enriched afresh.
+11. **A pipeline is the builder's.** It is not modelled at a storming wall.
 
 ---
 
