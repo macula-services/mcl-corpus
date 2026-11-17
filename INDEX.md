@@ -103,7 +103,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Model identity and auth" | `philosophy/AUTH_MODEL.md` |
 | "Model how work is picked up" | `philosophy/TASK_MODEL.md` |
 | "Reason about event subscription" | `philosophy/EVENT_SUBSCRIPTION_FLOW.md` |
-| "Coordinate a team of agents, or verify work" | `philosophy/ACTIVE_COORDINATION.md`, `philosophy/SHARED_LEARNING.md`, `skills/CHECK_EVIDENCE.md` |
+| "Coordinate a team of agents, or verify work" | `philosophy/ACTIVE_COORDINATION.md`, `philosophy/SHARED_LEARNING.md`, `skills/CHECK_EVIDENCE.md`, `skills/VERIFYING.md` |
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Test something" | `skills/TESTING.md` |
