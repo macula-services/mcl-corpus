@@ -73,6 +73,6 @@ All infrastructure changes flow through git, then CI, then deploy. The box is re
 
 ### A refused credential probe has no gentler form
 
-A task that enumerates secret files and then authenticates with each one is refused on the action itself, and no command shape makes it not that. Do not reshape it and do not hand it to a peer; put the prepared command in front of the owner to run themselves. When a block is on the shape instead (a script that names a secret, a script that pushes, a bundled command), the fix is to drop the wrapper and do the narrowest direct thing that is honestly the same task.
+A task that enumerates secret files and then authenticates with each one is refused on the action itself, and no command shape makes it not that. Do not reshape it and do not hand it to a peer; put the prepared command in front of the owner to run themselves. When a block is on the shape instead (a script that names a secret, a script that pushes, a bundled command), run the narrow command openly so the check sees what runs; if that is stopped too, it goes to the owner; never reshape to hide what runs.
 
 **Why:** a block on the action cannot be cleared by re-wording, and asking another session to run what yours refused is laundering the refusal.
