@@ -107,6 +107,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Test something" | `skills/TESTING.md` |
+| "Handle secrets or do security work" | `skills/SECURITY.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
 | "Push, tag or deploy a change" | `skills/SHIPPING.md` |
 | "Can we solve X by evolving controllers?" | `skills/NEUROEVOLUTION_SERVICE_METHOD.md` — read the intake gate FIRST, before designing anything |
