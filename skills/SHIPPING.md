@@ -33,7 +33,7 @@ Run the release workflow's own verify steps, in its own order, on the exact comm
 
 ## The ref that goes out
 
-### Push the ref the answer names, not the stale default branch
+### Push the ref the approval names, not the stale default branch
 
 In a worktree on a feature branch, `git push origin main` pushes the repository's own, stale main ref, not the branch you are on, and answers "everything up-to-date" while nothing has moved. Read both refs first, then push the branch to the ref the approval named, and confirm the remote moved afterwards.
 
@@ -57,7 +57,7 @@ When the remote default moves between the approval and the push, the rebased com
 
 Commits that are approved but not yet pushed must not sit on the default branch of a checkout other sessions also commit in. The next session to commit there builds on top of them, and its push ships them unverified and out of order. Park multi-step work on a branch or in a worktree, and push each approved commit from there.
 
-**Why:** everyone commits as the same author, so the history does not reveal whose unpushed work got swept into someone else's push.
+**Why:** where several sessions commit as one author, the history does not reveal whose unpushed work got swept into someone else's push.
 
 ### Untracked is the only truly unrecoverable state
 
@@ -75,6 +75,6 @@ Where a pushed version tag triggers the publish, the approval point is the push 
 
 ### Never fire the publish yourself
 
-Never run the publish command yourself, for a package, the docs, or anything else, no exceptions, and never offer "I'll publish it" as an option. Prepare the release (bump the version, changelog, tag, push, and confirm the docs build clean), then hand it over: the version is ready, here is what is left to run. In a repo whose tag push arms a protected publish, hand over the waiting run, not an instruction to publish locally.
+Never run a publish command by hand, for a package, the docs, or anything else, no exceptions, and never offer "I'll publish it" as an option. Prepare the release (bump the version, changelog, tag, and confirm the docs build clean) and push the tag, approved like any push: the tag push fires the publish, and there is no manual publish step after it.
 
 **Why:** a publish is one-way and externally visible, and the person who owns the package fires it; an offered option treats a forbidden act as available, and two publish paths for one version is how a version gets burned twice.
