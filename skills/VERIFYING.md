@@ -25,11 +25,11 @@ A run that succeeded is evidence only if the guard it was testing actually ran. 
 
 **Why:** a check that fails to load passes everything, and the green log carries no mark of it.
 
-### A change that no longer merges stops every run
+### A conflicting pull request gets no runs
 
-A change that no longer merges cleanly into its base prevents every run from being created — the merge cannot be built, so no run exists for it, and a watcher waits out its whole deadline for runs that will never come. Before treating a missing run as an outage or a queue delay, check whether the change still merges; a conflict explains it on the spot, and merging the base back in brings the runs.
+A pull request that no longer merges cleanly into its base gets no runs — the test merge cannot be built, so no run is created for it, and a watcher waits out its whole deadline for runs that will never come. Before treating a missing run as an outage or a queue delay, check whether the pull request still merges; a conflict explains it on the spot, and merging the base back in brings the runs.
 
-**Why:** a conflict reads as a stalled pipeline when it is really the merge failing to build.
+**Why:** a conflict reads as a stalled pipeline when it is really the test merge failing to build.
 
 ## The mechanism, not the label
 
