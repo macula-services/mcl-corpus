@@ -99,6 +99,11 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Add a Desk" | `philosophy/CARTWHEEL.md`, `skills/NAMING_CONVENTIONS.md`, `examples/VERTICAL_API_HANDLERS.md` |
 | "Write a Process Manager" | `philosophy/PROCESS_MANAGERS.md`, `examples/PROJECTIONS.md` (similar pattern) |
 | "Set up integration" | `philosophy/INTEGRATION_TRANSPORTS.md`, `skills/HOPE_FACT_SIDE_EFFECTS.md`, `examples/MESH_INTEGRATION.md` |
+| "Project a read model" | `philosophy/AVAILABLE_ACTIONS_IN_PROJECTIONS.md`, `philosophy/STATUS_LABELS_IN_PROJECTIONS.md`, `philosophy/SESSION_LEVEL_CONSISTENCY.md` |
+| "Model identity and auth" | `philosophy/AUTH_MODEL.md` |
+| "Model how work is picked up" | `philosophy/TASK_MODEL.md` |
+| "Reason about event subscription" | `philosophy/EVENT_SUBSCRIPTION_FLOW.md` |
+| "Coordinate a team of agents, or verify work" | `philosophy/ACTIVE_COORDINATION.md`, `philosophy/SHARED_LEARNING.md`, `skills/CHECK_EVIDENCE.md` |
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Test something" | `skills/TESTING.md` |
