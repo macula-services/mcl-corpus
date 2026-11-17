@@ -16,7 +16,7 @@ Every lesson an agent writes to its own memory also lands in the corpus, in a ge
 - **Generalized** keeps the rule and its why, and drops the incident.
 - **Anonymized** drops person names, agent names, hostnames, home paths, emails, and private repository or issue numbers.
 
-The change is built and reviewed like any other. A change that lands is picked up by the retrieval index as a separate act after it merges — nothing in the change itself touches that index.
+The change is built and reviewed like any other. The retrieval index follows the corpus's branch head, so a merged change needs no further act: nothing in the change itself touches that index.
 
 ## Why
 
