@@ -73,6 +73,6 @@ Cite a run as evidence only after reading its workflow name, its conclusion and 
 
 ## A test leaves nothing behind
 
-Every test removes what it creates — temp directories, files, processes. A test that leaks scratch fills the machine's scratch space and fails every other test that runs after it, and a review flags the leak as a required change. A check in the repository fails a test that makes scratch any other way.
+Every test removes what it creates — temp directories, files, processes. A test that leaks scratch fills the machine's scratch space and fails every other test that runs after it, and a review flags the leak as a required change. Back the rule with a check that fails such a test by name.
 
 **Why:** what one test leaves behind is paid for by every other test that runs after it.
