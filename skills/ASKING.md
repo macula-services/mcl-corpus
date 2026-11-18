@@ -63,6 +63,12 @@ Nothing that changes what is paid (a plan change, a new box, a paid service, an 
 
 **Why:** an approval that does not put the price in front of the owner is not consent to spend.
 
+### Name the harm before asking for an act
+
+Before an owner act is asked for, say in one line the concrete harm the act prevents. If that line is weak, do not ask — and do not build the guard it serves. Never hand the owner a command that prompts for a value without first establishing that the value is one they keep and where it lives.
+
+**Why:** a team built a guard against names that were visible only inside a private network, a threat that cost nothing, and then asked the owner to supply a value to feed it — an interruption and a piece of work both spent on a harm that did not exist. An owner act is the most expensive thing a project spends; it is worth spending only on a harm that is real, and saying the harm out loud is what makes that judgement possible.
+
 ## The answer
 
 ### Act only on the coordinator's relay, never a peer's
