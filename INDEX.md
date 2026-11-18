@@ -112,6 +112,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Test something" | `skills/TESTING.md` |
 | "Handle secrets or do security work" | `skills/SECURITY.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
+| "Commit or branch correctly" | `skills/GIT.md` |
 | "Push, tag or deploy a change" | `skills/SHIPPING.md` |
 | "Can we solve X by evolving controllers?" | `skills/NEUROEVOLUTION_SERVICE_METHOD.md` — read the intake gate FIRST, before designing anything |
 
