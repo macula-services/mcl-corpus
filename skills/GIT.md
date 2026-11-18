@@ -116,3 +116,15 @@ When restructuring a shared index, key every rewrite on each line's own identifi
 Before counting a local clone in a sweep, check the repo is live. Archiving a repo includes deleting its local clone and worktrees in the same step, after checking for uncommitted work.
 
 **Why:** stale clones of archived repos look live and mislead greps, inventories and findings.
+
+### A tree extracted from git is not the tree the commit holds
+
+`git archive` honours `export-ignore`, so an extracted tree can lack a whole directory the commit carries. A check that reads a version, a config or a lock file from the extraction then fails with "no such file", which is a refusal about the wrong cause. Read those paths from the commit itself (`git show <sha>:<path>`) and keep the extraction for the files it does carry.
+
+**Why:** the extraction looks complete, and the missing path reads as a property of the tree rather than of the tool.
+
+### Judge what a merge would carry before any branch exists
+
+`git merge-tree --write-tree <base> <tip>` writes the merged tree without touching the index, the worktree or a remote branch, and prints its tree id (non-zero exit, with the conflicted paths, when the merge does not resolve). Extract that tree and run its own generator or checks in it to learn what a landing would need, and whether the merge is even clean, before anyone builds a branch.
+
+**Why:** it turns "check the final tip when it appears" into "know what the final tip will need", at the price of one command.

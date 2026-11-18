@@ -108,3 +108,9 @@ A mutation-check restore can leave the mutant's compiled artifact in the build d
 A mutant the same length as the line it replaces, restored within the same second, leaves its `.pyc` valid: Python checks a cached module by the source's mtime in seconds and its size. Every import after the restore then runs the mutant, not the restored source. Run the test with `-B` (or export `PYTHONDONTWRITEBYTECODE=1`), so no bytecode of a mutant is ever cached.
 
 **Why:** the restore is byte-for-byte, but the cache outlives it, and the cases that follow import the mutant.
+
+### A planted mutant must land validly, not merely land
+
+Text inserted after a line that continues a statement (a trailing backslash, an open bracket, a line inside a heredoc) yields a file that no longer parses, and a runner that only counts failures reads that as a kill. Confirm the override landed, then parse-check the mutant (`bash -n`, a type check, a compile step) and refuse the run when it does not, exactly as for a mutant that failed to apply.
+
+**Why:** a mutant that does not parse is not a mutant the test killed, and it looks identical to one that is.
