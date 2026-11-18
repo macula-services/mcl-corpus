@@ -85,3 +85,11 @@ When a test's stand-in (a fake host, member or server) prints the very line a gu
 **How to apply:** for each line or value a guard reads, ask what produces it in production, and mutate that producer, not the guard. If a stand-in produces it in the test, add one check that runs the real producer over the smallest stub below it, with a value of the stub's own (an exit status, say), and require the line with that value.
 
 **Why:** a run's terminal script was changed to print its own "<name> ended, status N" line, which a screen check reads. The test's stand-in members printed that same line themselves. With the real script's print turned off, every case held. One check running the real script over a stub that exits with a named status closed it.
+
+## Read the issue's "done when", line by line
+
+A review checks every "done when" line of the issue against the diff before the verdict, and names the change or test that meets each one. Mutants and the author's claims cover what the author thought of; they do not cover a requirement the change quietly dropped.
+
+**How to apply:** open the issue first and list its "done when" lines. A fix that takes text out of a message (to stop a leak, say) gets a check on what the message must still say, not only on what it must no longer say.
+
+**Why:** a fix stopped a refusal from quoting a value that could carry a secret. The review killed every leak mutant and drafted a pass. The issue also said the refusal must still tell the reader what to do, and the fix had dropped that. Nobody had aimed a check at it, so only a second reader caught it.
