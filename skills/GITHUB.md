@@ -53,6 +53,12 @@ Turning on a repo's workflows, or its actions permissions, is a settings change,
 
 **Why:** a fork whose actions had never run, once enabled, quietly armed every upstream publisher in the same name.
 
+### A pull request opened by the workflow's own token starts no CI
+
+A workflow that opens or pushes to a pull request with the token the platform hands each run does not trigger any workflow on it, so the pull request sits with no CI. Letting a bot open the pull request therefore does not remove the human step: a person still has to push, close and reopen it, or start the runs by hand. To make it hands-off, the workflow needs a separate credential, an app or a scoped token, which is then a credential to guard.
+
+**Why:** the platform does this on purpose, so that a workflow cannot start itself in a loop. A plan of "the bot opens the pull request and CI checks it" breaks on the first run, and the fix is a new secret, which needs its own decision.
+
 ## Features and visibility
 
 ### A config file is not the whole feature

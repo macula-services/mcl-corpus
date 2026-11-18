@@ -25,6 +25,12 @@ A run that succeeded is evidence only if the guard it was testing actually ran. 
 
 **Why:** a check that fails to load passes everything, and the green log carries no mark of it.
 
+### A range check misses drift in a generated file's generator
+
+A check that judges only the ranges touching a generated file (a drawn diagram, a lockfile, a rendered doc) cannot see its generator move. When a change edits the generator, or the sources it reads, and touches nothing it outputs, every range check stays green while the tree no longer matches what the generator would produce. So check the whole tree as well: regenerate and compare at release preflight, before the first outward act of the release, not only per range.
+
+**Why:** in one case the drift was caught before a release, but the release's own check would have refused only after one package was already published, and a published package cannot be taken back. Every range check had passed, because no range had touched the generated file.
+
 ### A conflicting pull request gets no runs
 
 A pull request that no longer merges cleanly into its base gets no runs — the test merge cannot be built, so no run is created for it, and a watcher waits out its whole deadline for runs that will never come. Before treating a missing run as an outage or a queue delay, check whether the pull request still merges; a conflict explains it on the spot, and merging the base back in brings the runs.
@@ -64,6 +70,12 @@ When a test starts failing right after a dependency change, the instinct is to b
 Before passing a release, check that the proposed version is still unused: the tag is absent and the registry does not serve it, with the previous version as the positive control. A version that is already live means the release renumbers a section that already shipped.
 
 **Why:** a "skip duplicates" default or a stale section hides the fact that the version is live, and the pass then ships a version that is not the one the review read.
+
+### A scheduled job is unproven until its first run is observed
+
+A scheduled job that is merged is a definition, not a running job. Count it as working only after its first scheduled run has been seen: the run exists, it ran on the schedule, and it did what it is for. Until then, say "scheduled, not yet run", and put a check on the date the first run is due.
+
+**Why:** a daily sync had been on the default branch for 16 hours without ever running, while everyone counted it as live. Nothing fails when a scheduled job never fires, so only looking for the run shows it.
 
 ## The assertion where the behaviour lives
 
