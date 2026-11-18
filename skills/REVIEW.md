@@ -77,3 +77,11 @@ A full-screen terminal program redraws only the cells that changed, and pads a w
 **How to apply:** when reviewing a redactor over a recorded screen, test a wrap with a padded continuation line and a line with characters missing, not only a plain line break. Better: keep no screen at all once a secret is live, only transcripts. A screen cannot be redacted by value, so the only safe screen is one never written. Structured logs and transcripts that hold whole strings can be redacted reliably.
 
 **Why:** a review asked for "remove the breaks and escapes, then look again". The author built exactly that, and a padded wrap still kept the whole secret. The review's own request was too narrow.
+
+## A stand-in that prints the checked line pins nothing
+
+When a test's stand-in (a fake host, member or server) prints the very line a guard reads, the real code that prints it in production never runs under the test. Disable the real producer and every case still passes.
+
+**How to apply:** for each line or value a guard reads, ask what produces it in production, and mutate that producer, not the guard. If a stand-in produces it in the test, add one check that runs the real producer over the smallest stub below it, with a value of the stub's own (an exit status, say), and require the line with that value.
+
+**Why:** a run's terminal script was changed to print its own "<name> ended, status N" line, which a screen check reads. The test's stand-in members printed that same line themselves. With the real script's print turned off, every case held. One check running the real script over a stub that exits with a named status closed it.
