@@ -37,6 +37,18 @@ Two independent guards each make a failure unreachable, so each survives its own
 
 **Why:** mutation testing cannot see redundancy, and a comment crediting the wrong guard is then unfalsifiable.
 
+### A pin with a margin wider than the difference pins nothing
+
+A check written to allow a margin can pass the very behaviour it exists to forbid, when the cases it runs are closer together than the margin. A clock pinned as "somewhere near now" passes a clock that prints now, because the run's real wait is seconds. Widen the difference in the case — run it with a long window — rather than the assertion, and say why the margin is there.
+
+**Why:** a band is a statement about what is allowed, and one wide enough for the bug states nothing.
+
+### A behaviour promised on several paths is pinned on each
+
+A line promised "whenever X happens" is unpinned if only one of X's paths is asserted. A mutant that prints it on the success path alone then survives: the test only ever reached that path.
+
+**Why:** the promise is about every path it names, so the test has to reach every one of them.
+
 ## Run it cleanly
 
 ### A runner restores what it mutated
@@ -50,6 +62,12 @@ A mutation run must hold the original bytes and write them back in a finally. A 
 A test runner that greps failure markers from its output gives random survivors. Select the one test and read the runner's own exit code.
 
 **Why:** markers repeat and include noise; the exit code is the runner's own verdict on that one test.
+
+### An exit code is a kill only when the test spoke
+
+The exit code alone is not enough either: a run that never happened also fails. A runner that rewrites the source through a new file drops its execute bit, so every case dies at "cannot execute" (126); a syntax error (2) or a missing command (127) reads the same way, and a set of apparent kills is a set of runs that never reached the test. Require the test's own voice in the log — a line only it writes once it is running its cases — before counting a failure as a kill, and refuse the rest by name. Never grep for the one error string that happened last time.
+
+**Why:** the exit code says the process failed, not that the test failed, and every mutant looking immortal costs a round.
 
 ### A write-through mutant corrupts the fixture
 
