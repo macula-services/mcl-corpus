@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "A Division's wall file",
+  "description": "The meaning of one Division's storming wall, names only: no positions, no free marks, no pipeline, field type or status flag. Layout is saved apart from meaning. Lives in the Division's repository as wall.json, checked by wall-tree.yml.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "division",
+    "lanes",
+    "desks",
+    "policies",
+    "read_models",
+    "facts_that_leave",
+    "facts_that_arrive",
+    "hot_spots",
+    "clock_notes",
+    "dossiers"
+  ],
+  "properties": {
+    "division": { "type": "string" },
+    "lanes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "clock": {
+      "description": "Which lane is the clock, or null when the Division has no real wait.",
+      "type": ["string", "null"]
+    },
+    "desks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "lane", "event", "feeds"],
+        "properties": {
+          "name": { "type": "string" },
+          "lane": { "type": "string" },
+          "event": { "type": "string" },
+          "feeds": {
+            "description": "The read models this event projects into; empty when it feeds none.",
+            "type": "array",
+            "items": { "type": "string" },
+            "uniqueItems": true
+          }
+        }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["on", "maybe"],
+        "properties": {
+          "on": {
+            "description": "The input events; one event today, more than one is refused by the check until the clock lane decides all or any.",
+            "type": "array",
+            "items": { "type": "string" },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "maybe": { "type": "string" }
+        }
+      }
+    },
+    "read_models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["table", "questions"],
+        "properties": {
+          "table": { "type": "string" },
+          "questions": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+        }
+      }
+    },
+    "facts_that_leave": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "facts_that_arrive": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["fact", "maybe"],
+        "properties": {
+          "fact": { "type": "string" },
+          "maybe": { "description": "The desk the fact triggers.", "type": "string" }
+        }
+      }
+    },
+    "hot_spots": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "clock_notes": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "dossiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "known"],
+        "properties": {
+          "name": { "type": "string" },
+          "known": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["what", "made_known_by"],
+              "properties": {
+                "what": { "type": "string" },
+                "made_known_by": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
