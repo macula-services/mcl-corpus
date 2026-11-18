@@ -31,6 +31,12 @@ A check that judges only the ranges touching a generated file (a drawn diagram, 
 
 **Why:** in one case the drift was caught before a release, but the release's own check would have refused only after one package was already published, and a published package cannot be taken back. Every range check had passed, because no range had touched the generated file.
 
+### A generated artifact changes only in the change that owns it
+
+A repository may hold a check that a generated file (a drawn diagram, a rendered doc, a lockfile) changes only in the one kind of change that owns it, such as the release's version bump. A working change that leaves that file stale must not refresh it: the check refuses the change by name even though the file is genuinely out of date, because the refresh belongs to the owning change. Read the artifact's owning rule before regenerating it, and treat staleness on any other branch as expected rather than as a defect to fix there.
+
+**Why:** regenerating everywhere makes every change carry the artifact, so a diff stops showing which change decided its content, and the check that pins that is exactly what fails.
+
 ### A conflicting pull request gets no runs
 
 A pull request that no longer merges cleanly into its base gets no runs — the test merge cannot be built, so no run is created for it, and a watcher waits out its whole deadline for runs that will never come. Before treating a missing run as an outage or a queue delay, check whether the pull request still merges; a conflict explains it on the spot, and merging the base back in brings the runs.
