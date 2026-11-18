@@ -25,6 +25,12 @@ A variable immediately before a colon followed by a letter can be read as a hist
 
 **Why:** the wrong expansion runs against the wrong object and often produces no obvious error.
 
+### An apostrophe in a parameter-expansion default pairs with one further down
+
+A quote inside `${var:-default}` is not plain data. An apostrophe there opens a quoted run that goes past the closing brace, past the line and past the line's `>>` redirection, and closes only at the next apostrophe in the script. Alone, it is a parse error (`unexpected EOF while looking for a matching quote`). With a second apostrophe anywhere below it — a later `it's` in another line — the parse succeeds, and at run time the first line fails with `bad substitution: no closing '}' in it's here}...`, its redirection swallowed with it, the lines in between lost, and the script carries on.
+
+**Why:** the run-time message names the start of the swallowed span, points at text that reads as if it were the default, and the script still exits zero, so the only symptom is a file missing lines several steps later. Give the fallback its own assignment — `[[ -n "${var:-}" ]] || var="it's here"` — where the apostrophe sits in a plain double-quoted string.
+
 ## Aliases and shims
 
 ### A core utility may be aliased; check and use the real one
