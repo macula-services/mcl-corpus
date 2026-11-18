@@ -57,6 +57,12 @@ Never conclude a system does something from a definition — find the consumer. 
 
 **Why:** a declared or documented behaviour with no consumer is inert, and two readers of the same definitions reach opposite conclusions until one checks the consumers.
 
+### A "the compiler will catch it" claim needs a probe
+
+Before a design rests on the type checker refusing something, such as a map that must name every member of a union so that adding a member fails to compile, prove that the type is as narrow as the claim needs. In TypeScript, a union derived from a list of objects, like `(typeof TOOLS)[number]['name']`, widens to `string` whenever the objects' fields are typed `string` rather than as literals. A `Record` over that type then forces no entry for anything. Write a probe that must fail to compile, for example a value of type `string extends TheUnion ? true : false` assigned `false`, and read the error. Back the property with a runtime guard that compares the keys with the real list both ways, fails by name, and is proven by a mutant that drops one entry.
+
+**Why:** a type that widened in silence still compiles everything, so the design's promise holds only on paper. A reviewer caught one such claim with a two-line probe. The runtime guard is what keeps holding once someone loosens the type again.
+
 ## The control, not the coincidence
 
 ### Revert the change before blaming it
