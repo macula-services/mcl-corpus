@@ -134,3 +134,9 @@ Before counting a local clone in a sweep, check the repo is live. Archiving a re
 A shared working copy with per-owner isolation refuses a commit on a branch another owner's checkout holds: the reference-transaction hook aborts the commit, and the owner's request does not lift the hook. Commit in a checkout of your own, fast-forwarded to their tip, push your own branch first, then push the ref (`git push origin HEAD:<their-branch>`). Hand their checkout back exactly as you found it, and tell them the one fetch and fast-forward that picks your commit up.
 
 **Why:** the isolation keeps every owner's work reachable through the tool that created it, and a ref push is the operation it does not have to block.
+
+### A pairwise merge check needs a real merge commit, not a forced base
+
+To learn whether two branches A and B still merge once both land on the default branch, make a real merge commit of the default branch and A (`git commit-tree $(git merge-tree --write-tree main A | head -1) -p main -p A`), then run `git merge-tree --write-tree <that commit> B`. Do not pass `--merge-base main` with a tree of main+A: when B was built on an older main, every change main made since then reads as B undoing it, and conflicts appear that a real merge never has.
+
+**Why:** the forced base is quick and looks right, and its false conflicts point at files neither branch touched on purpose.
