@@ -51,6 +51,26 @@ When the remote default moves between the approval and the push, the rebased com
 
 **Why:** a pure rebase over unrelated commits is the same change; a rebase over a commit that edits the same files is not, and the byte check is what tells the two apart.
 
+## Landing a batch
+
+### The lander merges the default branch into passed heads
+
+When several passed changes land together, whoever lands the batch merges the moved default branch into each passed head. The authors are not called back for it. A merge that only takes the default branch's side, or regenerates a generated file, is the lander's to make and the lander's to check.
+
+**Why:** calling each author back to merge in turn makes a batch wait on the slowest session, and the author holds no knowledge the merge needs.
+
+### A freed member takes its next work from an ordered queue
+
+When a member's change passes or lands, its next package is already waiting in one ordered queue, and it takes the top one in the same step. It does not ask what to do next, and the coordinator does not pick on the spot.
+
+**Why:** a coordinator who chooses the next package only when asked leaves members idle, and the choice made under pressure skips the order that was agreed.
+
+### A change lands alone only when it changes the landing path
+
+Land a passed change on its own only when it changes how changes land: the merge, the batch, the checks before a push. Everything else waits for the next batch.
+
+**Why:** a change to the landing path must be on the default branch before it lands anything else, so that what it fixes applies to the very next batch. Any other change gains nothing from landing alone and costs the owner one more act.
+
 ## Where the work lives
 
 ### Approved-but-unpushed commits do not sit on a shared default branch
