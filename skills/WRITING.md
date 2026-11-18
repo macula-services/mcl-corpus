@@ -15,9 +15,9 @@ stage: stable
 
 ### No em dashes anywhere
 
-Write in plain, direct human style, with no em dashes, in everything: chat, issues and pull requests, drafted external messages, docs, commit messages, changelogs and comments. Prefer a period, a comma, or a parenthetical. The character is the violation, not the dash: a double hyphen is fine in code and commit prose.
+Write in plain, direct human style, with no em dashes, in everything: chat, issues and pull requests, drafted external messages, docs, commit messages, changelogs and comments. Prefer a period, a comma, or a parenthetical. The character is the violation, not the dash: a double hyphen is fine where it is syntax.
 
-**Why:** the rule already holds for chat and generalizes to everything the team produces; a stray em dash reads as filler and stands out in history.
+**Why:** a stray em dash reads as filler and stands out in history.
 
 ### State the point, drop the justification clause
 
@@ -33,13 +33,13 @@ Write so a person with no background understands. No unexplained terms, no bomba
 
 ### No bare citations
 
-Never cite a finding by number alone. Lead with what it says in plain words, then put the number in brackets at the end for traceability. The reader should follow the whole argument without opening a file. Build a word-name for a recurring idea and use it throughout.
+Never cite a finding by number alone. Lead with what it says in plain words, then put the number in brackets at the end for traceability. The reader should follow the whole argument without opening a file. Name a recurring idea with the plain words already in use; coin a new name only with the owner.
 
 **Why:** a bare number is a lookup the reader must perform, and asking them to agree with a citation instead of an argument is the worst shape for a decision.
 
 ### A light edit, not a rewrite
 
-When reworking someone's writing, start from their sentences and change the minimum. Keep their length and their words; plain words from the first draft. Offer additions as a short list they can pick from, never folded in.
+When reworking someone's writing, start from their sentences and change the minimum. Keep their length and their words; keep the plain words of their first draft rather than substituting your own. Offer additions as a short list they can pick from, never folded in.
 
 **Why:** over-building a simple edit costs rounds and trust, and reads as a sign of how the rest of the work will go.
 
