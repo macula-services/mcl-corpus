@@ -315,6 +315,18 @@ A command forced into the background with `( ... ) &` writes the *forking shell'
 
 **Why:** three runs of a probe that asks whether a program's clear command ends a background command each answered "gone" for a reason that had nothing to do with the clear — a phrase the program never draws, a watch on the wrong pid, and a keystroke typed into a running turn. Only the plain match, the right pid and a wait for the program to be idle produced a measurement that the program's own screen then confirmed in its own words.
 
+### A planted run in a shared temporary directory gets a directory of its own
+
+When a test starts a child run whose files it must clean up after, give that run a temporary directory of its own and remove that directory whole. Never clean the shared temporary directory by removing the entries that match the plant's prefix: a concurrent run's live file can carry the same prefix, and the cleanup that was proving itself deletes it. The same rule holds for the fix that makes a test do this: the plant's directory is the unit of cleanup, not the name.
+
+**Why:** a cleanup that removed every entry matching a planted prefix in the shared temporary directory deleted a file another run had made a fraction of a second earlier, in every one of four runs, and the test reported success.
+
+### A recursive removal goes through the project's own remover
+
+When the project keeps a remover that retries while something is still writing, use it everywhere — including in the fix a reviewer writes on someone else's branch. A guard that refuses a raw recursive delete refuses it wherever it appears, so a one-line fix carrying the language's own recursive removal turns the suite red on the fix, not on the code under review.
+
+**Why:** a fix for a temporary-directory leak used the language's raw recursive delete where the project required its retrying remover, and the project's own guard failed the build — a green run being the only thing that would have caught it, since the fix read correctly.
+
 ---
 
 ## Decision Record
