@@ -307,6 +307,14 @@ A runner that starts a child per test file ties that child's life to nothing. A 
 
 **Why:** five such orphans were found alive hours after their runners died, one of them holding a live session credential, and the person who owned it could not start a new session until the orphans were killed by hand. The flags bound a run that is allowed to finish; they do nothing for a run killed outright.
 
+### A screen a program draws is matched plainly, never as a phrase
+
+A terminal program draws text in pieces: a word, a cursor move to where the next word starts, the next word, with colour and title sequences between them. A script that waits for a phrase with `screen.includes('Enter to confirm')` waits forever, then types into a dialog it never left, and reports whatever the mis-driven state threw back as its answer. Strip the escape sequences, remove all whitespace from both the screen and the phrase, then compare. Anchor the wait on something drawn every time the program is ready — its version banner — never on a rotating hint line: a hint absent in one version turns the wait into a timeout that the script carries on past.
+
+A command forced into the background with `( ... ) &` writes the *forking shell's* pid, which exits by itself; a checker watching that sees a process that died on its own, not the command. Let the tool's own background mode fork, and have the command write its own pid and become the command.
+
+**Why:** three runs of a probe that asks whether a program's clear command ends a background command each answered "gone" for a reason that had nothing to do with the clear — a phrase the program never draws, a watch on the wrong pid, and a keystroke typed into a running turn. Only the plain match, the right pid and a wait for the program to be idle produced a measurement that the program's own screen then confirmed in its own words.
+
 ---
 
 ## Decision Record
