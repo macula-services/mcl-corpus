@@ -67,6 +67,12 @@ Time still runs left to right, a Division's life from `initiate` to `archive`, b
 
 This differs from Event Modeling, which places wireframes, commands, events and views on separate rows along one unbranched timeline, one column per slice, and so grows as wide as the system is long. The lane form folds a slice into one node and spends the rows on roles. The two draw the same facts; the lane form fits on a wall.
 
+### The existing form answers before a new note kind
+
+Before drawing a wall, or proposing one in prose, open this page and the wall it already holds, and express the idea with the notes that exist. Propose a new note kind only when the existing ones truly cannot say it, and then say so plainly. A drawing is rendered and looked at before it is shown to anyone.
+
+**Why:** a wall drawn with invented boxes, arrows and a colour nobody uses reads as a different method, and the reader has to be taught it. The picture that prompted this rule needed nothing new: a lane, a desk, its event and the policy on that desk already said it, in notes every reader of the wall knows.
+
 ---
 
 ## What each note becomes

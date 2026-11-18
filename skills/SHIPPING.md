@@ -19,6 +19,12 @@ On a repo whose CI builds and ships the deploy image only after its tests pass, 
 
 **Why:** the leg from the registry to the running system is automatic, but the leg from the push to the registry goes through the whole test gate, and an unrelated flaky test can stop it every time.
 
+### Run the product live from the first days, and again every night
+
+Schedule a live end-to-end run of the finished install in the first days of a product, and repeat it every night. A suite that runs over a recording sees only what the recording holds: the first-run screens, the host's own update and its trust prompts appear in a live run and nowhere else. Pick the one milestone path before opening parallel fronts, and keep generated artifacts out of the changes when many changes touch them.
+
+**Why:** a product that took weeks where a plugin of the same size took days had no live run for its first two weeks, ran several fronts against no milestone, and rebuilt one generated file in every change until landings serialized. Each of those is a cost that the first live run, or one ordered path, would have surfaced in the first days.
+
 ### A tag never lands ahead of its main
 
 Push the commit, re-fetch and confirm the remote default branch equals the tip, and only then create and push the tag. Never pipe a push, or any step whose exit code decides the next step, through a filter, which eats the exit code. Refuse to tag unless the remote branch already equals the approved base.
