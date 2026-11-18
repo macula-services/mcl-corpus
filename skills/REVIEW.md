@@ -117,3 +117,11 @@ A plan that orders an issue's work into packages places every line of that issue
 **How to apply:** before posting the plan, walk the issue from top to bottom and write each line's package beside it. A line with no package is a gap in the plan, never a detail for later. A line whose package lacks the thing it depends on (a link to a card before the cards exist) moves to the package that builds that thing.
 
 **Why:** a plan for a storming board ordered six packages and a model step, and its gap table was right. But the issue's own "done when" belonged to no package, the three "not measured yet" items had no home, and the big picture's outputs had no package. A link to an issue card was placed two packages before the cards existed. The review found five small items, all of the same kind: lines the plan had read but not placed.
+
+## A resume checks what a stopped run left behind
+
+A script that can resume (`--from <step>`) often finds something an earlier run left behind and uses it: a local tag it never pushed, a file it wrote, a build it made. That leftover gets every check the fresh path gave it. The run may have stopped because of that very thing.
+
+**How to apply:** in a resumable script, find each branch that says "it is already here, so push it" or "use it". Name the check the fresh path ran on that thing and the resume branch skips. Put the check in one function and call it from both paths. Add a proof case where the leftover is the bad one, and watch it fail before the fix.
+
+**Why:** a release script signed a release tag after main had moved, then verified it. When the verify failed, the run stopped and the tag stayed local. The resume path saw a tag that was "here but not on origin", pushed it, and exited 0. So an unverified tag would have gone out on the next try. The script's own proof passed, because no case had the leftover be the bad one.
