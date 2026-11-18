@@ -100,3 +100,9 @@ Every test removes what it creates — temp directories, files, processes. A tes
 A proof run that passes an override for the command it is checking, or a stub that answers instantly, never executes the line production runs. Let the default be what executes: put the stub on `PATH` and call the real name. Have the stub answer only after N calls, so a check made once cannot pass a wait, and assert that the wait happened. Add the failure directions too (the thing never answers, the step after it fails, the precondition refuses), each required to exit non-zero and leave nothing started. Then plant the old defect in a copy and require that run to fail, so the harness cannot pass by proving nothing.
 
 **Why:** the defect sits in the line the override replaces, and an instant answer hides a check that never waits, so a green proof covers the one path the operator will not run.
+
+### A result line is read from standard output alone
+
+When a run keeps a child's last line as its result, capture standard output on its own and send stderr elsewhere (a file, then the log). Never take the last line of `2>&1`. Through ssh, a container exec or any other relay, the two streams travel on separate pipes and their order is not kept, so a late warning on stderr can become the "result". Pin it with a stand-in that writes a stderr line *after* its result line, and require the run to still end on the result. Let a refusal's words come from stderr first, since that is where a well-behaved child says them.
+
+**Why:** a warning that lands last turns into the run's verdict, and a stand-in that writes only to stdout can never show it.
