@@ -110,6 +110,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Write or name something clearly" | `skills/WRITING.md` |
 | "Test something" | `skills/TESTING.md` |
+| "Prove a guard with mutation testing" | `skills/MUTATION.md` |
 | "Handle secrets or do security work" | `skills/SECURITY.md` |
 | "Write BEAM (Erlang/Elixir) code" | `skills/BEAM.md` |
 | "Diagnose a build or test result" | `skills/BUILD.md` |
