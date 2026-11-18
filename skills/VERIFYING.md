@@ -94,3 +94,9 @@ A scheduled job that is merged is a definition, not a running job. Count it as w
 A test of a behaviour owned elsewhere belongs where the behaviour lives. An integration check that goes green about someone else's invariant passes because the call succeeded, while nothing stops the owner from removing the behaviour — both suites stay green and the feature breaks. Assert the invariant in the repository that implements it, and verify the location yourself rather than trusting a relayed claim about where a seam lives.
 
 **Why:** a green test about the adjacent object is a signal from next to the thing that matters, not from the thing.
+
+### A zero-hit scan of a managed binary is a fact about the tool
+
+A .NET assembly keeps its strings in UTF-16, so `strings` with its default encoding reports nothing for it, and a scan that finds no hits then reads as "the name is absent". Use `strings -e l` (or the format the runtime in question uses) before concluding anything from a search of a compiled artifact, and say which scan produced the answer.
+
+**Why:** the first scan here said zero and the second said one, and the difference was an encoding flag, not the binary.

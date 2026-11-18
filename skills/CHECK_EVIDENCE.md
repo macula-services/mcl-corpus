@@ -82,3 +82,9 @@ Cite a run as evidence only after reading its workflow name, its conclusion and 
 Every test removes what it creates — temp directories, files, processes. A test that leaks scratch fills the machine's scratch space and fails every other test that runs after it, and a review flags the leak as a required change. Back the rule with a check that fails such a test by name.
 
 **Why:** what one test leaves behind is paid for by every other test that runs after it.
+
+### A harness that replaces the thing under test proves nothing about it
+
+A proof run that passes an override for the command it is checking, or a stub that answers instantly, never executes the line production runs. Let the default be what executes: put the stub on `PATH` and call the real name. Have the stub answer only after N calls, so a check made once cannot pass a wait, and assert that the wait happened. Add the failure directions too (the thing never answers, the step after it fails, the precondition refuses), each required to exit non-zero and leave nothing started. Then plant the old defect in a copy and require that run to fail, so the harness cannot pass by proving nothing.
+
+**Why:** the defect sits in the line the override replaces, and an instant answer hides a check that never waits, so a green proof covers the one path the operator will not run.
