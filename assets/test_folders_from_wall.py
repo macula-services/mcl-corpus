@@ -143,6 +143,13 @@ PLANTED = [
          "facts_that_leave": ["no_such_event_v1"]},
         ValueError,
     ),
+    (
+        "two desks of one name are refused by name, not collapsed into one folder",
+        {**_empty_wall(),
+         "desks": [{"name": "register_member", "lane": "Member", "event": "member_registered_v1", "feeds": []},
+                   {"name": "register_member", "lane": "Organiser", "event": "member_enrolled_v1", "feeds": []}]},
+        ValueError,
+    ),
 ]
 
 

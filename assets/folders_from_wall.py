@@ -28,8 +28,9 @@ def folders_from_wall(wall: dict) -> dict[str, list[str]]:
     """Map a wall file to the folders its CMD, PRJ and QRY apps must hold.
 
     Raises ValueError, naming the note, where the wall cannot be read to a
-    folder set: a policy with more than one input event, or a leaving fact
-    that is no desk's event. Both are refused, never guessed.
+    folder set: a policy with more than one input event, a leaving fact that
+    is no desk's event, or two notes asking for one CMD or QRY folder. Each is
+    refused, never guessed.
     """
     cmd: list[str] = []
     prj: list[str] = []
@@ -62,6 +63,14 @@ def folders_from_wall(wall: dict) -> dict[str, list[str]]:
     for read_model in wall.get("read_models", []):
         for question in read_model["questions"]:
             qry.append(question)
+
+    # Two notes that ask for one CMD or QRY folder would collapse into it unseen
+    # (two desks of one name, a policy written twice). PRJ is left out: two
+    # versions of one event share their projection folder by the table's rule.
+    for app, folders in (("cmd", cmd), ("qry", qry)):
+        twice = sorted({folder for folder in folders if folders.count(folder) > 1})
+        if twice:
+            raise ValueError(f"the wall asks for {', '.join(twice)} more than once in {app}")
 
     return {"cmd": cmd, "prj": prj, "qry": qry}
 

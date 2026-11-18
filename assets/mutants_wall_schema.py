@@ -25,6 +25,9 @@ MUTANTS: list[tuple[str, str, str]] = [
     ("an extra key is refused", "if key not in props:", "if False:"),
     ("a wrong type is refused", 'if schema.get("type") is not None and not _matches(value, schema["type"]):', "if False:"),
     ("a required key is refused", "if key not in value:", "if False:"),
+    ("a repeated item is refused", "if item in seen[:i]:", "if False:"),
+    ("a short list is refused", 'if len(value) < schema.get("minItems", 0):', "if False:"),
+    ("an unknown schema keyword is named", "if key not in APPLIED | DESCRIBING]", "if False]"),
 ]
 
 

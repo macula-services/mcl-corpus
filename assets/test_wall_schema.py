@@ -54,11 +54,25 @@ CASES = [
         {k: v for k, v in _wall().items() if k != "division"},
         ["/division: required by the schema"],
     ),
+    (
+        "a repeated item in a unique list is refused, naming both places",
+        {**_wall(), "lanes": ["Staff", "Staff"]},
+        ["/lanes/1: repeats /lanes/0"],
+    ),
+    (
+        "a list shorter than its minimum is refused, naming its path",
+        {**_wall(), "policies": [{"on": [], "maybe": "greet_member"}]},
+        ["/policies/0/on: needs at least 1 item(s), has 0"],
+    ),
 ]
 
 
 def main() -> int:
+    from check_wall_schema import _unknown_keywords
+
     failures: list[str] = []
+    if _unknown_keywords({"type": "object", "pattern": "x"}) != ["/: pattern"]:
+        failures.append("a schema keyword the reader does not apply is not named at load")
     for label, wall, want in CASES:
         got = check_wall_schema(wall)
         if got != want:

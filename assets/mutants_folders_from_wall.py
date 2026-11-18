@@ -29,6 +29,7 @@ MUTANTS: list[tuple[str, str, str]] = [
     ("a listener folder says from_mesh", "cmd.append(f\"on_{arriving['fact']}_from_mesh_{arriving['maybe']}\")", "cmd.append(f\"on_{arriving['fact']}_from_pg_{arriving['maybe']}\")"),
     ("a question is one folder", "qry.append(question)", "qry.append(question + \"_bogus\")"),
     ("a multi-input policy is refused", "if len(on) != 1:", "if False:"),
+    ("a folder asked for twice is refused", "if twice:", "if False:"),
 ]
 
 
