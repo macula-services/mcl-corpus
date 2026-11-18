@@ -57,6 +57,14 @@ A case that exists to pin a literal — a wire shape, a prefix, a separator, a d
 
 **How to apply:** write the exact bytes in the fixture — line numbers, tabs, escapes, separators — and say in a comment that they are written out rather than derived. Then mutate the constant: if the case stays green, it is pinning nothing.
 
+### A permission test grants each permission apart, or a swapped check passes
+
+A test that pins "this handler checks permission X" has to give X to a different principal from every other permission. If the fixture grants every permission to the same role, a handler that checks the wrong permission (Y where it should check X) gives the same answers for both callers, and the test stays green. Build each case's grants so that only the tested permission belongs to the allowed caller, and every other permission belongs to the refused caller. Then a check against the wrong permission either lets the refused caller through or refuses the allowed one.
+
+**Why:** "always allow" and "never allow" mutants die in a uniform fixture, so the suite looks strong. But a uniform grant table cannot tell one permission from another. A reviewer's swap mutants (each handler reading a neighbouring permission) survived a full table of rows until the grants were made disjoint per case.
+
+**How to apply:** alongside the always-true and always-false mutants, add one swap mutant per handler: replace the permission it reads with another one the system has. Each one must fail the row for that handler.
+
 ## Run it cleanly
 
 ### A runner restores what it mutated
