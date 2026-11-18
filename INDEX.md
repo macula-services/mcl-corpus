@@ -105,6 +105,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Reason about event subscription" | `philosophy/EVENT_SUBSCRIPTION_FLOW.md` |
 | "Coordinate a team of agents, or verify work" | `philosophy/ACTIVE_COORDINATION.md`, `philosophy/SHARED_LEARNING.md`, `skills/CHECK_EVIDENCE.md`, `skills/VERIFYING.md` |
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
+| "Review a change" | `skills/REVIEW.md` |
 | "Ask the owner for a decision" | `skills/ASKING.md` |
 | "Own the work and its scope" | `skills/OWNERSHIP.md` |
 | "File or handle an issue" | `skills/ISSUES.md` |
