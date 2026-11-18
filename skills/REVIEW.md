@@ -70,6 +70,12 @@ A design change, or anything security-sensitive (tokens, credentials, process si
 
 **Why:** a full round trip for a few lines costs more than the fix, and the author still sees the fix and learns from it. Sensitive and design changes stay with the author, because those are where a second mind matters most.
 
+## A correction after a pass is appended, never edited in
+
+Once a review has passed a text, a correction goes in a new message that says what changed, why, and which paragraph it affects, with a line for the reviewer to check. The text the reviewer read is not edited afterwards. Editing is for a typo that changes no meaning, before any verdict exists.
+
+**Why:** a verdict binds the exact words it was given, the same way a green run binds the exact tip it ran on. An edit leaves the reviewer checking a text that is no longer the one that passed, and with no diff to show what moved.
+
 ## A terminal screen never holds a string whole
 
 A full-screen terminal program redraws only the cells that changed, and pads a wrapped line with its own margin. So the raw bytes of a recorded screen drop characters and split words: a command shown whole on the screen can be kept with letters missing. A redactor that looks for a secret's exact value in those bytes can miss it, even after removing line breaks and escape sequences.

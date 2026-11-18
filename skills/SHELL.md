@@ -103,6 +103,12 @@ The shell runs backticks, dollar signs and exclamation marks in an inline messag
 
 **Why:** the words vanish from the message and the command-not-found noise is buried in the output, leaving a nonsense line.
 
+### Hand a person one script, not a list of commands
+
+When the owner has to run something, write one script that does the whole job: `set -euo pipefail`, a trap that removes whatever it created whether it succeeded or not, what it will do printed first and where its evidence landed printed at the end. Every command in it is meant to run. A list of commands to paste one at a time leaves the cleanup, and the ordering, to whoever got that far.
+
+**Why:** a paste is several steps that look like one, and a step skipped or run out of order shows up later as someone else's puzzle. A script fails as a unit and cleans up as a unit.
+
 ### Never hand a possibly-empty argument list to a test runner
 
 A test runner given an empty argument may treat it as a pattern and run every test file it can find. Build the flag list in a real script with a guard, echo the full argument list and confirm it names exactly what you mean before the run.

@@ -273,6 +273,32 @@ All tests must pass before the Docker image is built.
 
 ---
 
+## Running the suite by hand
+
+A suite is bounded by what its own entry point states. A hand-run invocation is bounded by nothing unless it repeats every one of those statements, so the rules below apply to any run started outside the entry point.
+
+### Build a runner's arguments in bash, not in the interactive shell
+
+Assemble a test runner's flags and file list in a bash script with `set -euo pipefail`, and print the final argument list before anything runs (the rule against an empty argument list is in `SHELL.md`). An interactive shell's array syntax is not portable between shells: a shell without `mapfile` leaves the array empty without an error, and the loop after it passes nothing.
+
+**Why:** an empty pattern once turned a one-file run into a sweep of every test file the search could reach, including other checkouts on the same machine, with the cases that start real processes live.
+
+### A test run that can start real work runs in its own process namespace
+
+A suite whose cases start real processes, servers or recorded hosts runs inside `unshare --user --pid --fork --mount-proc`, with a temporary directory of its own. Anything whose tear-down signals a process group by bare pid is confined the same way.
+
+Inside the namespace the run is not the user it was: a private home leaves a version manager's shims with no version to pick, and the checkout belongs to another user, so version control refuses it as unsafe. Put the real runtime's directory first on the path, and mark the checkout safe for that run only, through the environment rather than a config file.
+
+**Why:** a tear-down that signals by pid can reach a process it never started, and the broad sweep above is exactly the run that puts unrelated processes within reach.
+
+### A killed run takes its children with it
+
+A runner that starts a child per test file ties that child's life to nothing. A runner killed from outside leaves each child reparented and running, holding every descriptor and credential it inherited. Every documented way to run the suite states a timeout, a force-exit, and a guard that ends the file's process once the process that started it is gone. Run the suite through the project's entry point; a hand-run command carries all three or it does not run.
+
+**Why:** five such orphans were found alive hours after their runners died, one of them holding a live session credential, and the person who owned it could not start a new session until the orphans were killed by hand. The flags bound a run that is allowed to finish; they do nothing for a run killed outright.
+
+---
+
 ## Decision Record
 
 | Date | Decision |

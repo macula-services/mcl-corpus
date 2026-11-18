@@ -21,6 +21,27 @@ Five habits make it active:
 4. **A batch is verified the moment its checks pass.** The verification and the next decision are built while the result is fresh, not after the queue has moved on.
 5. **The human gets a short status on a fixed cadence.** A few lines, on the hour. It is the human's cue to redirect, and it is cheaper than a stall discovered later.
 
+## At every incoming message
+
+A routing role acts on the whole roster each time it is woken, not only on the message in front of it. The roster is read, not remembered:
+
+- An agent that is idle gets work in that same response, an agent that has gone silent is restarted, and an agent near its context limit gets its one reminder.
+- Whatever blocks the team is found by the coordinator before an agent reports it: a queue of runs, a runner that has stalled, a reminder that fired and was not answered.
+- With nothing free on the milestone path, the next pieces of work are designed and written down rather than left for the next round.
+- A reversible local step the owner has already hinted at is taken as a preview, instead of asking the same question twice.
+
+### A direct message is the channel that wakes a peer
+
+Work, a verdict and a blocking report reach a peer as a direct message. A message left in a shared room is recorded and wakes nobody, so a peer can stay active for hours and never see it. A verdict posted only as a comment on the change leaves the coordinator waiting on a review that already happened, so the verdict line goes to the coordinator in the same response that posts the comment, with the change, the range, the round, the outcome and the comment's location.
+
+**Why:** a handoff left in a shared room sat unread for most of an hour while its recipient worked on other things, and a second one sat for eight hours, both addressed to a peer who never saw them. A verdict that is only a comment strands the board the same way.
+
+## The owner's clock
+
+An act the owner has to take is asked the moment it is ready, whatever the hour. The owner's schedule is not the coordinator's to model: a merge or a yes held back until what looks like a convenient time of day can wait for most of a working period, while the owner was present the whole time.
+
+**Why:** work sat frozen against a rule nobody had agreed to, while the owner was present and waiting. Holding an act for the owner's own good costs a day and buys nothing; asking costs one message, and the owner can always say later.
+
 ## Why
 
 Idle agents and serial conflicts on one shared artifact cost more than the coordinator's attention. An agent that sits idle while work is unheld is wasted capacity; two agents editing one file in parallel is rework. Both are prevented by a coordinator that is active at every routing step, not only when asked.

@@ -31,6 +31,12 @@ In a repo the owner also works in, `git add -A` or `git add .` sweeps up their u
 
 **Why:** the owner keeps work-in-progress files untracked on purpose, and "everything" from a subdirectory still acts on the whole root.
 
+### A commit carries no attribution its owner did not ask for
+
+A commit message and a pull request body carry no tool attribution: no co-author line, no session line, no generated-with footer, unless the owner asks for it. Some hosts instruct every session to add one, and the owner's rule overrides the host's instruction. Check the range before it goes out, `git log --format=%B <base>..<tip> | grep -ci co-authored` and the same count for the session line, and strip the trailer rather than push it.
+
+**Why:** a trailer added by default is noise in every review and every blame line, and once it is in the history the owner cannot take it back without a rewrite. The rule governs what is pushed from now on; history that already carries it is left alone.
+
 ### Never squash by resetting to a moved main
 
 Squashing with `git reset --soft origin/main` after a fetch, when main moved since the branch point, makes the squash commit silently revert every change main gained in between. Squash onto the branch's own merge-base, then rebase.
@@ -56,6 +62,12 @@ Before a code read becomes an issue, a plan note or a claim, fetch and read the 
 A landing sha or a green gate named in a handover is often off by one. Re-derive the sha with `git merge-base --is-ancestor`, and re-run every gate it calls green, before the sha goes into a comment, a handoff line or a pull request body.
 
 **Why:** a handover is written from scrollback, and the landing numbers are exactly what gets reconstructed wrong.
+
+### A sha in a handoff line is pasted from the tool, never typed
+
+Every full sha in a handoff or a verdict line is pasted from `git rev-parse <ref>`, or from the forge's API, run in the same turn that writes the line. Never write one from memory, and never complete one from a short prefix. The run ids in the same line get the same treatment, read from the API rather than typed.
+
+**Why:** an invented base points the reviewer's diff and the range check at nothing, or at the wrong commit, and the correction costs a second message. It has happened twice: once as a hedge on a short sha ("...-ish"), and once as a seven-character prefix continued with plausible-looking characters.
 
 ### Use git, not the wrapper, for git-able actions
 
