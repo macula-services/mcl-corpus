@@ -107,6 +107,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Ask the owner for a decision" | `skills/ASKING.md` |
 | "Own the work and its scope" | `skills/OWNERSHIP.md` |
+| "File or handle an issue" | `skills/ISSUES.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
 | "Write or name something clearly" | `skills/WRITING.md` |
 | "Test something" | `skills/TESTING.md` |
