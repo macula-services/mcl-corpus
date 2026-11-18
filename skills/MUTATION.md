@@ -94,3 +94,9 @@ A mutation log that carries colour codes inside its "compiling ... failed" line 
 A mutation-check restore can leave the mutant's compiled artifact in the build directory when the timestamp is not strictly newer. Delete the artifact and compare it to the source before an evidence run.
 
 **Why:** a stale mutant artifact answers every later question wrongly.
+
+### A same-length mutant survives in cached bytecode
+
+A mutant the same length as the line it replaces, restored within the same second, leaves its `.pyc` valid: Python checks a cached module by the source's mtime in seconds and its size. Every import after the restore then runs the mutant, not the restored source. Run the test with `-B` (or export `PYTHONDONTWRITEBYTECODE=1`), so no bytecode of a mutant is ever cached.
+
+**Why:** the restore is byte-for-byte, but the cache outlives it, and the cases that follow import the mutant.
