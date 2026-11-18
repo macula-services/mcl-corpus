@@ -49,6 +49,14 @@ A line promised "whenever X happens" is unpinned if only one of X's paths is ass
 
 **Why:** the promise is about every path it names, so the test has to reach every one of them.
 
+### A fixture built from the constant it pins moves with the mutant
+
+A case that exists to pin a literal — a wire shape, a prefix, a separator, a default — writes those bytes out in its own fixture. Built instead from the same constant the production code reads, the fixture moves whenever the mutant moves, and every mutant on that constant survives the whole suite.
+
+**Why:** the check and its fixture then agree with each other rather than with what the outside world sends, so the suite proves only that the two agree. The same shape is easy to lose twice: first both sides carried one wrong value, then the case written to pin the true one derived its bytes from the very constant under test.
+
+**How to apply:** write the exact bytes in the fixture — line numbers, tabs, escapes, separators — and say in a comment that they are written out rather than derived. Then mutate the constant: if the case stays green, it is pinning nothing.
+
 ## Run it cleanly
 
 ### A runner restores what it mutated
