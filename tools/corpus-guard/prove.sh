@@ -110,6 +110,19 @@ else
   fail '--off left the guard armed'
 fi
 
+# --- a clone with hooks of its own is not armed over them -------------------
+own_hooks=$root/own-hooks
+new_clone "$own_hooks"
+printf '#!/bin/sh\nexit 0\n' > "$own_hooks/.git/hooks/commit-msg"
+chmod +x "$own_hooks/.git/hooks/commit-msg"
+if ( cd "$own_hooks" && ./$GUARD ) > "$root/own-hooks.out" 2>&1; then
+  fail 'install.sh armed over the clone'"'"'s own hooks, switching them off'
+elif grep -q 'commit-msg' "$root/own-hooks.out" && [ -z "$(cd "$own_hooks" && git config --local --get core.hooksPath)" ]; then
+  ok 'install.sh refuses to arm over the clone'"'"'s own hooks, naming them, and sets nothing'
+else
+  fail "install.sh refused without naming the hook, or set core.hooksPath anyway: $(said "$root/own-hooks.out")"
+fi
+
 # --- the mutant: the worktree test is what the worktree case pins ---------
 mutant=$root/mutant
 new_clone "$mutant"

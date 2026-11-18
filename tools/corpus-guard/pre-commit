@@ -47,11 +47,16 @@ default_branch=${default_branch#origin/}
     printf '    git worktree add <a path outside this clone> -b <a branch of yours> origin/%s\n' "$default_branch"
     printf '    cd <that path> && git add <your paths> && git commit -m "<message>"\n'
     printf '    git push origin HEAD:%s\n' "$default_branch"
+    printf '  A push refused as not a fast-forward means someone pushed first:\n'
+    printf '    git pull --rebase origin %s && git push origin HEAD:%s\n' "$default_branch" "$default_branch"
   else
     printf '    git worktree add <a path outside this clone> -b <a branch of yours> origin/HEAD\n'
     printf '    cd <that path> && git add <your paths> && git commit -m "<message>"\n'
     printf '    git push origin HEAD:<the default branch>\n'
+    printf '  A push refused as not a fast-forward means someone pushed first: pull --rebase, then push again.\n'
   fi
+  printf '  Once it is on the default branch, remove the worktree and its branch:\n'
+  printf '    git worktree remove <that path> && git branch -D <that branch>\n'
   printf '  See skills/GIT.md, "The shared clone is not a commit site".\n'
 } >&2
 

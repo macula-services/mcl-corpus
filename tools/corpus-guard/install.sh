@@ -34,6 +34,18 @@ hook_in_play() {
   esac
 }
 
+# Hooks in the clone's own hooks directory. A local core.hooksPath makes git run hooks from
+# there instead, so arming would silently switch these off: they are named, never displaced.
+displaced_hooks() {
+  common=$(git rev-parse --git-common-dir)
+  [ -d "$common/hooks" ] || return 0
+  for one in "$common"/hooks/*; do
+    [ -f "$one" ] && [ -x "$one" ] || continue
+    case $one in *.sample) continue ;; esac
+    printf '%s\n' "$one"
+  done
+}
+
 armed() { [ "$(git config --local --get corpus.shared-clone 2>/dev/null)" = "true" ]; }
 
 check() {
@@ -56,6 +68,11 @@ check() {
     ok 'the clone declares itself shared (corpus.shared-clone=true)'
   else
     fail 'the clone does not declare itself shared (corpus.shared-clone is not true), so a commit here is allowed'
+  fi
+
+  displaced=$(displaced_hooks)
+  if [ -n "$displaced" ]; then
+    fail "core.hooksPath switches off the clone's own hooks: $(printf '%s' "$displaced" | tr '\n' ' ')"
   fi
 
   hook=$(hook_in_play) || hook=
@@ -87,6 +104,13 @@ check() {
 
 case ${1:-install} in
   install)
+    displaced=$(displaced_hooks)
+    if [ -n "$displaced" ]; then
+      printf 'FAIL %s: arming would switch off the clone'"'"'s own hooks, so nothing was armed:\n' "$GUARD_NAME" >&2
+      printf '  %s\n' $displaced >&2
+      printf '  Move them next to the guard, or remove them, then run this again.\n' >&2
+      exit 1
+    fi
     git config --local corpus.shared-clone true
     git config --local core.hooksPath "$GUARD_DIR"
     printf 'armed corpus.shared-clone=true and core.hooksPath=%s in %s\n' "$GUARD_DIR" "$top"
