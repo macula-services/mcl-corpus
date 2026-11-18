@@ -29,7 +29,7 @@ A run that succeeded is evidence only if the guard it was testing actually ran. 
 
 A check that judges only the ranges touching a generated file (a drawn diagram, a lockfile, a rendered doc) cannot see its generator move. When a change edits the generator, or the sources it reads, and touches nothing it outputs, every range check stays green while the tree no longer matches what the generator would produce. So check the whole tree as well: regenerate and compare at release preflight, before the first outward act of the release, not only per range.
 
-**Why:** a release found the drift only partway through, after one package had already been published and could not be taken back. Every range check had passed, because no range had touched the generated file.
+**Why:** in one case the drift was caught before a release, but the release's own check would have refused only after one package was already published, and a published package cannot be taken back. Every range check had passed, because no range had touched the generated file.
 
 ### A conflicting pull request gets no runs
 
