@@ -121,6 +121,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Reason about cost, budget or estimates" | `skills/COST.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
 | "Commit or branch correctly" | `skills/GIT.md` |
+| "Work the hosting platform or a forge" | `skills/GITHUB.md` |
 | "Push, tag or deploy a change" | `skills/SHIPPING.md` |
 | "Can we solve X by evolving controllers?" | `skills/NEUROEVOLUTION_SERVICE_METHOD.md` — read the intake gate FIRST, before designing anything |
 
