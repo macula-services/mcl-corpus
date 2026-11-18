@@ -31,6 +31,18 @@ A search proves only that the strings you thought of are absent, and a presence 
 
 **Why:** a reader cannot tell a real check from a grep unless the check is handed over with its blind spots named.
 
+### A harness's own pipe needs its value set in the harness's shell
+
+When a harness builds the input side of a run itself (`printf ... | program`), setting that input as an argument to the command it invokes — `env VAR=x program` — changes only the program's environment. The harness's own `printf` still reads its old value, so every case feeds the same good input and passes. Set it as an assignment prefix on the harness's own call (`VAR=x run_it`), and read one case's output to confirm the new input actually reached the program.
+
+**Why:** the failure is invisible by design — every case is green — and it surfaces only by asking what the passing case really fed.
+
+### Match the refusal's own line, not a word the program prints anyway
+
+A program that prints a banner, a label or a prompt containing the word a case checks for makes a grep of its whole output for that word match on runs that never reached the check. Match the refusal itself — its own prefix and the reason it gives — and assert that whatever must not have happened yet (a download, a registration, a write) never started.
+
+**Why:** a case tuned to a word the program says for other reasons confirms that the program ran, not that the guard fired.
+
 ## A green exit is not a green result
 
 ### Count from the run's summary, not the failure markers
