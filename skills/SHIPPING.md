@@ -65,6 +65,12 @@ When several passed changes land together, whoever lands the batch merges the mo
 
 **Why:** calling each author back to merge in turn makes a batch wait on the slowest session, and the author holds no knowledge the merge needs.
 
+### A reviewed, green batch lands without a per-batch question
+
+When every change in a batch has passed review, the combined tip is green in the project's own checks, and the landing base is the current default tip, the batch lands on the coordinator's go and is reported afterwards with the range that would revert it. Do not open a landing question per batch: review plus a green tip is the safety, and a question per batch makes the owner the bottleneck of every shipment.
+
+**Why:** a team that had already settled this drifted back to one landing question per batch within days, and the owner's answer was that the team should be able to do far more without the owner's continuous intervention. Still asked, and batched into one question: version and release tags, changes to repository settings or secrets, infrastructure rolls, realm and credential changes, deletions, and spending. A landing is an infrastructure roll when the default branch publishes an image that a running machine follows: check for that before treating a batch as one that needs no question.
+
 ### A freed member takes its next work from an ordered queue
 
 When a member's change passes or lands, its next package is already waiting in one ordered queue, and it takes the top one in the same step. It does not ask what to do next, and the coordinator does not pick on the spot.
