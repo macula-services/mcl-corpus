@@ -131,3 +131,9 @@ A script that can resume (`--from <step>`) often finds something an earlier run 
 **How to apply:** in a resumable script, find each branch that says "it is already here, so push it" or "use it". Name the check the fresh path ran on that thing and the resume branch skips. Put the check in one function and call it from both paths. Add a proof case where the leftover is the bad one, and watch it fail before the fix.
 
 **Why:** a release script signed a release tag after main had moved, then verified it. When the verify failed, the run stopped and the tag stayed local. The resume path saw a tag that was "here but not on origin", pushed it, and exited 0. So an unverified tag would have gone out on the next try. The script's own proof passed, because no case had the leftover be the bad one.
+
+## A test value that equals a real constant can hide a hard-coded answer
+
+When a check flags a test literal that spells a constant defined elsewhere, first ask whether the code under test passes that value through or reads it. If it passes it through, the test only needs some value. Choosing one that equals a real constant makes the test blind: code that returns the constant instead of the value it was given still passes. Use a value no code names. Declaring a coincidence is for the same spelling with a different meaning in code that reads it.
+
+**Why:** a client test reported a mode equal to one an engine launcher pins. The reviewer declared a coincidence, and the check went green. A mutant client that returned that mode instead of the agent's still passed the test. Changing the value to one no engine names made the mutant fail.
