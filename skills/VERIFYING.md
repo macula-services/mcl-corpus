@@ -65,6 +65,12 @@ Before passing a release, check that the proposed version is still unused: the t
 
 **Why:** a "skip duplicates" default or a stale section hides the fact that the version is live, and the pass then ships a version that is not the one the review read.
 
+### A scheduled job is unproven until its first run is observed
+
+A scheduled job that is merged is a definition, not a running job. Count it as working only after its first scheduled run has been seen: the run exists, it ran on the schedule, and it did what it is for. Until then, say "scheduled, not yet run", and put a check on the date the first run is due.
+
+**Why:** a daily sync had been on the default branch for 16 hours without ever running, while everyone counted it as live. Nothing fails when a scheduled job never fires, so only looking for the run shows it.
+
 ## The assertion where the behaviour lives
 
 A test of a behaviour owned elsewhere belongs where the behaviour lives. An integration check that goes green about someone else's invariant passes because the call succeeded, while nothing stops the owner from removing the behaviour — both suites stay green and the feature breaks. Assert the invariant in the repository that implements it, and verify the location yourself rather than trusting a relayed claim about where a seam lives.
