@@ -51,6 +51,12 @@ A security feature (integrity, sealing, auth, anything an attacker targets) star
 
 **Why:** designing by being attacked costs round after round; the model names the actor and the residuals up front.
 
+### A check inside the same OS user is a speed bump: say so where the promise is made
+
+When agents run as the same OS user as the person they work for, any check made inside that user, such as a terminal test, a permission table in a config file or a list of who may act, can be met by an agent that tries: it can fake a terminal, edit the file, or write the guarded state directly. Unless an OS boundary is actually being built, call such checks speed bumps, state the residual next to the table or list that makes the promise, and never write it as "closed by a future wall" that nobody plans. A gate that no code calls is worse than a speed bump: it is a promise with nothing behind it. Retire it, or give it a caller and a check that fails by name.
+
+**Why:** a reader trusts the strongest wording in the docs. An honest speed bump keeps them looking; an implied wall makes them stop.
+
 ### Write security findings in defensive terms
 
 Write findings, ratings and fix designs as the invariant that must hold, the limit, the fix, and the regression test. One line each for capability, precondition, exposure and severity. Keep step-by-step attack mechanics and payload recipes out; where a test input is needed, describe the shape the code must refuse, not how to build it.
