@@ -45,6 +45,12 @@ A suite run is evidence only when its output ends with the runner's own summary 
 
 **Why:** a truncated count backs a claim that is false.
 
+### A proof harness proves its own matcher first
+
+When a proof asserts by pattern, run one case whose pattern is known not to match and require it to be reported red before any real case runs. Read a pattern list with a trailing newline, or its last entry is dropped unread; never let a loop that iterated zero times read as a pass. The harness's own landed-mutation check belongs with it: compare the mutated bytes against the held ones, or a mutation that never applied looks like a surviving mutant.
+
+**Why:** a harness fails by silence, and silence looks exactly like every case holding.
+
 ### A check that exits 0 with hits is red
 
 A check that prints hits and still exits 0 is text to read, never a gate the shell enforces. Run it on its own, read the hit count, and only then act — or make the next step depend on a zero-hit reading, so a hit stops the chain.

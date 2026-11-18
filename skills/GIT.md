@@ -63,6 +63,14 @@ Clone, fetch, ls-remote, push, branches, tags and log are git's. Use the hosting
 
 **Why:** the wrapper hides what actually happened in git terms and trips checks and prompts.
 
+## Resolving a collision
+
+### A collision on a format string is resolved by counting, field by field
+
+When two changes touch one format line — a `printf`, a template, a `format!` — resolve it by writing the merged format and the merged argument list side by side and counting: as many specifiers as arguments, every field at the same ordinal in both, and every name assigned above the line. Keep each change's field where that change put it, and have the merge commit say which field came from where.
+
+**Why:** a specifier and an argument that drift by one position still parse. They print one value under another value's name, which reads plausibly and passes any test that only asks whether the names are present.
+
 ## Where work lives
 
 ### The clone stays on the default branch; work lives in a worktree
