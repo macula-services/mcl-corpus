@@ -1,0 +1,28 @@
+# The corpus guard: a commit in the shared clone is refused by name.
+#
+# Why it has a workflow of its own. The guard is a pre-commit hook that only acts in a
+# clone armed by tools/corpus-guard/install.sh, so nothing in CI ever runs the refusal
+# itself. What can be checked here is the guard file: prove.sh plants a world and requires
+# the refusal, the worktree allowance and the named faults. An edit that makes the hook
+# fail open — or a removal of the very test a case exists for — goes red by name here.
+
+name: corpus guard
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  shared-clone-commit:
+    name: shared-clone-commit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: prove the guard refuses a commit in the shared clone
+        run: tools/corpus-guard/prove.sh

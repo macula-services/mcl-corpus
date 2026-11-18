@@ -85,6 +85,14 @@ One clone per repo, on the default branch, clean and fast-forwarded. Branch work
 
 **Why:** a clone off the default branch misleads every sweep, and stray worktrees look like repos nobody removes.
 
+### The shared clone is not a commit site
+
+A clone that several people commit in has one index. A commit made there takes every staged line, including lines someone else staged for a lesson of their own, and it carries them under your message and your name. Write the lesson in a worktree of your own and push that to the default branch (`git push origin HEAD:main`); the clone keeps its place as the copy everyone reads and fast-forwards.
+
+The guard is `tools/corpus-guard`: `install.sh` arms a clone with two local config keys, `--check` names whatever is wrong and exits non-zero, `--off` disarms it. A commit in an armed clone is refused by name, with the staged paths listed. Arming sets a local `core.hooksPath`, which switches off any hook in the clone's own hooks directory, so `install.sh` refuses to arm over one and names it. A push to the default branch refused as not a fast-forward means someone pushed first: `git pull --rebase`, then push again; once the lesson is on the default branch, remove the worktree and its branch. The refusal leaves the index alone, so clear only the paths you name (`git restore --staged -- <path>`): a bare `git reset` drops a line another person staged. `git commit --no-verify` skips the refusal, which is why the rule above it is written down as well as enforced. CI runs `prove.sh` as the `shared-clone-commit` job, so a guard that stops refusing goes red by name.
+
+**Why:** after the commit, nothing in the repository can tell whose line was whose; the index recorded no owner. Worktrees give each committer an index, and files, of their own, which is the only thing that removes the shared index from the path.
+
 ### Trunk is the default
 
 Commit directly to the default branch; do not propose pull requests or feature branches unless an explicit instruction asks for one.

@@ -1,0 +1,63 @@
+#!/bin/sh
+# The shared clone is not a commit site.
+#
+# One clone that several people work in has one index. A commit made in it takes
+# every staged line, including lines someone else staged for a lesson of their
+# own, and git records no one as having staged a line. This hook refuses that
+# commit: a lesson is committed from a worktree of the committer's own, then
+# pushed to the default branch.
+#
+# It acts only in a clone that declares itself shared — `corpus.shared-clone=true`,
+# which tools/corpus-guard/install.sh sets — so a fresh clone, a fork and CI are
+# untouched. It allows every linked worktree, recognised by the `commondir` file
+# git writes into a worktree's git dir and never into a clone's. A worktree cut
+# from an older default branch carries no copy of this hook, which is an allow too.
+
+set -u
+
+[ "$(git config --local --get corpus.shared-clone 2>/dev/null)" = "true" ] || exit 0
+
+git_dir=$(git rev-parse --absolute-git-dir 2>/dev/null) || exit 1
+[ -f "$git_dir/commondir" ] && exit 0
+
+top=$(git rev-parse --show-toplevel 2>/dev/null) || top=$(pwd)
+
+default_branch=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null) ||
+  default_branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) ||
+  default_branch=
+default_branch=${default_branch#origin/}
+
+{
+  printf 'FAIL shared-clone-commit: this is the shared clone, not a commit site\n'
+  printf '  %s\n' "$top"
+  printf '  One commit here takes every staged line, including lines another person staged.\n'
+
+  staged=$(git diff --cached --name-only)
+  if [ -n "$staged" ]; then
+    printf '  staged here, and it would have gone into this commit:\n'
+    printf '%s\n' "$staged" | sed 's/^/    /'
+    printf '  Carry those lines to your worktree first. Unstage only the paths you name\n'
+    printf '  (git restore --staged -- <path>), never a bare git reset: the index may hold\n'
+    printf "  another person's staged lines.\n"
+  fi
+
+  printf '\n'
+  printf '  Commit from a worktree of your own, then push it to the default branch:\n'
+  if [ -n "$default_branch" ]; then
+    printf '    git worktree add <a path outside this clone> -b <a branch of yours> origin/%s\n' "$default_branch"
+    printf '    cd <that path> && git add <your paths> && git commit -m "<message>"\n'
+    printf '    git push origin HEAD:%s\n' "$default_branch"
+    printf '  A push refused as not a fast-forward means someone pushed first:\n'
+    printf '    git pull --rebase origin %s && git push origin HEAD:%s\n' "$default_branch" "$default_branch"
+  else
+    printf '    git worktree add <a path outside this clone> -b <a branch of yours> origin/HEAD\n'
+    printf '    cd <that path> && git add <your paths> && git commit -m "<message>"\n'
+    printf '    git push origin HEAD:<the default branch>\n'
+    printf '  A push refused as not a fast-forward means someone pushed first: pull --rebase, then push again.\n'
+  fi
+  printf '  Once it is on the default branch, remove the worktree and its branch:\n'
+  printf '    git worktree remove <that path> && git branch -D <that branch>\n'
+  printf '  See skills/GIT.md, "The shared clone is not a commit site".\n'
+} >&2
+
+exit 1

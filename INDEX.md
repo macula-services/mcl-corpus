@@ -29,6 +29,7 @@ app, a Phoenix LiveView site, or a Blazor site to it.
 | **Skills** | `skills/` | Executable knowledge, guardrails, codegen |
 | **Examples** | `examples/` | Concrete patterns |
 | **Roles** | `roles/`, `agents/` | Personas |
+| **Guardrails as code** | `tools/` | Checks the corpus runs on itself — `tools/corpus-guard` refuses a commit in a shared clone |
 | **Glossary** | `GLOSSARY.md` | Canonical vocabulary, the D5 model |
 | **Codex** | `CODEX.md` | Narrative booklet distilled from the corpus (draft) |
 
