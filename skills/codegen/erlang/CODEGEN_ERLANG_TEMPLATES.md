@@ -24,9 +24,9 @@ For a new `mcl-<svc>` service, **DON'T hand-write the shell**.
 Use the canonical scaffolder in `mcl-om`:
 
 ```bash
-cd ~/work/github.com/macula-services/mcl-om
+cd <checkout>/mcl-om
 ./scripts/scaffold-service.sh \
-    ~/work/github.com/macula-services/mcl-<svc> \
+    <checkout>/mcl-<svc> \
     mcl-<svc> \
     "One-line description of <svc>"
 ```

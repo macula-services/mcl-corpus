@@ -388,7 +388,7 @@ mesh_pubsub_e2e_test() ->
 
 **Date exorcised:** 2026-09-25
 **Where it appeared:** `macula-services/mcl-bookclub-observer`'s first fleet
-rollout on beam03, before the realm admitted its provider claim
+rollout on a lab host, before the realm admitted its provider claim
 **Cost:** Two live end-to-end attempts read as broken while the code was
 fine — the diagnosis order was wrong, not the software.
 

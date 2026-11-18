@@ -735,7 +735,7 @@ event_data(Event) ->                              %% raw in-memory event
 ## 🔥 Demon 49: Discarding `evoq_dispatcher:dispatch/2`'s Return Value
 
 **Date exorcised:** 2026-05-26
-**Where it appeared:** `macula-services/a since-removed service/apps/simulate_visit/src/simulate_visit.erl` — three call sites, `_ = maybe_X:dispatch(...)`
+**Where it appeared:** `a since-removed service/apps/simulate_visit/src/simulate_visit.erl` — three call sites, `_ = maybe_X:dispatch(...)`
 **Cost:** ~2 hours of "events vanish silently" debugging across multiple boot probes
 
 ### The Lie

@@ -22,7 +22,7 @@ This page consolidates them into one troubleshooting reference.
 ## 1. Read the actual error, not just "it failed"
 
 `macula-cli`'s own [`guides/HOWTO.md`](https://github.com/macula-io/macula-cli/blob/master/guides/HOWTO.md)
-§10 has the real BOLT#4 error table:
+§10 has the real error table:
 
 | Name | What it means | What to check |
 |---|---|---|

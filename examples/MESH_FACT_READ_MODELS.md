@@ -13,7 +13,7 @@ stage: stable
 > distinction still holds — a mesh fact is external truth, never a domain event. But its
 > Correct Way flow (`FACT → LISTENER → COMMAND → AGGREGATE → DOMAIN EVENT → projected`)
 > assumes the receiving side is a full Macula Division with an event-sourced aggregate to
-> dispatch a command to. A `mcl-om`-based edge service (`macula-services/mcl-<name>`) is
+> dispatch a command to. A `mcl-om`-based edge service (a `mcl-<name>` service) is
 > not that: no desks, no aggregate, no event store — just a mesh-fact listener maintaining a
 > direct read model. That shorter shape still needs a Policy step, for a different reason:
 > not command validation, but the admit/supersede/expire decision this example is about.
@@ -255,7 +255,7 @@ initial convergence*, never as the mechanism completeness depends on.
 ## Training Note
 
 This example teaches:
-- Why an edge service with no aggregate (a `mcl-om`-based `macula-services/mcl-<name>`
+- Why an edge service with no aggregate (a `mcl-om`-based `mcl-<name>`
   service) still needs a Policy step between Listener and Projection, for a different
   reason than command validation: the admit/supersede/expire decision.
 - Why a DHT-crawl-based discovery mechanism silently stops being complete at scale, and

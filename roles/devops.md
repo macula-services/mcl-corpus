@@ -116,8 +116,8 @@ Once QA has passed the division at the Review Gate, execute the release:
 3. Commit + tag (`vX.Y.Z`), push — CI builds the OCI image and pushes to `ghcr.io`
 4. Monitor CI; if compile/test fails, that's Stage 1 or QA's problem, hand it back with the failure output
 5. Once the image is published, apply the deployment path for this service's actual target:
-   - **Beam cluster (docker + watchtower)**: add/update the service's compose file and its line in the target node's `reconcile.manifest` under `macula-demo/infrastructure/beam0X.lab/`, commit, push. `mcl-reconcile.timer` picks it up; watchtower tracks `:latest` afterward.
-   - **msi00.lab (podman + Quadlet)**: update the `.container` unit under `~/.config/containers/systemd/`; `podman-auto-update.timer` picks up the new digest.
+   - **Beam cluster (docker + watchtower)**: add/update the service's compose file and its line in the target node's `reconcile.manifest` under `<demo-repo>/infrastructure/<node>/`, commit, push. `mcl-reconcile.timer` picks it up; watchtower tracks `:latest` afterward.
+   - **a lab host (podman + Quadlet)**: update the `.container` unit under `~/.config/containers/systemd/`; `podman-auto-update.timer` picks up the new digest.
    - There is no third "just `docker run` it" path.
 
 ### Rules
@@ -126,7 +126,7 @@ Once QA has passed the division at the Review Gate, execute the release:
 - CHANGELOG format: `## [X.Y.Z] - YYYY-MM-DD` with Added/Changed/Fixed sections.
 - Commit message: `chore: release vX.Y.Z` with a summary of changes.
 - Never build the image locally for production — CI builds from the tag, always.
-- Never hand-edit a running node — update `macula-demo/infrastructure` (or the Quadlet unit) and let the timer apply it.
+- Never hand-edit a running node — update `<demo-repo>/infrastructure` (or the Quadlet unit) and let the timer apply it.
 
 ### Output Format
 
@@ -137,7 +137,7 @@ Once QA has passed the division at the Review Gate, execute the release:
 [DEVOPS] Tagged: v0.2.5, pushed
 [DEVOPS] CI: waiting... (run #42)
 [DEVOPS] CI: ALL GREEN, image pushed to ghcr.io
-[DEVOPS] macula-demo/infrastructure updated, pushed
+[DEVOPS] <demo-repo>/infrastructure updated, pushed
 [DEVOPS] Release v0.2.5 complete
 ```
 

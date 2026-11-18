@@ -9,7 +9,7 @@ stage: stable
 
 [Back to FAQ index](FAQ.md) · [Back to corpus index](../INDEX.md)
 
-The hard rule first, from `macula-io/CLAUDE.md`: **LiveViews must never
+The hard rule first, from the repository's `CLAUDE.md`: **LiveViews must never
 call backend or library services directly.** A LiveView only ever
 subscribes to `Phoenix.PubSub` and reacts; something else calls the mesh
 and broadcasts the result. `macula-services/mcl-whiteboard` is a real,

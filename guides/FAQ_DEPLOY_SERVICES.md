@@ -53,10 +53,10 @@ matching semver tag (on a `v*` tag push) — the ":latest for
 watchtower/auto-update, semver for rollback" convention this workspace
 uses everywhere.
 
-## 3. Declare it on a target node — beam00-03 (Docker + watchtower)
+## 3. Declare it on a target node — the Beam cluster (Docker + watchtower)
 
 The fleet's real GitOps source of truth is
-[`macula-io/macula-demo`](https://github.com/macula-io/macula-demo)'s
+its demo repo's
 `infrastructure/` directory. A currently-live example
 (`mcl-turn-credentials`, added 2026-08-28) shows the exact shape:
 
@@ -93,7 +93,7 @@ deployed service, whitespace-separated:
 ```
 Example, the real live line: `mcl-turn-credentials
 scripts/docker-compose.mcl-turn-credentials.yml
-beam00.lab/mcl-turn-credentials-config.env
+a Beam node/mcl-turn-credentials-config.env
 mcl-turn-credentials.env  -`
 
 **Adding a new service is exactly this**: add one manifest line (plus the
@@ -117,9 +117,9 @@ it directly before assuming yours needs the same shape), others just get
 the file written by hand with no script at all. Either way, nothing
 resembling this runs automatically on a schedule.
 
-## 4. Declare it on a target node — msi00.lab (Podman + Quadlet)
+## 4. Declare it on a target node — a lab host (Podman + Quadlet)
 
-msi00.lab is separate from the beam00-03 fleet and uses Podman Quadlet
+a lab host is separate from the Beam cluster and uses Podman Quadlet
 instead of Docker Compose — **never put watchtower here**, it fights
 Quadlet/systemd for control of the same container. A real, current
 example (trimmed — the actual unit also has a `[Unit]` section, a
@@ -144,7 +144,7 @@ WantedBy=default.target
 `AutoUpdate=registry` is Podman's own native mechanism (driven by
 `podman-auto-update.timer`) — no watchtower needed or wanted.
 
-**How a unit gets installed on msi00.lab:** `mcl-reconciler.service`
+**How a unit gets installed on a lab host:** `mcl-reconciler.service`
 (a `systemd --user` unit) watches `~/.mcl/gitops/apps/` and symlinks
 each `.container` file it finds into `~/.config/containers/systemd/`.
 `mcl-whiteboard` and `mcl-graph` are installed
@@ -168,8 +168,8 @@ The scaffold's own `scripts/health.sh` is the standard check:
 MCL_HEALTH_PORT=<port> scripts/health.sh <remote-host>
 ```
 
-Beyond HTTP health: `docker logs <name>` (beam00-03) or
-`podman logs <name>` (msi00.lab) for the container itself;
+Beyond HTTP health: `docker logs <name>` (the Beam cluster) or
+`podman logs <name>` (a lab host) for the container itself;
 `journalctl --user -u mcl-reconcile.service` on a beam node for
 reconcile-level problems (a stale/untracked file blocking `git pull`
 used to silently stall reconciliation for *every* stack on that node —

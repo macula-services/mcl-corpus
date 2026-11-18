@@ -10,8 +10,7 @@ stage: stable
 *This exists so an agent about to bump, pin or release a library knows the ecosystem's dependency rules before it breaks one.*
 
 This page holds the model only. Which repository depends on which, at which
-version, is generated rather than written down: see the dependency register,
-[macula-ecosystem#5](https://github.com/macula-io/macula-ecosystem/issues/5).
+version, is generated rather than written down: see the dependency register.
 Do not copy its data here; a hand-kept table drifts from the code
 ([Demon 74](../skills/antipatterns/documentation.md)).
 
@@ -58,7 +57,7 @@ A registry is for libraries in its own language. Two other kinds of input
 have no release there: a contract written in another language (a `.proto`
 set), and a build-time tool such as a code-generation plugin. When one feeds
 only a single image's build, it may be pinned by the full commit of a release
-tag, never by a branch or tag name (reckon-gateway#4). Libraries stay
+tag, never by a branch or tag name. Libraries stay
 registry-only.
 
 ## 4. Pinning: `~> MAJOR.MINOR`
@@ -90,8 +89,7 @@ what you will break. The register lists who consumes what; the grep shows how.
 
 The tag, the application vsn (`.app.src`, `mix.exs`, `Cargo.toml`, ...) and
 the release name (relx) agree. `v1.4.0` ships an application that reports
-1.4.0, in a release called by that version. The release guard in CI
-(macula-ci-images#5, #6) refuses a tag where they differ; bump all of them
+1.4.0, in a release called by that version. The release guard in CI refuses a tag where they differ; bump all of them
 in the release commit, before the tag
 ([Demon 30](../skills/antipatterns/release.md)).
 

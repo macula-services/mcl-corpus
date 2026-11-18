@@ -19,7 +19,7 @@ the org namespace, and the caller's pin.
 **Where it appeared:** the first two-provider fleet deployment — the Erlang
 `mcl-bookclub` and its Elixir twin `mcl-bookclub-phoenix`, one org
 (`mcl-bookclub`), one procedure (`get_bookclub_by_id`), both on the same
-beam03 station set. Diagnosed through macula-services/mcl-om issue #5.
+station set. Diagnosed through macula-services/mcl-om issue #5.
 **Cost:** The many-club scoreboard showed `bookclub_verified => no` for the
 second club on live fleet, and the issue's first diagnosis chased a
 nonexistent "resolve drops the org-key record" for a full session, because
@@ -73,7 +73,7 @@ Three mechanisms, one per layer of the lie:
    ADVERTISE frame out to EVERY connected link, so providers on
    overlapping station sets keep fighting over every SHARED station's
    registry even when their records name distinct stations (live on
-   beam03: the pinned calls kept flapping). The `advertise` opt
+   a lab host: the pinned calls kept flapping). The `advertise` opt
    registers the handler on just the one link, so each station's
    registry holds exactly its own providers.
 3. **`no_provider` means exactly "nothing to dial"** (mcl_om 0.29.0): a

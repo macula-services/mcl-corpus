@@ -161,7 +161,7 @@ The root `rebar.config` declares ALL external dependencies and lists ALL apps in
 
 | Service | Repo | Root App | Domain Apps |
 |--------|------|----------|-------------|
-| a division service | `macula-services/mcl-<svc>` | `mcl_<svc>` | `{verb}_{aggregates}` (CMD), `project_<models>` (PRJ), `query_<models>` (QRY) — e.g. `mcl-chess`: `play_games`, `project_games`, `query_games` |
+| a division service | `mcl-<svc>` | `mcl_<svc>` | `{verb}_{aggregates}` (CMD), `project_<models>` (PRJ), `query_<models>` (QRY) — e.g. `mcl-chess`: `play_games`, `project_games`, `query_games` |
 
 ---
 

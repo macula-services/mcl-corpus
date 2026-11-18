@@ -536,7 +536,7 @@ Not another line in a document — a test that fails.
 **Where it appeared:** `macula-services/mcl-bookclub-observer`'s three fact
 policies (`on_member_registered_fact_maybe_record` and siblings), first fleet
 rollout — the consumer half of mcl-bookclub's mesh facts
-**Cost:** A full live-debugging session on beam03. The mesh delivered every
+**Cost:** A full live-debugging session on a lab host. The mesh delivered every
 fact; the observer recorded nothing. Zero errors anywhere — the policies
 skipped the facts as malformed and `skip` is silent by design.
 

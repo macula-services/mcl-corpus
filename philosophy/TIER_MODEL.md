@@ -23,7 +23,7 @@ anyone.
 ## The tiers
 
 ```
-Layer 2 — services    macula-services/mcl-{om, rag, git, …}
+Layer 2 — services    mcl-{om, rag, git, …}
                       Always-on, multi-tenant, realm-bound, each with
                       its own SERVICE-PRINCIPAL identity.
                       EDGE-FIRST: hosted wherever the operator puts
@@ -113,7 +113,7 @@ implementation.
 
 Every Layer-2 service:
 
-1. Lives at `github.com/macula-services/mcl-<name>`
+1. Lives at a `mcl-<name>` repository
 2. Implements the `mcl_om_service` behaviour (six callbacks:
    `info/0`, `start/1`, `stop/1`, `health/0`, `capabilities/0`,
    `identity_spec/0`)

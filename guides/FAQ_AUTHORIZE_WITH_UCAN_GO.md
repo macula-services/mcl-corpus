@@ -26,7 +26,7 @@ provider.Advertise(frame.NewAdvertiseSpec(realm, procedure, providerID.NodeID())
 policy := func(_ []byte, _ string) ucan.Policy { return ucan.Required(providerID.NodeID()) }
 go provider.ServeOneCallGated(lookup, policy, providerID, 15*time.Second)
 
-// No token: refused with BOLT#4 Unauthorized before the handler ever runs.
+// No token: refused with the Unauthorized error before the handler ever runs.
 resp, _ := caller.Call(procedure, realm, cbor.Null(), deadlineMs, callerID, 10*time.Second)
 
 // A valid token: reaches the handler for real.

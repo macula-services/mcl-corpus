@@ -115,7 +115,7 @@ Content-Type: application/json
 {
   "public_key":   "base64-encoded-ed25519-public-key",
   "service_name": "mcl-rag",
-  "node_name":    "beam00"
+  "node_name":    "<node>"
 }
 ```
 
@@ -123,10 +123,10 @@ Content-Type: application/json
 
 ```json
 {
-  "org_identity":  "mri:org:io.macula/rgfaber",
-  "service_mri":   "mri:app:io.macula/rgfaber/_service-mcl-rag-beam00",
+  "org_identity":  "mri:org:io.macula/<owner>",
+  "service_mri":   "mri:app:io.macula/<owner>/_service-mcl-rag-<node>",
   "service_name":  "mcl-rag",
-  "node_name":     "beam00",
+  "node_name":     "<node>",
   "cert_pem":      "-----BEGIN CERTIFICATE-----…",
   "org_ca_pem":    "-----BEGIN CERTIFICATE-----…",
   "ca_chain_pem":  "-----BEGIN CERTIFICATE-----…"
@@ -195,7 +195,7 @@ write one assuming a realm somewhere is reading and gating on it yet.
 ## 3. The bigger picture is an active, dated design — not shipped
 
 The citizen identity plan, now
-[macula-io/macula-architecture#9](https://github.com/macula-io/macula-architecture/issues/9)
+an architecture issue
 (drafted **2026-09-01**), opens by naming the actual
 state of things plainly: "Three pieces of this were already designed,
 separately, and never reconciled" — a Hanko-based identity layer cake

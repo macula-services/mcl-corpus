@@ -20,7 +20,7 @@ no-live-station example — `examples/09_ucan.php` — covers the pure
 mint/verify round trip.
 
 ```php
-// Caller half. First call, no token: expects BOLT#4 Unauthorized (0x10).
+// Caller half. First call, no token: expects the Unauthorized error (0x10).
 $unauthorized = $session->call($procedure, $realm, Value::int(21), 10000);
 // $unauthorized->isError() === true, $unauthorized->code() === 0x10
 

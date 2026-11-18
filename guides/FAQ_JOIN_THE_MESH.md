@@ -20,7 +20,7 @@ this: see [macula-cli](FAQ_MACULA_CLI.md) or the SDK guides for
 [PHP](FAQ_DEVELOP_EDGE_SERVICES_PHP.md) instead, and
 connect to a public station like `station-de-frankfurt.macula.io`.
 
-Everything below is sourced from `macula-io/macula-station`'s own
+Everything below is sourced from the station's own
 `docs/DEPLOYMENT_GUIDE.md` and `Dockerfile` — read those directly for the full
 depth (a real production incident writeup, the fleet roster, more edge cases)
 this FAQ entry condenses. **Only §1–4 below (the container, config, and the
@@ -397,11 +397,11 @@ guarantee.
 
 ## See also
 
-- [`macula-io/macula-station`'s own README](https://github.com/macula-io/macula-station) —
+- The station's own README —
   architecture overview, what a station actually is
-- [`macula-io/macula-station/docs/DEPLOYMENT_GUIDE.md`](https://github.com/macula-io/macula-station/blob/main/docs/DEPLOYMENT_GUIDE.md) —
+- The station's `docs/DEPLOYMENT_GUIDE.md` —
   the full version of this document, with citations into the actual source
-- [`macula-io/macula-station/docs/CASCADE_INVESTIGATION.md`](https://github.com/macula-io/macula-station/blob/main/docs/CASCADE_INVESTIGATION.md) —
+- The station's `docs/CASCADE_INVESTIGATION.md` —
   a real production incident and its fix
 - [FAQ: How do I deploy my own mcl-* service?](FAQ_DEPLOY_SERVICES.md) —
   the equivalent walkthrough for a service, not a station
