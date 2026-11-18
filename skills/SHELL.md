@@ -108,3 +108,9 @@ The shell runs backticks, dollar signs and exclamation marks in an inline messag
 A test runner given an empty argument may treat it as a pattern and run every test file it can find. Build the flag list in a real script with a guard, echo the full argument list and confirm it names exactly what you mean before the run.
 
 **Why:** a runner aimed at one file becomes a machine-wide run, and an empty array is the cause, invisible in the command line.
+
+### A command with arguments belongs in an array, never in a quoted string
+
+`CMD="systemctl --user"` followed by `"$CMD" enable` asks the shell for a program literally named `systemctl --user`; a quoted expansion is one word, and the split never happens. Hold the command and its arguments in an array (`CMD=(systemctl --user)`, then `"${CMD[@]}" enable`) or in a function. And prove the call path with a stub on PATH, because a dry run that only prints the variable never executes the branch where the string form fails.
+
+**Why:** the failure appears at the first real call, in the one branch a dry run skips, and it is the shell's own invariant rather than a typo anyone spots by reading.
