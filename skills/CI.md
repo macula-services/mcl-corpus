@@ -79,6 +79,12 @@ A self-hosted runner clears the contents of its temp directory when a job tears 
 
 **Why:** the shape, directory tree intact with the files gone, looks like an unexplained cleanup pass, but it is the runner, and the run that filled the cache never gets it back.
 
+### A change from a fork inherits the base repository's jobs
+
+A change proposed from a fork runs the base repository's workflow files, so it carries jobs the fork's own settings never asked for. A job the base's runner policy cannot supply then runs no step at all, or reports that no runner was acquired: that is a property of the base repository's policy, not evidence about the change. Read the full job list before calling a run red, because a job that never started proves nothing either way.
+
+**Why:** a change sat red on a job that had not run one step, while every job that did run was green. Re-running once is the repair when the cause is a queued runner; landing past such a job is a decision the owner makes, and the verdict then names the job and says it never started.
+
 ## Environment drift
 
 ### A native dependency can outrun the pinned runtime

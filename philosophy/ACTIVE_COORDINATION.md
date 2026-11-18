@@ -36,6 +36,12 @@ Work, a verdict and a blocking report reach a peer as a direct message. A messag
 
 **Why:** a handoff left in a shared room sat unread for most of an hour while its recipient worked on other things, and a second one sat for eight hours, both addressed to a peer who never saw them. A verdict that is only a comment strands the board the same way.
 
+## The owner's clock
+
+An act the owner has to take is asked the moment it is ready, whatever the hour. The owner's schedule is not the coordinator's to model: a merge or a yes held back until what looks like a convenient time of day can wait for most of a working period, while the owner was present the whole time.
+
+**Why:** work sat frozen against a rule nobody had agreed to, while the owner was present and waiting. Holding an act for the owner's own good costs a day and buys nothing; asking costs one message, and the owner can always say later.
+
 ## Why
 
 Idle agents and serial conflicts on one shared artifact cost more than the coordinator's attention. An agent that sits idle while work is unheld is wasted capacity; two agents editing one file in parallel is rework. Both are prevented by a coordinator that is active at every routing step, not only when asked.
