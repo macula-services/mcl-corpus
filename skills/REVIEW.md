@@ -53,3 +53,11 @@ The original author then reviews that commit, those lines only, and records the 
 A design change, or anything security-sensitive (tokens, credentials, process signals, landing gates), still goes back to the author as a failure, with every item in it.
 
 **Why:** a full round trip for a few lines costs more than the fix, and the author still sees the fix and learns from it. Sensitive and design changes stay with the author, because those are where a second mind matters most.
+
+## A terminal screen never holds a string whole
+
+A full-screen terminal program redraws only the cells that changed, and pads a wrapped line with its own margin. So the raw bytes of a recorded screen drop characters and split words: a command shown whole on the screen can be kept with letters missing. A redactor that looks for a secret's exact value in those bytes can miss it, even after removing line breaks and escape sequences.
+
+**How to apply:** when reviewing a redactor over a recorded screen, test a wrap with a padded continuation line and a line with characters missing, not only a plain line break. Prefer that the screen is not kept once the secret is in play. Structured logs that hold whole strings can be redacted reliably.
+
+**Why:** a review asked for "remove the breaks and escapes, then look again". The author built exactly that, and a padded wrap still kept the whole secret. The review's own request was too narrow.
