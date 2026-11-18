@@ -112,6 +112,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Test something" | `skills/TESTING.md` |
 | "Handle secrets or do security work" | `skills/SECURITY.md` |
 | "Write BEAM (Erlang/Elixir) code" | `skills/BEAM.md` |
+| "Diagnose a build or test result" | `skills/BUILD.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
 | "Commit or branch correctly" | `skills/GIT.md` |
 | "Push, tag or deploy a change" | `skills/SHIPPING.md` |
