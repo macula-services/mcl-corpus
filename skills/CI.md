@@ -114,3 +114,9 @@ A change that touches paths CI skips gets a short by-eye read even on a green ti
 Read the workflows' triggers before promising CI on a tip. A workflow whose `on:` is `push: branches: [main]` plus `pull_request:` runs nothing for an intermediate branch that has no pull request: the run list for that sha is empty and the waiter answers "no workflow run", which is not a slow or queued run. Either wait for the pull request the landing will open, or say plainly that the tip has no CI, and never substitute runs from another sha.
 
 **Why:** a green on a neighbouring tip says nothing about this tree, and an empty run list read as "still starting" turns a missing run into a cited one.
+
+### A check goes in a workflow that runs for the files it guards
+
+Before placing a new check in an existing workflow, read that workflow's path filters and its runner image. A check that guards generated files (a diagram, a lock file, a rendered page) cannot live in a workflow whose `paths-ignore` lists those files. A pull request that changes only them never starts that workflow, so the check never runs on the very change it is for. Put it in a workflow with no path filter, as its own job, on an image that has the check's interpreter. Name the mutant that changes only a guarded file, and run it.
+
+**Why:** a drift check in the wrong workflow is green by never running. A design passed review with its drift check in a build workflow that ignored the diagram directory and whose image had no python. Only reading the filter and running the tool in the image showed it.
