@@ -2,6 +2,10 @@
 """Mutation test for check_wall_schema: each rule is a mutant, and a mutant
 that survives (the pinning test still passes) shows the test is not aimed at it.
 
+The test runs with -B, so no bytecode of a mutant is cached: a mutant of the
+same length restored within the same second would otherwise leave its .pyc
+valid, and every later import would run the mutant.
+
 For each rule it holds the file's bytes, writes the mutated form, runs
 test_wall_schema.py, and restores the bytes in a finally. A mutant is killed
 when the test fails under it.
@@ -42,7 +46,7 @@ def main() -> int:
             continue
         SOURCE.write_bytes(mutated)
         try:
-            run = subprocess.run([sys.executable, str(TEST)], capture_output=True, text=True)
+            run = subprocess.run([sys.executable, "-B", str(TEST)], capture_output=True, text=True)
         finally:
             SOURCE.write_bytes(original)
         if run.returncode == 0:
