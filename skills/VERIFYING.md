@@ -25,6 +25,12 @@ A run that succeeded is evidence only if the guard it was testing actually ran. 
 
 **Why:** a check that fails to load passes everything, and the green log carries no mark of it.
 
+### A range check misses drift in a generated file's generator
+
+A check that judges only the ranges touching a generated file (a drawn diagram, a lockfile, a rendered doc) cannot see its generator move. When a change edits the generator, or the sources it reads, and touches nothing it outputs, every range check stays green while the tree no longer matches what the generator would produce. So check the whole tree as well: regenerate and compare at release preflight, before the first outward act of the release, not only per range.
+
+**Why:** a release found the drift only partway through, after one package had already been published and could not be taken back. Every range check had passed, because no range had touched the generated file.
+
 ### A conflicting pull request gets no runs
 
 A pull request that no longer merges cleanly into its base gets no runs — the test merge cannot be built, so no run is created for it, and a watcher waits out its whole deadline for runs that will never come. Before treating a missing run as an outage or a queue delay, check whether the pull request still merges; a conflict explains it on the spot, and merging the base back in brings the runs.
