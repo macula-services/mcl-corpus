@@ -117,6 +117,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Write BEAM (Erlang/Elixir) code" | `skills/BEAM.md` |
 | "Diagnose a build or test result" | `skills/BUILD.md` |
 | "Check CI status or read a run" | `skills/CI.md` |
+| "Reason about cost, budget or estimates" | `skills/COST.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
 | "Commit or branch correctly" | `skills/GIT.md` |
 | "Push, tag or deploy a change" | `skills/SHIPPING.md` |
