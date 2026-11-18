@@ -1,65 +1,92 @@
 #!/usr/bin/env python3
-"""Draws assets/event_storming_bookclub_wall.svg: the public book club
-(macula-services/mcl-bookclub) on a design-level storming wall in the Macula
-lane form described in philosophy/EVENT_STORMING.md.
+"""Draws assets/event_storming_bookclub_wall.svg from the book club's wall file.
 
-Lanes are roles and services. One enlarged blue sticky is one desk. The event
-a desk produces sits on its right edge as an output port; the policy that
-triggers a desk sits on its left edge as an input port. An arrow from an event
-port to a policy port is a process manager; into the mesh lane it is an
-emitter; onto a green sticky it is a projection.
+Usage: event_storming_bookclub_wall.py WALL_JSON
 
-Every name below is a folder of the book club as it is on main; change the
-tables, not the drawing code, when the club changes. Run with python3, no
-dependencies. The SVG is committed; this script is how it is made again.
+WALL_JSON is macula-services/mcl-bookclub's wall.json, the book club's meaning
+(names only). Lanes are roles and services. One enlarged blue sticky is one
+desk; the event a desk produces sits on its right edge as an output port; the
+policy that triggers a desk sits on its left edge as an input port. An arrow
+from an event port to a policy port is a process manager; into the mesh lane it
+is an emitter; onto a green sticky it is a projection.
+
+This script holds only the lane form's geometry and colours. Every note it
+draws — desks, events, policies, read models, leaving and arriving facts, hot
+spots — is read from the file, so the picture and the file cannot drift apart:
+change the file, not the drawing code, when the club changes. The SVG is
+committed; this script is how it is made again, from the file. Run with
+python3, no dependencies.
 """
 from __future__ import annotations
 
+import json
 import pathlib
+import re
+import sys
 
-# ---- the wall, as data ----------------------------------------------------
+_VERSION = re.compile(r"_v\d+$")
 
-LANES = [  # (key, label, height)
-    ("organiser", "Organiser", 260),
-    ("member", "Member", 260),
-    ("read", "What people ask (PRJ → QRY)", 170),
-    ("mesh", "Other services, over the mesh", 130),
-]
 
-# Desks left to right follow the timeline of a club's life. Each desk names
-# its lane, the event it produces, the policy on its input port (if any), the
-# green sticky its event feeds, and whether the event leaves the club.
-DESKS = [
-    dict(name="initiate_bookclub", lane="organiser", event="bookclub_initiated_v1",
-         feeds="clubs"),
-    dict(name="register_member", lane="member", event="member_registered_v1",
-         feeds="members", emits=True),
-    dict(name="procure_book", lane="organiser", event="book_procured_v1",
-         feeds="books", emits=True),
-    dict(name="start_reading", lane="member", event="reading_started_v1",
-         feeds="readings"),
-    dict(name="finish_reading", lane="member", event="reading_finished_v1",
-         feeds="readings"),
-    dict(name="plan_party", lane="organiser", event="party_planned_v1",
-         policy="on member registered,\nmaybe plan party", hotspot=True),
-    dict(name="unregister_member", lane="member", event="member_unregistered_v1",
-         feeds="members"),
-    dict(name="retire_book", lane="organiser", event="book_retired_v1",
-         feeds="books", emits=True),
-    dict(name="archive_bookclub", lane="organiser", event="bookclub_archived_v1",
-         feeds="clubs"),
-]
+def _without_version(name: str) -> str:
+    return _VERSION.sub("", name)
 
-# The policy arrow: which event port feeds which desk's policy port, and the
-# folder that arrow is in the code.
-POLICIES = [("member_registered_v1", "plan_party", "on_member_registered_v1_maybe_plan_party/")]
 
-READ_MODELS = [  # (key, table, queries), drawn left to right in this order
-    ("clubs", "clubs", ["get_bookclub_by_id"]),
-    ("members", "members", ["get_member_by_id"]),
-    ("books", "books", ["get_book_by_id"]),
-    ("readings", "readings", ["get_reading_by_id", "get_readings_by_member"]),
-]
+def _human(name: str) -> str:
+    """The note's name as a person would say it: no version, spaces for marks."""
+    return _without_version(name).replace("_", " ")
+
+
+def _wall(path: str) -> dict:
+    return json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+
+
+# ---- the wall, read from the file ----------------------------------------
+
+def _lanes(wall: dict) -> list[tuple[str, str, int]]:
+    # The business lanes in the file's order, then the two lanes the lane form
+    # always draws: the read models people ask for, and the mesh.
+    out = [(lane.lower(), lane, 260) for lane in wall["lanes"]]
+    out += [
+        ("read", "What people ask (PRJ → QRY)", 170),
+        ("mesh", "Other services, over the mesh", 130),
+    ]
+    return out
+
+
+def _desks(wall: dict) -> list[dict]:
+    leaving = set(wall["facts_that_leave"])
+    hot = set(wall["hot_spots"])
+    policy_for = {p["maybe"]: p for p in wall["policies"]}
+    desks = []
+    for desk in wall["desks"]:
+        d = {"name": desk["name"], "lane": desk["lane"].lower(), "event": desk["event"]}
+        # The drawing shows one projection arrow per desk; the club's desks each
+        # feed one table.
+        if desk["feeds"]:
+            d["feeds"] = desk["feeds"][0]
+        if desk["event"] in leaving:
+            d["emits"] = True
+        if desk["event"] in hot:
+            d["hotspot"] = True
+        if desk["name"] in policy_for:
+            p = policy_for[desk["name"]]
+            d["policy"] = f"on {_human(p['on'][0])},\nmaybe {_human(p['maybe'])}"
+        desks.append(d)
+    return desks
+
+
+def _policies(wall: dict) -> list[tuple[str, str, str]]:
+    # The policy arrow: which event port feeds which desk's policy port, and the
+    # folder that arrow is in the code.
+    return [
+        (p["on"][0], p["maybe"], f"on_{p['on'][0]}_maybe_{p['maybe']}/")
+        for p in wall["policies"]
+    ]
+
+
+def _read_models(wall: dict) -> list[tuple[str, str, list[str]]]:
+    # (key, table, queries), drawn left to right in this order.
+    return [(rm["table"], rm["table"], list(rm["questions"])) for rm in wall["read_models"]]
 
 HOTSPOT_TEXT = ["party planned:", "leaves the club?", "not decided"]
 
@@ -76,6 +103,10 @@ PORT_W, PORT_H = 118, 36
 PORT_OVERLAP = 18
 GREEN_W, GREEN_H = 250, 96
 PINK_W, PINK_H = 250, 54
+# A note of the method has clearly rounded corners; a free mark is sharp
+# (mcl-whiteboard#13). The corpus's picture follows the same corner, so the
+# board and the pictures show one note.
+CORNER = 8
 
 BLUE, ORANGE, LILAC = "#8EC5FF", "#FFB347", "#C9A6EC"
 GREEN, PINK_WIDE, PINK_HOT = "#A9E5A3", "#F7BFD6", "#FF4FA3"
@@ -122,9 +153,9 @@ def group(kind: str, name: str, inner: list[str], **data) -> str:
     return f'<g class="k-{kind}" data-name="{esc(name)}"{attrs}>' + "".join(inner) + "</g>"
 
 
-def sticky(x, y, w, h, fill, rotate=0.0):
+def sticky(x, y, w, h, fill, rotate=0.0, rx=CORNER):
     tr = f' transform="rotate({rotate} {x + w / 2} {y + h / 2})"' if rotate else ""
-    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="3" fill="{fill}" '
+    return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" '
             f'stroke="{INK}" stroke-opacity="0.18"{tr}/>')
 
 
@@ -181,7 +212,7 @@ def build() -> str:
     items = []
     for i, (fill, label) in enumerate(legend):
         x, y = 56 + i * 235, y_end + 22
-        items += [sticky(x, y, 18, 14, fill), text(x + 26, y + 12, label, 12, MUTED)]
+        items += [sticky(x, y, 18, 14, fill, rx=3), text(x + 26, y + 12, label, 12, MUTED)]
     items.append(text(W - 44, y_end + 58, "time runs left to right, a club's life from initiate to archive",
                       12, MUTED, anchor="end"))
     parts.append(group("legend", "legend", items))
@@ -283,6 +314,11 @@ def build() -> str:
 
 
 if __name__ == "__main__":
+    wall = _wall(sys.argv[1])
+    LANES = _lanes(wall)
+    DESKS = _desks(wall)
+    POLICIES = _policies(wall)
+    READ_MODELS = _read_models(wall)
     out = pathlib.Path(__file__).with_suffix(".svg")
     out.write_text(build() + "\n")
     print(out)
