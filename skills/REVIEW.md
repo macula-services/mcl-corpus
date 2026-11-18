@@ -93,3 +93,19 @@ A review checks every "done when" line of the issue against the diff before the 
 **How to apply:** open the issue first and list its "done when" lines. A fix that takes text out of a message (to stop a leak, say) gets a check on what the message must still say, not only on what it must no longer say.
 
 **Why:** a fix stopped a refusal from quoting a value that could carry a secret. The review killed every leak mutant and drafted a pass. The issue also said the refusal must still tell the reader what to do, and the fix had dropped that. Nobody had aimed a check at it, so only a second reader caught it.
+
+## A claim about the tree is settled by the tree
+
+A plan's "waits on" column, a row's "read from" source, and a review's list of what catches a missed row are all claims about the repository at that moment. Each is settled by the repository, not by memory, by a title, or by a name that sounds right. Three ways it goes wrong: a wait named on work that already landed, a control credited with more than it does, and a source that names a file without the field.
+
+**How to apply:** before posting a plan, prove each wait is still pending — the merge commit is not on the default branch, or the file it was to produce does not exist. For each source, name the field as well as the file, because two records of one concept may name their fields differently, and a row that reads "the recorded file" without its field cannot be built. For each control, plant in a copy of the tree the thing it is supposed to catch, and run the check: reading the check's judgment function gives you the words it prints, and a grep gives you less, but only a plant tells you your case reaches them. When reviewing someone's fix of a failure you raised, compare their before blocks against the original and check that nothing the original had right was dropped in the rewrite.
+
+**Why:** a plan waited on a package that had landed two batches earlier and credited an exact-count check with covering every directory in the source tree, when the rest fell to a looser cap — both settled in one turn by the landing commit, the recorded file and the check's tests. Later, a claim that a new directory could enter the source tree unreported was disproved by planting one: the architecture test failed by name, and the file had only to be called out on the page with a reason. That claim would have become a false issue. The first two cost a review round; all three came from writing down what the tree was remembered to be.
+
+### A design that compares a declared name with a reported one says how the names map
+
+When a design checks the name a host reports (a model, a version, a runtime) against the name a declaration holds, it must say how the two are matched. They are often not the same vocabulary. A declaration names an alias, and the host reports the full id that the alias resolved to. A plain string compare then stops exactly the members the rule exists to let through. Match through a mapping recorded from the host itself, kept beside the recorded host version. Stop by name, with "re-take the recording", on an id the recording does not hold. Never match by guessing a pattern.
+
+**How to apply:** for every equality check across a boundary, ask the author for the spelling on each side, with a real example of each. Ask too where an open vocabulary (one that accepts any name) gets its only real check.
+
+**Why:** a review rule for a mixed crew compared the declared reviewer model with the one the session reported. On one host the declaration held an alias and the session reported a full id, so the rule would have refused every correct reviewer. On the other host any name passed declaration, so a misspelled model was caught nowhere but the launch read-back, and the design had not said so.

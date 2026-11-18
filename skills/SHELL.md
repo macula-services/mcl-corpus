@@ -114,3 +114,11 @@ A test runner given an empty argument may treat it as a pattern and run every te
 `CMD="systemctl --user"` followed by `"$CMD" enable` asks the shell for a program literally named `systemctl --user`; a quoted expansion is one word, and the split never happens. Hold the command and its arguments in an array (`CMD=(systemctl --user)`, then `"${CMD[@]}" enable`) or in a function. And prove the call path with a stub on PATH, because a dry run that only prints the variable never executes the branch where the string form fails.
 
 **Why:** the failure appears at the first real call, in the one branch a dry run skips, and it is the shell's own invariant rather than a typo anyone spots by reading.
+
+### A readiness check on something just started waits, and its stub answers late
+
+A script that starts a service and then checks for its "ready" line once fails on a healthy service, because the service needs seconds to connect. If a failure trap stops what the run started, a healthy restore ends with everything stopped. Poll until a deadline (state and ready line together, read since a timestamp taken before the start). In the proof, use a stub that says "ready" only after several calls, and assert it was asked more than once. A stub that answers on the first call cannot tell a wait from no wait. Prove each failure direction too: never ready, and a helper that fails after it has already started things. Each must exit non-zero and stop everything.
+
+**How to apply:** a test-only override (an env var that swaps the command) used only in the green run leaves the default line unproven. Put the stub first on PATH instead, so the line the operator runs is the line the proof runs.
+
+**Why:** a runner-restore script was proven green against a stub that answered "Listening" at once. On the real host it would have stopped four healthy runners seconds after starting them. A helper it ran also started the units before the script began tracking them, so a failure there left them running unseen.
