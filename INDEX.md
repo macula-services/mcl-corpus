@@ -106,6 +106,7 @@ Skills are loaded contextually. The retrieval system should hold these always-on
 | "Coordinate a team of agents, or verify work" | `philosophy/ACTIVE_COORDINATION.md`, `philosophy/SHARED_LEARNING.md`, `skills/CHECK_EVIDENCE.md`, `skills/VERIFYING.md` |
 | "Code review" | `skills/antipatterns/INDEX.md` + relevant `skills/antipatterns/*.md` |
 | "Naming" | `skills/NAMING_CONVENTIONS.md`, `skills/codegen/erlang/CODEGEN_ERLANG_NAMING.md` |
+| "Write or name something clearly" | `skills/WRITING.md` |
 | "Test something" | `skills/TESTING.md` |
 | "Handle secrets or do security work" | `skills/SECURITY.md` |
 | "Bump, pin or release a library" | `philosophy/DEPENDENCIES.md`, `skills/antipatterns/release.md` |
