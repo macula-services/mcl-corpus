@@ -109,3 +109,11 @@ When a design checks the name a host reports (a model, a version, a runtime) aga
 **How to apply:** for every equality check across a boundary, ask the author for the spelling on each side, with a real example of each. Ask too where an open vocabulary (one that accepts any name) gets its only real check.
 
 **Why:** a review rule for a mixed crew compared the declared reviewer model with the one the session reported. On one host the declaration held an alias and the session reported a full id, so the rule would have refused every correct reviewer. On the other host any name passed declaration, so a misspelled model was caught nowhere but the launch read-back, and the design had not said so.
+
+## A plan gives every line of its issue a home
+
+A plan that orders an issue's work into packages places every line of that issue. Each "done when" line, each "not measured yet" item, and each output the issue says must leave the work belongs to one package by name, or the plan says plainly that it is open. A decision with a prerequisite goes to the package where the prerequisite first exists, not to the package where it reads well.
+
+**How to apply:** before posting the plan, walk the issue from top to bottom and write each line's package beside it. A line with no package is a gap in the plan, never a detail for later. A line whose package lacks the thing it depends on (a link to a card before the cards exist) moves to the package that builds that thing.
+
+**Why:** a plan for a storming board ordered six packages and a model step, and its gap table was right. But the issue's own "done when" belonged to no package, the three "not measured yet" items had no home, and the big picture's outputs had no package. A link to an issue card was placed two packages before the cards existed. The review found five small items, all of the same kind: lines the plan had read but not placed.
