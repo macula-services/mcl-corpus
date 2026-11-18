@@ -39,8 +39,17 @@ When a change fails review twice and each fix opens new findings, stop relaying 
 
 **Why:** when the new findings are in machinery the previous round added, the question itself is malformed, and more rounds will not settle it.
 
-### A hygiene-only failure folds in
+### A small failure is fixed by the reviewer
 
-A failure whose required items are all hygiene, such as a stale comment, a restated literal, wording, or a doc line, is folded in by the author. The reviewer then checks only those lines, with no new round. A behaviour or security bug still gets a full round.
+When a failure's required items are only hygiene (a stale comment, a restated literal, wording), a weak test pin, or a small real bug (about 30 lines, no design change), the reviewer fixes them on the change's branch instead of sending them back:
 
-**Why:** hygiene does not deserve another full round, and the reviewer names the exact fix so it can be checked in isolation.
+1. Tell the author before pushing, so they hold their own pushes.
+2. Fix it, and show that each mutant that survived now dies.
+3. Push, and wait for CI to pass on the new tip.
+4. Report the verdict as FIXED, naming the fix commit.
+
+The original author then reviews that commit, those lines only, and records the lesson learned in the shared corpus.
+
+A design change, or anything security-sensitive (tokens, credentials, process signals, landing gates), still goes back to the author as a failure, with every item in it.
+
+**Why:** a full round trip for a few lines costs more than the fix, and the author still sees the fix and learns from it. Sensitive and design changes stay with the author, because those are where a second mind matters most.
