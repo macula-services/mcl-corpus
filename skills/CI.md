@@ -108,3 +108,9 @@ Run the gate inside the same container image CI uses, as the same user CI runs a
 A change that touches paths CI skips gets a short by-eye read even on a green tip, without an extra round for the owner.
 
 **Why:** CI is green precisely because it skipped the jobs that would have caught the defect.
+
+### A branch with no pull request gets no runs at all
+
+Read the workflows' triggers before promising CI on a tip. A workflow whose `on:` is `push: branches: [main]` plus `pull_request:` runs nothing for an intermediate branch that has no pull request: the run list for that sha is empty and the waiter answers "no workflow run", which is not a slow or queued run. Either wait for the pull request the landing will open, or say plainly that the tip has no CI, and never substitute runs from another sha.
+
+**Why:** a green on a neighbouring tip says nothing about this tree, and an empty run list read as "still starting" turns a missing run into a cited one.

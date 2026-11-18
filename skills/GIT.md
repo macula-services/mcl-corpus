@@ -128,3 +128,9 @@ Before counting a local clone in a sweep, check the repo is live. Archiving a re
 `git merge-tree --write-tree <base> <tip>` writes the merged tree without touching the index, the worktree or a remote branch, and prints its tree id (non-zero exit, with the conflicted paths, when the merge does not resolve). Extract that tree and run its own generator or checks in it to learn what a landing would need, and whether the merge is even clean, before anyone builds a branch.
 
 **Why:** it turns "check the final tip when it appears" into "know what the final tip will need", at the price of one command.
+
+### Another owner's branch takes your commit through a ref push, not their checkout
+
+A shared working copy with per-owner isolation refuses a commit on a branch another owner's checkout holds: the reference-transaction hook aborts the commit, and the owner's request does not lift the hook. Commit in a checkout of your own, fast-forwarded to their tip, push your own branch first, then push the ref (`git push origin HEAD:<their-branch>`). Hand their checkout back exactly as you found it, and tell them the one fetch and fast-forward that picks your commit up.
+
+**Why:** the isolation keeps every owner's work reachable through the tool that created it, and a ref push is the operation it does not have to block.
