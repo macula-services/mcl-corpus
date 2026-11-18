@@ -100,3 +100,11 @@ A test of a behaviour owned elsewhere belongs where the behaviour lives. An inte
 A .NET assembly keeps its strings in UTF-16, so `strings` with its default encoding reports nothing for it, and a scan that finds no hits then reads as "the name is absent". Use `strings -e l` (or the format the runtime in question uses) before concluding anything from a search of a compiled artifact, and say which scan produced the answer.
 
 **Why:** the first scan here said zero and the second said one, and the difference was an encoding flag, not the binary.
+
+## The environment that will run it, not yours
+
+A preflight run proves the run only in the environment where it ran. When one person checks a script and another person runs it, their shells differ in PATH, logins, keys and tools. A green preflight in the checker's shell says nothing about the runner's. So a preflight checks, by name, everything the real run will reach for in the environment it runs in: `command -v` for each tool it calls, each login it needs, each key it signs with. It refuses before the first outward act, naming what is missing.
+
+**How to apply:** list every external command, login and key the script uses, and give each a check at the top of the preflight that names it when it is absent. When you hand someone a command to run, check those things in their environment, or make the script check them. Never stand in for that with your own run.
+
+**Why:** a release script's preflight passed in the checking agent's shell. The owner's first real run stopped at its CI wait, exit 127: the waiter lived in a directory only the agent's PATH held. Nothing outward had happened yet, but only by luck of where the wait sat in the order. A tool the script called after the first push would have stopped the release halfway.
