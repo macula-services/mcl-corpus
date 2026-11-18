@@ -39,6 +39,12 @@ A token missing a scope is refused on that action, and the error often names the
 
 **Why:** the refusal names the file, so the real cause, a scope the token lacks, is invisible, and reaching for a broader token is the wrong fix.
 
+### A value piped from the API is checked for its shape, never its length
+
+When a token or an identifier is piped from the API into a script, check the shape of what arrives, not how long it is. A call that fails for a missing scope answers with an error body, and that body travels down the same pipe: a "longer than N characters" test accepts it and hands it to the next step. A registration token, for one, is a single word of uppercase letters and digits; braces, quotes, spaces or lowercase letters mean an error body, and the script refuses it by name before it touches anything. Where the value has to come down a pipe, its shape is the only evidence there is.
+
+**Why:** the wrong input is accepted silently, and it surfaces three steps later as a credential rejection far from the line that let it in.
+
 ## Pull requests and settings
 
 ### A fast-forwarded pull request leaves no merge commit
