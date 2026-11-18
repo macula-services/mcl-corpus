@@ -271,6 +271,16 @@ The CI workflow runs:
 
 All tests must pass before the Docker image is built.
 
+### A path a test compares against a tool's answer is taken resolved
+
+When a test builds a fixture path from a temporary root and then compares it with a path a tool answered — `git worktree list`, `git rev-parse --show-toplevel`, a file walker — take the root's real path where it is made (`realpathSync(mkdtempSync(...))`, `pwd -P`, the language's equivalent), and build every expectation in the file from that. Tools answer with the place they resolved; a temporary root reached through a link is therefore a different spelling of the same place.
+
+**Why:** one CI job runs the whole suite under a temporary root reached through a link, deliberately. A test whose fixture root was not resolved compared `…/_temp/private/var/…` (the tool's answer) with `…/_temp/var/…` (its own) and failed there alone. The same suite was green locally, so it read as a load flake. Prove a fix for it under the same condition the CI creates — a symlink in the temp root's path, red on the old bytes and green on the new — rather than by re-running until it passes.
+
+### "It passes when run alone" is a claim about a run that was actually scoped
+
+A filter handed to a package's test entry point may not reach the runner: arguments are appended to a chain of commands, and a runner that does not understand the flag runs everything anyway. Check the scope before quoting it — a run that reports the whole suite's test count was not the one-file run the claim needs.
+
 ---
 
 ## Running the suite by hand
