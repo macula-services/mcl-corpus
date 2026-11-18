@@ -71,6 +71,12 @@ When two changes touch one format line â€” a `printf`, a template, a `format!` â
 
 **Why:** a specifier and an argument that drift by one position still parse. They print one value under another value's name, which reads plausibly and passes any test that only asks whether the names are present.
 
+### Review a conflict resolution with the remerge diff, row by row
+
+When two changes edit neighbouring rows of one table or list, such as a component table or a diagram's boxes, the conflict hunk shows both rows twice, and the resolution has to take each row from the change that owns it, not one side whole. Review a resolution with `git show --remerge-diff <merge>`: it shows the conflict markers as git produced them and what the merge kept, so a reviewer reads only the resolved lines. For each row, name which side it came from. Then search the merged tree, not either parent, for any name one side retired.
+
+**Why:** taking "ours" or "theirs" whole for a hunk silently reverts the other change's row. The result still compiles and still reads plausibly, so only a row-by-row read catches it.
+
 ## Where work lives
 
 ### The clone stays on the default branch; work lives in a worktree
