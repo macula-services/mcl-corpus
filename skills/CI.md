@@ -59,6 +59,14 @@ A CI-wait helper called seconds after a push can answer "no run on this sha" wit
 
 ## Waiting on CI
 
+### A re-run hides its first attempt
+
+A run that failed and was re-run to green is stored as one run whose conclusion is success and whose attempt number is two. Its first attempt's failures appear in no list, no run view and no "failed runs" filter.
+
+**Why:** a census of failures built from the run list therefore drops exactly the runs somebody re-ran because they were flaky, which is the evidence most worth having. A census that reads 22 failures may be missing the two that mattered.
+
+**How to apply:** after listing runs, take every row whose attempt number is above one and read that run's first attempt's jobs and their logs. Report how many runs were re-run, and treat each re-run as a flake claim you have read rather than inferred. A job log whose text holds terminal escape sequences is refused by the CLI unless its escape allowance is passed; that refusal exits non-zero and leaves an empty file, which reads as "no log at all" if only the file size is checked.
+
 ### Do not poll in a loop
 
 Wait with a single watch command at a slow interval, or check once at about the run's expected length; never a sub-minute loop over several run ids.
