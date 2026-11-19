@@ -25,6 +25,16 @@ The REST endpoints and the GraphQL path can rate-limit or refuse at different ti
 
 **Why:** a shared token can be refused on one path while the other still answers, so a blocker report is premature until both have been tried.
 
+## Text that is stored
+
+### A posted body is read back, and corrected where it stands
+
+A comment, an issue or a pull-request body is stored text on someone else's server: what you sent is a request, and the stored body is what every reader sees. Fetch it back and compare it with your source before you believe it landed as written. A control character written as an escape sequence can be transformed on the way and arrive as something else, so name characters in words instead of escaping them. A small error is corrected by updating that same comment — the update keeps its id and its link — not by posting a second comment below it.
+
+**Why:** the stored body is the artefact the work is held to, so a mangled citation is simply a wrong citation to everyone downstream, and nobody reports it. A correction posted underneath leaves two versions of one text, and the older one is the one an existing link opens.
+
+**How to apply:** after posting, fetch the body through the API, compare it trimmed against the file you sent — a trailing newline is not a difference, and a difference anywhere else is — and report that comparison rather than that the post succeeded. Correct with the comment's update call; post a fresh comment only for a fresh take, such as a verdict or an amendment.
+
 ## Credentials
 
 ### The CLI reads a token from the environment before any stored login
