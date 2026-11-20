@@ -69,6 +69,12 @@ Every full sha in a handoff or a verdict line is pasted from `git rev-parse <ref
 
 **Why:** an invented base points the reviewer's diff and the range check at nothing, or at the wrong commit, and the correction costs a second message. It has happened twice: once as a hedge on a short sha ("...-ish"), and once as a seven-character prefix continued with plausible-looking characters.
 
+### A handoff line carries a range, and a link is not one
+
+Write the handoff line as the package, both ends of the range at full length, the round and the run ids, and nothing else. A pull request or a thread link belongs in the prose below it. A document link stands in for the range only when the package has no code range to name: a design review, or work that landed in a repository the package's own repository cannot see.
+
+**Why:** the line is read at a glance for the range and the run to trust. A narrowed sha invites a wrong guess at the rest of it, and a link where a range belongs sends the reader to a page that points back at the range, or fails the line's check and costs a second message. Both were corrected within a day of each other.
+
 ### Use git, not the wrapper, for git-able actions
 
 Clone, fetch, ls-remote, push, branches, tags and log are git's. Use the hosting wrapper only for what exists only there: repos, issues, pull requests, secrets, environments, runs.
