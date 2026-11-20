@@ -13,6 +13,12 @@ stage: stable
 
 ## Aim the mutant
 
+### Spend mutants where a wrong guard would be silent
+
+Prove a test bites with a mutant on guard code and security code: refusals, matchers, permissions, anything whose failure would be silent. Elsewhere the red-first run is the evidence, since each mutant costs a full suite pass.
+
+**Why:** a guard that stopped guarding looks exactly like a guard, so it is the one place where the extra run buys what the red-first run cannot; anywhere else the breakage is loud anyway.
+
 ### A survivor means re-aim at the pinned check, not a missing test
 
 A mutant that survives means the mutation did not hit the check the test pins; re-aim it at that check. It does not mean the test has a gap.

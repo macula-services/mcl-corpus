@@ -31,6 +31,12 @@ One review per change. No second reviewer, and no diff-only re-review after a sm
 
 **Why:** review rounds are the dominant cost, and the second round rarely finds what the first could not.
 
+### Cap the rounds, and fail only on harm
+
+A change gets at most two review rounds. A FAIL names harm to the person who uses it or the person who owns it: a wrong result, a leak, a silent loss. Style, naming and "this could be smaller" ride as notes in the same message and never open a round. A handoff stays at about ten lines — the range, the run, and the claims — and the detail lives on the change itself.
+
+**Why:** rounds and long handoffs are paid once per change and by every reader, and the defect a third round might find is rarely the one that hurts.
+
 ### Read while CI runs, send the verdict on green
 
 Start reading the change as soon as it is handed over, while its CI runs. Send the verdict only once every run on the exact tip has passed. A verdict with a run still pending is not sent, and a run that fails turns a PASS into a FAIL.
