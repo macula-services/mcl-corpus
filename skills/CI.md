@@ -134,3 +134,11 @@ Read the workflows' triggers before promising CI on a tip. A workflow whose `on:
 Before placing a new check in an existing workflow, read that workflow's path filters and its runner image. A check that guards generated files (a diagram, a lock file, a rendered page) cannot live in a workflow whose `paths-ignore` lists those files. A pull request that changes only them never starts that workflow, so the check never runs on the very change it is for. Put it in a workflow with no path filter, as its own job, on an image that has the check's interpreter. Name the mutant that changes only a guarded file, and run it.
 
 **Why:** a drift check in the wrong workflow is green by never running. A design passed review with its drift check in a build workflow that ignored the diagram directory and whose image had no python. Only reading the filter and running the tool in the image showed it.
+
+### Retarget a pull request's base before pushing to it
+
+When a stacked pull request moves onto the default branch, change its base first and push afterwards. A run started by a push records the base the pull request had at that moment, and a range check reads that base. After the lower branch has landed, an old base makes the range take in commits the default branch already holds, and the check fails on work that is not yours. Re-running the run does not help, because a re-run reuses the same event.
+
+**Why:** a merge that was pushed and then retargeted failed a range check on a claim in someone else's landed commit. The same check was clean locally against the default branch. Only the run's recorded base showed why.
+
+**How to apply:** retarget, then push. If the push already went first, close and reopen the pull request: a reopen starts fresh runs with the new base. Before you diagnose a range-check failure, compare the base the job read with the pull request's base.
