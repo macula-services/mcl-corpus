@@ -327,6 +327,18 @@ When the project keeps a remover that retries while something is still writing, 
 
 **Why:** a fix for a temporary-directory leak used the language's raw recursive delete where the project required its retrying remover, and the project's own guard failed the build — a green run being the only thing that would have caught it, since the fix read correctly.
 
+### A suite reads the tree it runs in, and the dependencies it was not given
+
+Two failures belong to the worktree, not to the change, and both look exactly like a broken change.
+
+A test that asserts the checkout stays clean reads the repository's own `git status`. Run the whole suite while a merge is staged or anything is uncommitted, and that test fails with the staged file list as its evidence. Commit first, then run, or re-run that one file after committing.
+
+A composite `test` script usually starts with a link that proves a sub-project, and that link aborts the whole run before a single test when the sub-project's dependencies are missing. The run then exits non-zero with no test summary at all — which reads as "the suite failed" and proves nothing. Install that sub-project's dependencies, or run the test glob directly and say plainly that the job did not run.
+
+**Why:** a whole-suite run on a merge in progress reported two failures: one from the staged files the checkout carried, the other from an installer whose dependencies were never installed. Both files passed unchanged once the tree was committed and the dependencies installed, and the run that "failed" had no test summary in it.
+
+**How to apply:** commit, install the sub-project's dependencies, run, then read the summary counts. A run without its summary is not a result, whichever way it exited.
+
 ---
 
 ## Decision Record
